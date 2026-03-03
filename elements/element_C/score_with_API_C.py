@@ -16,6 +16,7 @@ from scripts.shared.utils import extract_text_with_fallback
 import traceback
 import re
 
+
 # Resolve project root: c:\GPTScorer
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 

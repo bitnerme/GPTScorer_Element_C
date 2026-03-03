@@ -299,6 +299,9 @@ def process_files_background(job_id: str, file_payloads, mode: str):
 
         if filename.lower().endswith(".csv"):
             df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
+            # Ensure narrative_feedback column exists
+            if "narrative_feedback" not in df_one.columns:
+                df_one["narrative_feedback"] = ""
 
         elif filename.lower().endswith((".pdf", ".docx")):
             suffix = os.path.splitext(filename)[1]
