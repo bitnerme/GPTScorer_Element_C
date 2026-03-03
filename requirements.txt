@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+openai
+joblib
+scikit-learn
+python-docx
+PyMuPDF

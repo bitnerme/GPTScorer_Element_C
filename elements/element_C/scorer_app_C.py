@@ -1,0 +1,437 @@
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Sequence, Tuple
+import math
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi import Request
+from fastapi import Form
+import pandas as pd
+import joblib
+import os
+from pathlib import Path
+import tempfile
+from typing import List
+from .score_with_API_C import score_documents_with_api
+from scripts.shared.utils import extract_text_from_file
+from dataclasses import dataclass
+from typing import Tuple
+from fastapi import BackgroundTasks
+from core.job_manager import create_job, update_progress, complete_job, get_job, jobs
+from io import BytesIO
+
+app = FastAPI()
+
+
+print("### RUNNING THIS scorer_app_C.py ###")
+print(__file__)
+
+# ----------------------------------------------------
+# Project Structure Anchoring
+# ----------------------------------------------------
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+ELEMENT_NAME = "element_C"   # Change per element
+ELEMENT_CODE = "C"           # Change per element
+
+MODELS_DIR = PROJECT_ROOT / "models" / ELEMENT_NAME
+DATA_DIR = PROJECT_ROOT / "data" / ELEMENT_NAME
+OUTPUTS_DIR = PROJECT_ROOT / "outputs" / ELEMENT_NAME
+
+SIMPLE_UI_DIR = PROJECT_ROOT / "simple_ui"
+ELEMENT_UI_DIR = SIMPLE_UI_DIR / ELEMENT_NAME
+SHARED_UI_DIR = SIMPLE_UI_DIR / "shared"
+
+# Mount static folder for JSfrom fastapi.staticfiles import StaticFiles
+app.mount(
+    "/static",
+    StaticFiles(directory=SHARED_UI_DIR),
+    name="static"
+)
+
+@app.get("/", response_class=HTMLResponse)
+async def root():
+    with open(ELEMENT_UI_DIR / "index.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+print("=== BACKEND ID ===")
+print("FILE:", __file__)
+print("CWD :", os.getcwd())
+print("PID :", os.getpid())
+print("==================")
+
+
+# ----------------------------------------------------
+# Reconcile Subelements
+# ----------------------------------------------------
+
+@dataclass(frozen=True)
+class FlagPolicy:
+    allowed: Tuple[str, ...] = ("", "ci-ok", "ok", "none")
+    blocked: Tuple[str, ...] = ("ci-fail", "critical", "block", "red flag")
+
+def reconcile_integer_subscores(
+    row: dict,
+    keys: Sequence[str],
+    target_element_col: str,
+    flag_suffix: str = "_flag",
+    min_score: int = 0,
+    max_score: int = 5,
+    flag_policy: FlagPolicy = FlagPolicy(),
+    # Optional per-criterion preference weights: lower = prefer adjusting this criterion
+    # Example: {"C2": 0.8, "C4": 0.9, "C1": 1.0, ...}
+    preference_weight: Optional[Dict[str, float]] = None,
+    # If True, treat non-allowed non-blocked flags as “adjustable but expensive”.
+    # If False, only allowed flags are adjustable.
+    soft_block_nonallowed: bool = True,
+) -> Dict[str, int]:
+    """
+    Reconcile integer subelement scores to match the closest achievable mean to the calibrated target.
+    Minimizes movement (fewest ±1 steps) and uses informed priority based on flags + current values.
+
+    Returns dict mapping each key -> recommended integer score.
+    """
+    n = len(keys)
+    if n == 0:
+        return {}
+
+    # 1) Read original integer scores
+    orig: Dict[str, int] = {}
+    for k in keys:
+        v = row.get(k, None)
+        if v is None or (isinstance(v, float) and math.isnan(v)):
+            raise ValueError(f"Missing subscore {k}")
+        orig[k] = int(round(float(v)))
+
+    # clamp originals to bounds (defensive)
+    for k in keys:
+        orig[k] = max(min_score, min(max_score, orig[k]))
+
+    target = float(row[target_element_col])
+
+    # 2) Decide adjustability and per-criterion base costs from flags
+    adjustable: List[str] = []
+    base_cost: Dict[str, float] = {}
+
+    def _norm_flag(x):
+        return str(x).strip().lower()
+
+    for k in keys:
+        f = _norm_flag(row.get(f"{k}{flag_suffix}", ""))
+
+        if f in flag_policy.blocked:
+            base_cost[k] = float("inf")  # never adjust
+            continue
+
+        if f in flag_policy.allowed:
+            adjustable.append(k)
+            base_cost[k] = 1.0
+        else:
+            if soft_block_nonallowed:
+                # still adjustable, but expensive
+                adjustable.append(k)
+                base_cost[k] = 5.0
+            else:
+                base_cost[k] = float("inf")
+
+    rec = orig.copy()
+
+    # If nothing is adjustable, return originals
+    if not adjustable:
+        return rec
+
+    # 3) Choose the closest achievable integer sum to calibrated target
+    current_sum = sum(rec.values())
+    desired_sum = int(round(target * n))
+
+    # Feasible sum range given bounds and adjustability
+    min_possible = 0
+    max_possible = 0
+    for k in keys:
+        if k in adjustable:
+            min_possible += min_score
+            max_possible += max_score
+        else:
+            min_possible += rec[k]
+            max_possible += rec[k]
+
+    # clamp desired_sum to feasible range
+    if desired_sum < min_possible:
+        desired_sum = min_possible
+    elif desired_sum > max_possible:
+        desired_sum = max_possible
+
+    # We will move by integer steps until current_sum == desired_sum
+    delta = desired_sum - current_sum
+    if delta == 0:
+        return rec
+
+    # 4) Stepwise min-cost adjustments (greedy with convex-ish costs)
+    # Cost encodes:
+    # - flag cost (base_cost)
+    # - preference_weight (optional)
+    # - “expert-like” direction: when increasing, prefer low scores; when decreasing, prefer high scores
+    w = preference_weight or {}
+
+    def step_cost(k: str, direction: int) -> float:
+        # direction: +1 (increase) or -1 (decrease)
+        if base_cost[k] == float("inf"):
+            return float("inf")
+
+        # apply optional preference weights (default 1.0)
+        pw = float(w.get(k, 1.0))
+
+        # directional “expert-like” cost:
+        # - when increasing: lower current score => cheaper
+        # - when decreasing: higher current score => cheaper
+        s = rec[k]
+        if direction > 0:
+            directional = 1.0 + (s / max_score)  # higher s => a bit more expensive to increase
+        else:
+            directional = 1.0 + ((max_score - s) / max_score)  # lower s => more expensive to decrease
+
+        return base_cost[k] * pw * directional
+
+    # perform |delta| unit moves
+    direction = 1 if delta > 0 else -1
+    steps = abs(delta)
+
+    for _ in range(steps):
+        best_k = None
+        best_cost = float("inf")
+
+        for k in adjustable:
+            # check bounds for this move
+            if direction > 0 and rec[k] >= max_score:
+                continue
+            if direction < 0 and rec[k] <= min_score:
+                continue
+
+            c = step_cost(k, direction)
+            if c < best_cost:
+                best_cost = c
+                best_k = k
+
+        # If no valid move exists (should be rare due to feasible clamp), stop
+        if best_k is None or best_cost == float("inf"):
+            break
+
+        rec[best_k] += direction
+
+    return rec
+
+# Scoring endpoint
+@app.post("/score")
+async def score_element_c(
+    background_tasks: BackgroundTasks,
+    mode: str = Form(...),
+    files: List[UploadFile] = File(...)
+):
+    mode = (mode or "").strip().lower()
+
+    file_payloads = []
+    for file in files:
+        content = await file.read()
+        file_payloads.append({
+            "filename": file.filename,
+            "content": content
+        })
+
+    job_id = create_job(len(file_payloads))
+
+    background_tasks.add_task(
+        process_files_background,
+        job_id,
+        file_payloads,
+        mode
+    )
+
+    return {"job_id": job_id}
+
+def process_files_background(job_id: str, file_payloads, mode: str):
+    mode = (mode or "").strip().lower()
+    if mode not in ("legacy", "current"):
+        mode = "current"
+
+    # =========================
+    # Linear Calibration
+    # =========================
+    # Legacy is bias only
+    LEGACY_BIAS_OFFSET = 0.72
+    # Current linear calibration (variance + bias alignment)
+    CURRENT_A = 1.34
+    CURRENT_B = -1.40
+
+    # =========================
+    # Output Columns
+    # =========================
+    score_cols = [
+        "filename",
+
+        # Raw subscores
+        "C1", "C2", "C3", "C4", "C5", "C6",
+
+        # Final subscores
+        "C1_final", "C2_final", "C3_final",
+        "C4_final", "C5_final", "C6_final",
+
+        "element_score_raw",
+        "element_score_calibrated",
+        "calibration_delta",
+
+        "flags",
+        "rationales",
+        "narrative_feedback"
+    ]
+
+    dfs = []
+
+
+    # ============================================================
+    # 1) FILE LOOP
+    # ============================================================
+    for i, file_data in enumerate(file_payloads):
+        filename = file_data["filename"]
+        content = file_data["content"]
+
+        print("PROCESSING:", filename)
+
+        if filename.lower().endswith(".csv"):
+            df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
+
+        elif filename.lower().endswith((".pdf", ".docx")):
+            suffix = os.path.splitext(filename)[1]
+
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                tmp.write(content)
+                tmp.flush()
+                tmp_path = tmp.name
+
+            documents = [{"filename": filename, "path": tmp_path}]
+            blended = "v1.13" if mode == "legacy" else "v1.15"
+
+            df_one = score_documents_with_api(
+                documents,
+                blended_version=blended
+            )
+        else:
+            raise ValueError(f"Unsupported file type: {filename}")
+
+        dfs.append(df_one)
+        update_progress(job_id, i + 1)
+
+    if not dfs:
+        complete_job(job_id, [])
+        return
+
+    # ============================================================
+    # 2) CONCAT
+    # ============================================================
+    df = pd.concat(dfs, ignore_index=True)
+
+    if "doc_id" in df.columns:
+        df["filename"] = df["doc_id"]
+
+    # ============================================================
+    # 3) Ensure integer subscores
+    # ============================================================
+    for k in range(1, 7):
+        df[f"C{k}"] = (
+            pd.to_numeric(df.get(f"C{k}"), errors="coerce")
+            .fillna(0)
+            .round()
+            .astype(int)
+        )
+
+    # ============================================================
+    # 4) Compute Raw Element Score
+    # ============================================================
+    df["element_score_raw"] = df[[f"C{k}" for k in range(1, 7)]].mean(axis=1)
+
+        # ============================================================
+    # 5) Apply Mode-Dependent Linear Calibration
+    # ============================================================
+
+    if mode == "legacy":
+        a = 1.0
+        b = LEGACY_BIAS_OFFSET
+    else:  # current
+        a = CURRENT_A
+        b = CURRENT_B
+
+    df["element_score_calibrated"] = (
+        a * df["element_score_raw"] + b
+    ).clip(0.0, 5.0)
+
+    # ============================================================
+    # 6) Initialize Final Columns
+    # ============================================================
+    for k in range(1, 7):
+        df[f"C{k}_final"] = df[f"C{k}"]
+
+    # ============================================================
+    # 7) Reconcile Integers (ONE PASS)
+    # ============================================================
+    keys = [f"C{k}" for k in range(1, 7)]
+
+    for idx, row in df.iterrows():
+        rec = reconcile_integer_subscores(
+            row=row.to_dict(),
+            keys=keys,
+            target_element_col="element_score_calibrated",
+            flag_suffix="_flag",
+            soft_block_nonallowed=True
+        )
+        for k, v in rec.items():
+            df.loc[idx, f"{k}_final"] = v
+
+    # ============================================================
+    # 8) Recompute Calibrated Mean From Finals
+    # ============================================================
+    df["element_score_calibrated"] = df[
+        [f"C{k}_final" for k in range(1, 7)]
+    ].mean(axis=1)
+
+    df["calibration_delta"] = (
+        df["element_score_calibrated"] - df["element_score_raw"]
+    )
+
+    # ============================================================
+    # 9) Combine Flags + Rationales
+    # ============================================================
+    flag_cols = [f"C{k}_flag" for k in range(1, 7) if f"C{k}_flag" in df.columns]
+    rat_cols = [f"C{k}_rationale" for k in range(1, 7) if f"C{k}_rationale" in df.columns]
+
+    df["flags"] = (
+        df[flag_cols]
+        .apply(lambda r: " | ".join(str(x) for x in r if pd.notna(x) and str(x).strip()), axis=1)
+        if flag_cols else ""
+    )
+
+    df["rationales"] = (
+        df[rat_cols]
+        .apply(lambda r: " | ".join(str(x) for x in r if pd.notna(x) and str(x).strip()), axis=1)
+        if rat_cols else ""
+    )
+
+    # ============================================================
+    # 10) Finalize Output
+    # ============================================================
+    safe_cols = [c for c in score_cols if c in df.columns]
+    df = df.fillna("")
+    results = df[safe_cols].to_dict(orient="records")
+
+    complete_job(job_id, results)
+
+@app.get("/progress/{job_id}")
+def progress(job_id: str):
+    job = get_job(job_id)
+    if not job:
+        return {"error": "Invalid job ID"}
+    return job
+
+# CLI run
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("scorer_app_C:app", host="127.0.0.1", port=8000, reload=True)

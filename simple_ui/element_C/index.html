@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Element C Scoring App</title>
+</head>
+<body>
+    <h1>Element C Scoring</h1>
+
+    <form id="uploadForm">
+
+        <label for="modeSelect">Scoring Mode:</label><br>
+        <select id="modeSelect" name="mode">
+            <option value="current">Current (Default)</option>
+            <option value="legacy">Legacy (v1.13 Only)</option>
+        </select><br><br>
+
+        <label for="file">Upload a File</label><br>
+        <input type="file" id="fileInput" name="files" multiple><br><br>
+
+        <!-- Checkbox on its own line -->
+        <label>
+            <input type="checkbox" id="downloadCSVCheckbox">
+            Download results as CSV instead of viewing
+        </label><br><br>
+
+        <!-- Submit button below the checkbox -->
+        <button type="submit">Submit for Scoring</button>
+    </form>
+
+    <form id="uploadForm">
+    
+    <div id="progressContainer" style="display:none; margin-top:20px;">
+        <div style="width:100%; background:#ddd;">
+            <div id="progressBar"
+                style="width:0%; height:20px; background:#4caf50;">
+            </div>
+        </div>
+        <p id="progressText">Scored 0 of 0 documents</p>
+    </div>
+
+    <div id="results-section" style="display:none; margin-top:20px;">
+        <h3>Scoring Results</h3>
+        <div id="resultOutput"></div>
+        <button onclick="downloadCSV()">Download Results CSV</button>
+    </div>
+
+    <button onclick="console.log('Saved results:', window.lastResults)">Check Saved Results</button>
+
+</body>
+<script src="/static/script.js"></script>
+</html>

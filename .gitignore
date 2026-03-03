@@ -1,0 +1,40 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Output folders (if applicable)
+outputs/
+models/
+data/
+
+# IDE settings (optional)
+.vscode/
+.idea/
+
+# Office temp files
+~$*
+*.tmp
+
+# Excel / PowerPoint (unless intentionally included)
+*.xlsx
+*.pptx
+
+# Word lock files
+~WRL*
+
+# Python cache
+__pycache__/
+*.pyc

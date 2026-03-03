@@ -1,0 +1,52 @@
+Element C:  Presentation and Justification of Solution Design Requirements
+C1. Determination of design requirements. __________ design requirements are related to prior research.	
+score = 5    80%-100% of	
+score = 4    60%-79% of	
+score = 3    40%-59% of	
+score = 2    20%-39% of	
+score = 1    1-19% of	
+score = 0    No
+						
+C2. Requirements list. Design requirements  __________.	
+score = 5    are listed, prioritized, clear, and detailed	
+score = 4    are listed, prioritized, generally clear, and detailed	
+score = 3    are listed, prioritized, generally clear, and somewhat detailed	
+score = 2    are listed and prioritized but some or all may be incomplete and/or lack specificity	
+score = 1    are listed, formatted, and prioritization is attempted, but these may be partial and/or overly general	
+score = 0    are not present or are too vague
+						
+C3. Quantity of high-priority design requirements. __________ of the design requirements listed are identified as high priority.	
+score = 5    Five	
+score = 4    Four	
+score = 3    Three	
+score = 2    Two	
+score = 1    One
+score = 0    None
+						
+C4. Objective & measurable. Design requirements __________.	
+score = 5    are consistently objective and measurable	
+score = 4    are nearly always objective and measurable	
+score = 3    are generally objective and measurable	
+score = 2    may be only sometimes objective and/or measurable	
+score = 1    are insufficiently measurable	
+score = 0    are not measurable
+
+	
+C5. Leading to solution. Design requirements __________.	
+score = 5    would be highly likely to lead to a tangible and viable problem solution	
+score = 4    would be likely to lead to a tangible and viable problem solution	
+score = 3    have a potential to lead to a tangible and viable problem solution	
+score = 2    have some potential to lead to a tangible and viable problem solution	
+score = 1    have little potential to lead to a tangible and viable problem solution	
+score = 0    cannot lead to a tangible and viable problem solution
+						
+C6. Primary stakeholder validation. There is evidence that requirements represent the needs of, and have been validated by, __________ primary stakeholder groups.	
+score = 5    80%-100% of	
+score = 4    60%-79% of	
+score = 3    40%-59% of	
+score = 2    20%-39% of	
+score = 1    1-19% of	
+score = 0    no primary stakeholder groups.
+
+						
+
