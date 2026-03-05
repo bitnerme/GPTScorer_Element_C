@@ -9,12 +9,82 @@ from pdf2image import convert_from_path
 import pytesseract
 import docx
 import subprocess
-import time
 import traceback
+import json
+from pathlib import Path
+
+from pathlib import Path
+import json
+
+
+def check_drift(current_metrics, baseline_file):
+
+    baseline_path = Path(baseline_file)
+
+    if not baseline_path.exists():
+        return {
+            "status": "NO BASELINE",
+            "message": f"Baseline file not found: {baseline_file}"
+        }
+
+    with open(baseline_path, "r") as f:
+        baseline = json.load(f)
+
+    report = {}
+    failures = []
+
+    # -----------------------------
+    # Compute metric differences
+    # -----------------------------
+
+    api_mean_diff = abs(current_metrics["api_mean"] - baseline["api_mean"])
+    api_std_diff = abs(current_metrics["api_std"] - baseline["api_std"])
+
+    final_mean_diff = abs(current_metrics["final_mean"] - baseline["final_mean"])
+    final_std_diff = abs(current_metrics["final_std"] - baseline["final_std"])
+
+    report["api_mean_diff"] = api_mean_diff
+    report["api_std_diff"] = api_std_diff
+    report["final_mean_diff"] = final_mean_diff
+    report["final_std_diff"] = final_std_diff
+
+    # -----------------------------
+    # Thresholds
+    # -----------------------------
+
+    API_MEAN_THRESHOLD = 0.25
+    API_STD_THRESHOLD = 0.20
+    FINAL_MEAN_THRESHOLD = 0.25
+    FINAL_STD_THRESHOLD = 0.20
+
+    if api_mean_diff > API_MEAN_THRESHOLD:
+        failures.append("api_mean_shift")
+
+    if api_std_diff > API_STD_THRESHOLD:
+        failures.append("api_std_shift")
+
+    if final_mean_diff > FINAL_MEAN_THRESHOLD:
+        failures.append("final_mean_shift")
+
+    if final_std_diff > FINAL_STD_THRESHOLD:
+        failures.append("final_std_shift")
+
+    # -----------------------------
+    # Final result
+    # -----------------------------
+
+    if failures:
+        status = "DRIFT DETECTED"
+    else:
+        status = "PASS"
+
+    return {
+        "status": status,
+        "failures": failures,
+        "report": report
+    }
 
 # --- Extract text from .docx/doc or .pdf ---
-
-
 def extract_text_from_file(filepath):
     print("\n=== ENTER extract_text_from_file ===")
     print("FILEPATH:", repr(filepath))
@@ -105,7 +175,6 @@ def extract_text_from_docx(filepath):
     return "\n".join(
         [para.text for para in doc.paragraphs if para.text.strip()]
     )
-
 
 def extract_text_from_pdf(filepath):
     try:

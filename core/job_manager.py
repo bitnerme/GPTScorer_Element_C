@@ -19,7 +19,7 @@ def update_progress(job_id: str, completed: int):
 def complete_job(job_id: str, results):
     jobs[job_id]["status"] = "done"
     jobs[job_id]["results"] = results
-    print("COMPLETE_JOB STATE:", jobs[job_id])
+    #print("COMPLETE_JOB STATE:", jobs[job_id])
 
 def get_job(job_id: str):
     return jobs.get(job_id)

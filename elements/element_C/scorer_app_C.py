@@ -14,7 +14,11 @@ from pathlib import Path
 import tempfile
 from typing import List
 from .score_with_API_C import score_documents_with_api
-from scripts.shared.utils import extract_text_from_file
+from scripts.shared.utils import (
+    extract_text_from_file,
+    call_gpt_with_backoff,
+    check_drift
+)
 from dataclasses import dataclass
 from typing import Tuple
 from fastapi import BackgroundTasks
@@ -23,6 +27,19 @@ from io import BytesIO
 
 app = FastAPI()
 
+@app.post("/check_saved_results")
+async def check_saved_results():
+
+    global last_metrics
+
+    if last_metrics is None:
+        return {"status": "NO RESULTS", "message": "Run scoring first."}
+
+    baseline_file = Path("config/baseline_metrics_current.json")
+
+    drift_report = check_drift(last_metrics, baseline_file)
+
+    return drift_report
 
 print("### RUNNING THIS scorer_app_C.py ###")
 print(__file__)
@@ -49,6 +66,65 @@ app.mount(
     StaticFiles(directory=SHARED_UI_DIR),
     name="static"
 )
+
+import pandas as pd
+
+def compute_gpt_metrics(df: pd.DataFrame) -> dict:
+    df = df.copy()
+
+    # ---- API element score (raw) ----
+    # Prefer element_score_raw if present; otherwise compute from raw subscores C1..C6
+    raw_subs = [f"C{i}" for i in range(1, 7)]
+    for c in raw_subs:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    if "element_score_raw" not in df.columns:
+        df["element_score_raw"] = df[raw_subs].mean(axis=1)
+
+    df["element_score_raw"] = pd.to_numeric(df["element_score_raw"], errors="coerce")
+
+    # ---- FINAL element score (what the CSV exports / teachers see) ----
+    # Prefer C*_final if present; else fall back to raw C*
+    final_subs = [f"C{i}_final" for i in range(1, 7)]
+    if all(c in df.columns for c in final_subs):
+        for c in final_subs:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+        df["element_score_final"] = df[final_subs].mean(axis=1)
+        final_source = "C*_final"
+    else:
+        df["element_score_final"] = df[raw_subs].mean(axis=1)
+        final_source = "C* (fallback)"
+
+    df["element_score_final"] = pd.to_numeric(df["element_score_final"], errors="coerce")
+
+    api_s = df["element_score_raw"].dropna()
+    fin_s = df["element_score_final"].dropna()
+
+    return {
+        "sample_size": int(len(df)),
+        "n_valid_api": int(api_s.shape[0]),
+        "n_valid_final": int(fin_s.shape[0]),
+        "api_mean": float(api_s.mean()) if len(api_s) else None,
+        "api_std": float(api_s.std(ddof=0)) if len(api_s) else None,
+        "final_mean": float(fin_s.mean()) if len(fin_s) else None,
+        "final_std": float(fin_s.std(ddof=0)) if len(fin_s) else None,
+        "final_source": final_source,
+    }
+
+    metrics = {}
+
+    # API behavior (model output)
+    metrics["api_mean"] = df["element_score_raw"].mean()
+    metrics["api_std"] = df["element_score_raw"].std()
+
+    # Final system behavior (after calibration)
+    metrics["final_mean"] = df["element_score_calibrated"].mean()
+    metrics["final_std"] = df["element_score_calibrated"].std()
+
+    metrics["sample_size"] = len(df)
+
+    return metrics
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
@@ -250,6 +326,7 @@ async def score_element_c(
     return {"job_id": job_id}
 
 def process_files_background(job_id: str, file_payloads, mode: str):
+    print("ENTERED process_files_background")
     mode = (mode or "").strip().lower()
     if mode not in ("legacy", "current"):
         mode = "current"
@@ -287,7 +364,6 @@ def process_files_background(job_id: str, file_payloads, mode: str):
 
     dfs = []
 
-
     # ============================================================
     # 1) FILE LOOP
     # ============================================================
@@ -318,6 +394,7 @@ def process_files_background(job_id: str, file_payloads, mode: str):
                 documents,
                 blended_version=blended
             )
+
         else:
             raise ValueError(f"Unsupported file type: {filename}")
 
@@ -399,6 +476,32 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     df["calibration_delta"] = (
         df["element_score_calibrated"] - df["element_score_raw"]
     )
+
+    # ============================================================
+    # 8.5) Compute Metrics for Drift Detection
+    # ============================================================
+
+    print("RAW element mean:", df["element_score_raw"].mean())
+
+    if "element_score_calibrated" in df.columns:
+        print("CALIBRATED element mean:", df["element_score_calibrated"].mean())
+
+    if "element_score_final" in df.columns:
+        print("FINAL element mean:", df["element_score_final"].mean())
+
+    # compute from final subscores
+    final_cols = [f"C{i}_final" for i in range(1,7)]
+    if all(c in df.columns for c in final_cols):
+        print("MEAN(C*_final):", df[final_cols].mean(axis=1).mean())
+
+    raw_cols = [f"C{i}" for i in range(1,7)]
+    if all(c in df.columns for c in raw_cols):
+        print("MEAN(C*):", df[raw_cols].mean(axis=1).mean())
+
+    if(len(df) > 1):
+        gpt_metrics = compute_gpt_metrics(df)
+        global last_metrics
+        last_metrics = gpt_metrics
 
     # ============================================================
     # 9) Combine Flags + Rationales

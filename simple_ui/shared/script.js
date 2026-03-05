@@ -103,6 +103,21 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
     }
 });
 
+async function checkStoredResults() {
+
+    console.log("Calling drift check...");
+
+    const response = await fetch("/check_saved_results", {
+        method: "POST"
+    });
+
+    const data = await response.json();
+
+    console.log("Drift result:", data);
+
+    document.getElementById("resultOutput").innerText =
+        "Drift Check: " + JSON.stringify(data, null, 2);
+    }
 
 function displayResults(results) {
     window.lastResults = results || [];
