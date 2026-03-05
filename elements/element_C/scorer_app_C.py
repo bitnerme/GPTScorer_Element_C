@@ -260,8 +260,8 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     # Legacy is bias only
     LEGACY_BIAS_OFFSET = 0.72
     # Current linear calibration (variance + bias alignment)
-    CURRENT_A = 1.34
-    CURRENT_B = -1.40
+    CURRENT_A = 1.289
+    CURRENT_B = -1.267
 
     # =========================
     # Output Columns

@@ -7,3 +7,4 @@ joblib
 scikit-learn
 python-docx
 PyMuPDF
+pdfminer.six

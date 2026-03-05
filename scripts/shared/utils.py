@@ -109,14 +109,12 @@ def extract_text_from_docx(filepath):
 
 def extract_text_from_pdf(filepath):
     try:
-        from PyPDF2 import PdfReader
+        from pdfminer.high_level import extract_text
     except ImportError:
-        raise ImportError("PyPDF2 must be installed to extract text from PDFs")
+        raise ImportError("pdfminer.six must be installed to extract text from PDFs")
 
-    reader = PdfReader(filepath)
-    text = "\n".join(page.extract_text() or "" for page in reader.pages)
+    text = extract_text(filepath)
     return text
-
 
 # --- GPT call with retries ---
 @backoff.on_exception(backoff.expo, (openai.error.OpenAIError, Exception), max_tries=5)

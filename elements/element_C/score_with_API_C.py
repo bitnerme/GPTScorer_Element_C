@@ -188,7 +188,6 @@ def is_truncated_json(text: str) -> bool:
 
 
 def score_document(filename, content, blended_model):
-    print("ENTERING score_document")
     # Choose prompt based on model
     if blended_model == "v1.13":
         prompt = f"""
@@ -351,9 +350,6 @@ def score_document(filename, content, blended_model):
         }
     ]
 
-    print("TEXT LENGTH:", len(content))
-    print("TEXT SAMPLE:", content[:500])
-
     # === Call the API ===
     
     gpt_model = get_gpt_model(blended_model)
@@ -381,10 +377,6 @@ def score_document(filename, content, blended_model):
 
    # === Continue with parsing logic ===
     try:
-        print("=== GPT RESPONSE START ===")
-        print(response_str)
-        print("=== GPT RESPONSE END ===\n")
-
         # --- Normalize ---
         response_str = response_str.strip()
 
@@ -478,7 +470,6 @@ def score_document(filename, content, blended_model):
         # =====================================================
 
         # --- Preserve pure API subscores BEFORE rule engine ---
-        print("INJECTING API COLUMNS")
         for i in range(1, 7):
             response_dict[f"C{i}_api"] = int(response_dict[f"C{i}"])
 
@@ -490,8 +481,6 @@ def score_document(filename, content, blended_model):
         for i in range(1, 7):
             assert f"C{i}" in response_dict, f"Missing C{i}"
             assert f"C{i}_rationale" in response_dict, f"Missing C{i}_rationale"
-        
-        print("RETURNING KEYS:", response_dict.keys())
 
         return response_dict
 
@@ -660,7 +649,7 @@ def postprocess_v115(row, filename):
     row["element_penalty_weak_c2c4"] = int(weak_trigger)
     row["element_score_adjusted"] = round(max(0.0, element_raw + element_adjust), 2)
 
-    print("DEBUG v115 keys:", sorted(row.keys()))
+    ("DEBUG v115 keys:", sorted(row.keys()))
 
     return row
 
@@ -815,7 +804,6 @@ def score_documents_with_api(documents, blended_version):
 
         # --- Extraction ---
         text = extract_text_with_fallback(file_path)
-        print("TEXT LENGTH:", len(text))
 
         response_dict = score_document(filename, text, blended_version)
         if response_dict is None:
