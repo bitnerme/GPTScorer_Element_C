@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Element C Scoring App</title>
+    <style>
+    .status-success {
+        color: #2e7d32;
+        font-weight: bold;
+    }
+
+    .status-warning {
+        color: #ed6c02;
+        font-weight: bold;
+    }
+    </style>
 </head>
 <body>
     <h1>Element C Scoring</h1>
@@ -27,8 +38,6 @@
         <!-- Submit button below the checkbox -->
         <button type="submit">Submit for Scoring</button>
     </form>
-
-    <form id="uploadForm">
     
     <div id="progressContainer" style="display:none; margin-top:20px;">
         <div style="width:100%; background:#ddd;">
@@ -44,9 +53,18 @@
         <div id="resultOutput"></div>
         <button onclick="downloadCSV()">Download Results CSV</button>
     </div>
-    
-    <button type="button" onclick="checkStoredResults()">Check Saved Results</button>
-    
+
+    <button onclick="checkSavedResults()">Check Saved Results</button>
+
+    <div id="adminDiagnostics" style="margin-top:20px;"></div>
+     
+    <div id="sampleSizeStatus" style="margin-bottom:15px; display:none;">
+            <strong>Sample Size</strong><br>
+            Required sample size: <span id="requiredSample"></span><br>
+            Actual records analyzed: <span id="actualSample"></span><br>
+            <span id="sampleStatus"></span>
+        </div>   
+
 </body>
 <script src="/static/script.js"></script>
 </html>

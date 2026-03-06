@@ -69,6 +69,18 @@ def check_drift(current_metrics, baseline_file):
     if final_std_diff > FINAL_STD_THRESHOLD:
         failures.append("final_std_shift")
 
+    sample_warning = None
+
+    baseline_n = baseline.get("sample_size")
+    current_n = current_metrics.get("sample_size")
+
+    if baseline_n and current_n:
+        if current_n < baseline_n * 0.5:
+            sample_warning = (
+                f"WARNING: current sample size ({current_n}) is much smaller "
+                f"than baseline ({baseline_n}). Drift metrics may be unstable."
+            )
+
     # -----------------------------
     # Final result
     # -----------------------------
@@ -80,6 +92,9 @@ def check_drift(current_metrics, baseline_file):
 
     return {
         "status": status,
+        "sample_size_current": current_n,
+        "sample_size_baseline": baseline_n,
+        "sample_warning": sample_warning,
         "failures": failures,
         "report": report
     }

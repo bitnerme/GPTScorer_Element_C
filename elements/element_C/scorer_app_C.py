@@ -27,6 +27,9 @@ from io import BytesIO
 
 app = FastAPI()
 
+last_metrics = None
+last_mode = "current"
+
 @app.post("/check_saved_results")
 async def check_saved_results():
 
@@ -35,9 +38,21 @@ async def check_saved_results():
     if last_metrics is None:
         return {"status": "NO RESULTS", "message": "Run scoring first."}
 
-    baseline_file = Path("config/baseline_metrics_current.json")
+    global last_mode
+
+    if last_mode == "legacy":
+        baseline_file = Path("config/baseline_metrics_legacy.json")
+    else:
+        baseline_file = Path("config/baseline_metrics_current.json")
+
+    if last_mode == "legacy":
+        baseline_file = Path("config/baseline_metrics_legacy.json")
+    else:
+        baseline_file = Path("config/baseline_metrics_current.json")
 
     drift_report = check_drift(last_metrics, baseline_file)
+
+    print("CURRENT METRICS:", last_metrics)
 
     return drift_report
 
@@ -111,20 +126,6 @@ def compute_gpt_metrics(df: pd.DataFrame) -> dict:
         "final_std": float(fin_s.std(ddof=0)) if len(fin_s) else None,
         "final_source": final_source,
     }
-
-    metrics = {}
-
-    # API behavior (model output)
-    metrics["api_mean"] = df["element_score_raw"].mean()
-    metrics["api_std"] = df["element_score_raw"].std()
-
-    # Final system behavior (after calibration)
-    metrics["final_mean"] = df["element_score_calibrated"].mean()
-    metrics["final_std"] = df["element_score_calibrated"].std()
-
-    metrics["sample_size"] = len(df)
-
-    return metrics
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
@@ -330,6 +331,9 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     mode = (mode or "").strip().lower()
     if mode not in ("legacy", "current"):
         mode = "current"
+
+    global last_metrics, last_mode
+    last_mode = mode
 
     # =========================
     # Linear Calibration

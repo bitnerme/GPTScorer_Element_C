@@ -103,24 +103,14 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
     }
 });
 
-async function checkStoredResults() {
-
-    console.log("Calling drift check...");
-
-    const response = await fetch("/check_saved_results", {
-        method: "POST"
-    });
-
-    const data = await response.json();
-
-    console.log("Drift result:", data);
-
-    document.getElementById("resultOutput").innerText =
-        "Drift Check: " + JSON.stringify(data, null, 2);
-    }
-
 function displayResults(results) {
     window.lastResults = results || [];
+
+    console.log("displayResults called", results);
+    
+    const sampleBlock = document.getElementById("sampleSizeStatus");
+    if (sampleBlock) sampleBlock.style.display = "none";
+
     console.log("displayResults called with:", results);
 
     const resultsDiv = document.getElementById("resultOutput");
@@ -132,6 +122,8 @@ function displayResults(results) {
         resultsDiv.textContent = "No results returned.";
         return;
     }
+
+    console.log("Results length:", results.length);
 
     results.forEach(result => {
         const fileName = document.createElement("h4");
@@ -178,6 +170,72 @@ function displayResults(results) {
     });
 
     resultsSection.style.display = "block";
+}
+
+async function checkSavedResults() {
+
+    const response = await fetch("/check_saved_results", {
+        method: "POST"
+    });
+
+    const data = await response.json();
+
+    console.log("Drift API response:", data);
+
+    const diagDiv = document.getElementById("adminDiagnostics");
+
+    let warningHTML = "";
+
+    if (data.sample_warning) {
+        warningHTML = `
+        <div style="
+            border:2px solid #f0ad4e;
+            background:#fff8e5;
+            padding:10px;
+            margin-bottom:15px;
+            color:#a66300;
+            font-weight:bold;
+        ">
+        ⚠ ${data.sample_warning}
+        </div>`;
+    }
+        
+    let statusColor = data.status === "PASS" ? "#2e7d32" : "#c62828";
+
+    let metricsHTML = "";
+
+    if (data.report) {
+
+        metricsHTML = `
+        <div style="border:1px solid #ccc; padding:10px;">
+            <b>Model Stability Check</b><br><br>
+
+            Baseline sample size: ${data.sample_size_baseline}<br>
+            Current sample size: ${data.sample_size_current}<br><br>
+
+            API mean diff: ${data.report.api_mean_diff.toFixed(4)}<br>
+            API std diff: ${data.report.api_std_diff.toFixed(4)}<br>
+            Final mean diff: ${data.report.final_mean_diff.toFixed(4)}<br>
+            Final std diff: ${data.report.final_std_diff.toFixed(4)}<br><br>
+
+            <span style="color:${statusColor}; font-weight:bold;">
+            Status: ${data.status}
+            </span>
+        </div>
+        `;
+    } else {
+
+        metricsHTML = `<div style="color:#c62828;font-weight:bold;">
+            No drift metrics available.
+        </div>`;
+    }
+
+    diagDiv.style.display = "block";
+
+    diagDiv.innerHTML =
+        `<h3>Admin Diagnostics</h3>` +
+        warningHTML +
+        metricsHTML;
 }
 
 function escapeCSV(value) {
