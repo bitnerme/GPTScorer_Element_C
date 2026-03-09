@@ -15,4 +15,4 @@ def interpret_diagnostics(api_drift, final_drift, golden_fail, production_drift)
     if production_drift and not api_drift and not final_drift and not golden_fail:
         return "Student response distribution appears to have changed."
 
-    return "Multiple diagnostic signals detected. Investigate scoring pipeline or increase sample size."
+    return "Multiple diagnostic signals detected. Increase sample size or investigate scoring pipeline."
