@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 import tempfile
 from typing import List
-from .score_with_API_C import score_documents_with_api
+from elements.element_C.score_with_API_C import score_documents_with_api
 from scripts.shared.utils import (
     extract_text_from_file,
     call_gpt_with_backoff,
@@ -24,11 +24,21 @@ from typing import Tuple
 from fastapi import BackgroundTasks
 from core.job_manager import create_job, update_progress, complete_job, get_job, jobs
 from io import BytesIO
+from core.diagnostics import interpret_diagnostics
 
 app = FastAPI()
 
 last_metrics = None
 last_mode = "current"
+
+# =========================
+# Linear Calibration
+# =========================
+# Legacy is bias only
+LEGACY_BIAS_OFFSET = 0.72
+# Current linear calibration (variance + bias alignment)
+CURRENT_A = 1.289
+CURRENT_B = -1.267
 
 @app.post("/check_saved_results")
 async def check_saved_results():
@@ -50,11 +60,37 @@ async def check_saved_results():
     else:
         baseline_file = Path("config/baseline_metrics_current.json")
 
-    drift_report = check_drift(last_metrics, baseline_file)
+    drift_result = check_drift(last_metrics, baseline_file)
+
+    api_drift = any(f.startswith("api_") for f in drift_result["failures"])
+    final_drift = any(f.startswith("final_") for f in drift_result["failures"])
+
+    golden_fail = False
+    production_drift = False
+
+    print("\nDEBUG FLAGS")
+    print("api_drift:", api_drift)
+    print("final_drift:", final_drift)
+    print("golden_fail:", golden_fail)
+    print("production_drift:", production_drift)
+
+    diagnosis = interpret_diagnostics(
+        api_drift,
+        final_drift,
+        golden_fail,
+        production_drift
+    )
+
+    print("\nROOT CAUSE ANALYSIS")
+    print("-------------------")
+    print(diagnosis)
+
+    # attach interpretation to response sent to UI
+    drift_result["diagnostic_interpretation"] = diagnosis
 
     print("CURRENT METRICS:", last_metrics)
 
-    return drift_report
+    return drift_result
 
 print("### RUNNING THIS scorer_app_C.py ###")
 print(__file__)
@@ -326,6 +362,51 @@ async def score_element_c(
 
     return {"job_id": job_id}
 
+def apply_calibration_pipeline(df, mode):
+
+        for k in range(1,7):
+            df[f"C{k}"] = (
+                pd.to_numeric(df.get(f"C{k}"), errors="coerce")
+                .fillna(0)
+                .round()
+                .astype(int)
+            )
+
+        df["element_score_raw"] = df[[f"C{k}" for k in range(1,7)]].mean(axis=1)
+
+        if mode == "legacy":
+            a = 1.0
+            b = LEGACY_BIAS_OFFSET
+        else:
+            a = CURRENT_A
+            b = CURRENT_B
+
+        df["element_score_calibrated"] = (
+            a * df["element_score_raw"] + b
+        ).clip(0.0, 5.0)
+
+        for k in range(1,7):
+            df[f"C{k}_final"] = df[f"C{k}"]
+
+        keys = [f"C{k}" for k in range(1,7)]
+
+        for idx,row in df.iterrows():
+            rec = reconcile_integer_subscores(
+                row=row.to_dict(),
+                keys=keys,
+                target_element_col="element_score_calibrated",
+                flag_suffix="_flag",
+                soft_block_nonallowed=True
+            )
+            for k,v in rec.items():
+                df.loc[idx,f"{k}_final"] = v
+
+        df["element_score_calibrated"] = df[
+            [f"C{k}_final" for k in range(1,7)]
+        ].mean(axis=1)
+
+        return df
+
 def process_files_background(job_id: str, file_payloads, mode: str):
     print("ENTERED process_files_background")
     mode = (mode or "").strip().lower()
@@ -334,15 +415,6 @@ def process_files_background(job_id: str, file_payloads, mode: str):
 
     global last_metrics, last_mode
     last_mode = mode
-
-    # =========================
-    # Linear Calibration
-    # =========================
-    # Legacy is bias only
-    LEGACY_BIAS_OFFSET = 0.72
-    # Current linear calibration (variance + bias alignment)
-    CURRENT_A = 1.289
-    CURRENT_B = -1.267
 
     # =========================
     # Output Columns
@@ -383,6 +455,8 @@ def process_files_background(job_id: str, file_payloads, mode: str):
             if "narrative_feedback" not in df_one.columns:
                 df_one["narrative_feedback"] = ""
 
+            print("After CSV load:", df_one["narrative_feedback"].iloc[0][:50])
+
         elif filename.lower().endswith((".pdf", ".docx")):
             suffix = os.path.splitext(filename)[1]
 
@@ -418,64 +492,9 @@ def process_files_background(job_id: str, file_payloads, mode: str):
         df["filename"] = df["doc_id"]
 
     # ============================================================
-    # 3) Ensure integer subscores
+    # 3-8) Apply Calibration Pipeline
     # ============================================================
-    for k in range(1, 7):
-        df[f"C{k}"] = (
-            pd.to_numeric(df.get(f"C{k}"), errors="coerce")
-            .fillna(0)
-            .round()
-            .astype(int)
-        )
-
-    # ============================================================
-    # 4) Compute Raw Element Score
-    # ============================================================
-    df["element_score_raw"] = df[[f"C{k}" for k in range(1, 7)]].mean(axis=1)
-
-        # ============================================================
-    # 5) Apply Mode-Dependent Linear Calibration
-    # ============================================================
-
-    if mode == "legacy":
-        a = 1.0
-        b = LEGACY_BIAS_OFFSET
-    else:  # current
-        a = CURRENT_A
-        b = CURRENT_B
-
-    df["element_score_calibrated"] = (
-        a * df["element_score_raw"] + b
-    ).clip(0.0, 5.0)
-
-    # ============================================================
-    # 6) Initialize Final Columns
-    # ============================================================
-    for k in range(1, 7):
-        df[f"C{k}_final"] = df[f"C{k}"]
-
-    # ============================================================
-    # 7) Reconcile Integers (ONE PASS)
-    # ============================================================
-    keys = [f"C{k}" for k in range(1, 7)]
-
-    for idx, row in df.iterrows():
-        rec = reconcile_integer_subscores(
-            row=row.to_dict(),
-            keys=keys,
-            target_element_col="element_score_calibrated",
-            flag_suffix="_flag",
-            soft_block_nonallowed=True
-        )
-        for k, v in rec.items():
-            df.loc[idx, f"{k}_final"] = v
-
-    # ============================================================
-    # 8) Recompute Calibrated Mean From Finals
-    # ============================================================
-    df["element_score_calibrated"] = df[
-        [f"C{k}_final" for k in range(1, 7)]
-    ].mean(axis=1)
+    df = apply_calibration_pipeline(df, mode.lower())
 
     df["calibration_delta"] = (
         df["element_score_calibrated"] - df["element_score_raw"]
@@ -528,6 +547,10 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     # ============================================================
     # 10) Finalize Output
     # ============================================================
+
+    print("score_cols:", score_cols)
+    print("df columns:", df.columns.tolist())
+
     safe_cols = [c for c in score_cols if c in df.columns]
     df = df.fillna("")
     results = df[safe_cols].to_dict(orient="records")

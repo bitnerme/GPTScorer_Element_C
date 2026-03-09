@@ -1,0 +1,8 @@
+{
+  "sample_size": 20,
+  "bias": -0.125,
+  "mae": 0.742,
+  "ci_half": 0.419,
+  "ci_full": 0.837,
+  "mean_calibrated_score": 2.042
+}

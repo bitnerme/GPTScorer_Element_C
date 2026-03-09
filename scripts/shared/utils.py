@@ -101,12 +101,6 @@ def check_drift(current_metrics, baseline_file):
 
 # --- Extract text from .docx/doc or .pdf ---
 def extract_text_from_file(filepath):
-    print("\n=== ENTER extract_text_from_file ===")
-    print("FILEPATH:", repr(filepath))
-    print("CALL STACK:")
-    traceback.print_stack(limit=5)
-
-    print("UTILS FILE LOCATION:", __file__)
 
     ext = os.path.splitext(filepath)[1]
 

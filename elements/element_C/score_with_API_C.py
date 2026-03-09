@@ -803,7 +803,9 @@ def score_documents_with_api(documents, blended_version):
         file_path = doc["path"]
 
         # --- Extraction ---
-        text = extract_text_with_fallback(file_path)
+        text = extract_text_with_fallback(file_path)     
+        print("EXTRACTED LENGTH:", len(text))
+        print("EXTRACTED SAMPLE:", text[:300])
 
         response_dict = score_document(filename, text, blended_version)
         if response_dict is None:

@@ -232,10 +232,27 @@ async function checkSavedResults() {
 
     diagDiv.style.display = "block";
 
+    let interpretationHTML = "";
+
+    if (data.diagnostic_interpretation) {
+        interpretationHTML = `
+            <div style="
+                border:1px solid #bbb;
+                background:#f7f7f7;
+                padding:10px;
+                margin-top:15px;
+            ">
+                <b>Root Cause Analysis</b><br><br>
+                ${data.diagnostic_interpretation}
+            </div>
+        `;
+    }
+    
     diagDiv.innerHTML =
-        `<h3>Admin Diagnostics</h3>` +
-        warningHTML +
-        metricsHTML;
+    `<h3>Admin Diagnostics</h3>` +
+    warningHTML +
+    metricsHTML +
+    interpretationHTML;
 }
 
 function escapeCSV(value) {
