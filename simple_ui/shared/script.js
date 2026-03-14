@@ -172,9 +172,8 @@ function displayResults(payload) {
     window.lastPayload = payload;
 
     const results = payload.results;
-    const element = payload.element;
-    const count = payload.subelement_count;
-
+    const element = Object.keys(results[0]).find(k => /^[A-Z]\d+$/.test(k))?.[0];
+    
     const title = document.getElementById("pageTitle");
     if (title) {
         title.innerText = `Element ${element} Scoring`;
@@ -196,16 +195,24 @@ function displayResults(payload) {
         fileName.textContent = result.filename;
         resultsDiv.appendChild(fileName);
 
-        for (let i = 1; i <= count; i++) {
+        const subKeys = Object.keys(result)
+            .filter(k => k.startsWith(element) && !k.includes("_"))
+            .sort((a, b) => {
+                const na = parseInt(a.slice(1));
+                const nb = parseInt(b.slice(1));
+                return na - nb;
+            });
 
-            const key = `${element}${i}_final`;
-            const score = result[key] ?? result[`${element}${i}`] ?? "";
+        subKeys.forEach(k => {
+
+            const score = result[`${k}_final`] ?? result[k] ?? "";
 
             const p = document.createElement("p");
-            p.textContent = `${element}${i}: ${score}`;
+            p.textContent = `${k}: ${score}`;
 
             resultsDiv.appendChild(p);
-        }
+
+        });
 
         if (result.element_score_calibrated !== undefined) {
 
@@ -266,7 +273,7 @@ function downloadCSV() {
 
     const payload = window.lastPayload;
     const results = payload.results;
-    const element = payload.element;
+    const element = Object.keys(results[0]).find(k => /^[A-Z]\d+$/.test(k))?.[0];
     const count = payload.subelement_count;
 
     const headers = ["filename"];

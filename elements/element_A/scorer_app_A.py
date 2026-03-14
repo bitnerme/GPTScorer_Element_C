@@ -26,6 +26,13 @@ from core.job_manager import create_job, update_progress, complete_job, get_job,
 from io import BytesIO
 from core.diagnostics import interpret_diagnostics
 import json
+from core.schema import build_score_cols
+import __main__
+from core.schema import (
+    get_element_from_file,
+    detect_subelement_count,
+    build_score_cols
+)
 
 app = FastAPI()
 
@@ -440,28 +447,6 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     global last_metrics, last_mode
     last_mode = mode
 
-    # =========================
-    # Output Columns
-    # =========================
-    score_cols = [
-        "filename",
-
-        # Raw subscores
-        "A1", "A2", "A3", "A4", "A5", "A6",
-
-        # Final subscores
-        "A1_final", "A2_final", "A3_final",
-        "A4_final", "A5_final", "A6_final",
-
-        "element_score_raw",
-        "element_score_calibrated",
-        "calibration_delta",
-
-        "flags",
-        "rationales",
-        "narrative_feedback"
-    ]
-
     dfs = []
 
     # ============================================================
@@ -475,6 +460,14 @@ def process_files_background(job_id: str, file_payloads, mode: str):
 
         if filename.lower().endswith(".csv"):
             df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
+            
+            # Detect element + subelements
+            element = get_element_from_file(__file__)
+            subelement_count = detect_subelement_count(df, element)
+
+            # Build schema
+            score_cols = build_score_cols(element, subelement_count)
+            
             # Ensure narrative_feedback column exists
             if "narrative_feedback" not in df_one.columns:
                 df_one["narrative_feedback"] = ""

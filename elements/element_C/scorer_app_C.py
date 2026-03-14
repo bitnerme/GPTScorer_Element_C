@@ -23,6 +23,13 @@ from core.job_manager import create_job, update_progress, complete_job, get_job,
 from io import BytesIO
 from core.diagnostics import interpret_diagnostics
 import json
+from core.schema import build_score_cols
+import __main__
+from core.schema import (
+    get_element_from_file,
+    detect_subelement_count,
+    build_score_cols
+)
 
 app = FastAPI()
 
@@ -432,28 +439,6 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     global last_metrics, last_mode
     last_mode = mode
 
-    # =========================
-    # Output Columns
-    # =========================
-    score_cols = [
-        "filename",
-
-        # Raw subscores
-        "C1", "C2", "C3", "C4", "C5", "C6",
-
-        # Final subscores
-        "C1_final", "C2_final", "C3_final",
-        "C4_final", "C5_final", "C6_final",
-
-        "element_score_raw",
-        "element_score_calibrated",
-        "calibration_delta",
-
-        "flags",
-        "rationales",
-        "narrative_feedback"
-    ]
-
     dfs = []
 
     # ============================================================
@@ -467,6 +452,13 @@ def process_files_background(job_id: str, file_payloads, mode: str):
 
         if filename.lower().endswith(".csv"):
             df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
+            # Detect element + subelements
+            element = get_element_from_file(__file__)
+            subelement_count = detect_subelement_count(df, element)
+
+            # Build schema
+            score_cols = build_score_cols(element, subelement_count)
+
             # Ensure narrative_feedback column exists
             if "narrative_feedback" not in df_one.columns:
                 df_one["narrative_feedback"] = ""
@@ -571,6 +563,7 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     df = df.fillna("")
     results = df[safe_cols].to_dict(orient="records")
 
+    print("SENDING RESULTS TO JOB STORE:", results[0])
     complete_job(job_id, results)
 
     # ============================================================
@@ -592,6 +585,7 @@ def progress(job_id: str):
     job = get_job(job_id)
     if not job:
         return {"error": "Invalid job ID"}
+    print("PROGRESS STATE:", jobs[job_id])
     return job
 
 # CLI run
