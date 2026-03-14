@@ -51,7 +51,7 @@ async function pollProgress(jobId) {
                         window.lastResults = data.results;
                         downloadCSV();
                     } else {
-                        displayResults(data.results);
+                        displayResults(data);
                     }
 
                 }, 500);
@@ -93,6 +93,9 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
 
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
+        document.getElementById("progressContainer").style.display = "block";
+        document.getElementById("progressBar").style.width = "0%";
+            
         const data = await response.json();
         const jobId = data.job_id;
         pollProgress(jobId);
@@ -103,15 +106,79 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
     }
 });
 
-function displayResults(results) {
-    window.lastResults = results || [];
+async function checkSavedResults() {
 
-    console.log("displayResults called", results);
-    
-    const sampleBlock = document.getElementById("sampleSizeStatus");
-    if (sampleBlock) sampleBlock.style.display = "none";
+    const response = await fetch("/check_saved_results", {
+        method: "POST"
+    });
 
-    console.log("displayResults called with:", results);
+    const data = await response.json();
+
+    const diagDiv = document.getElementById("adminDiagnostics");
+
+    if (!diagDiv) return;
+
+    diagDiv.style.display = "block";
+
+    if (!data.report) {
+        diagDiv.innerHTML = `
+            <h3>Admin Diagnostics</h3>
+            <div style="color:#c62828;font-weight:bold;">
+                No drift metrics available.
+            </div>
+        `;
+        return;
+    }
+
+    let statusColor = data.status === "PASS" ? "#2e7d32" : "#c62828";
+
+    diagDiv.innerHTML = `
+        <h3>Admin Diagnostics</h3>
+
+        <div style="border:1px solid #ccc; padding:10px;">
+        <b>Model Stability Check</b><br><br>
+
+        <b>Absolute Metrics</b><br>
+        API mean: ${data.current_metrics.api_mean.toFixed(4)}<br>
+        API std: ${data.current_metrics.api_std.toFixed(4)}<br>
+        Final mean: ${data.current_metrics.final_mean.toFixed(4)}<br>
+        Final std: ${data.current_metrics.final_std.toFixed(4)}<br><br>
+
+        <b>Drift vs Baseline</b><br>
+        API mean diff: ${data.report.api_mean_diff.toFixed(4)}<br>
+        API std diff: ${data.report.api_std_diff.toFixed(4)}<br>
+        Final mean diff: ${data.report.final_mean_diff.toFixed(4)}<br>
+        Final std diff: ${data.report.final_std_diff.toFixed(4)}<br><br>
+
+        <span style="color:${statusColor}; font-weight:bold;">
+        Status: ${data.status}
+        </span>
+        </div>
+
+        ${
+            data.diagnostic_interpretation
+            ? `<div style="border:1px solid #bbb;background:#f7f7f7;padding:10px;margin-top:15px;">
+               <b>Root Cause Analysis</b><br><br>
+               ${data.diagnostic_interpretation}
+               </div>`
+            : ""
+        }
+    `;
+
+}
+
+function displayResults(payload) {
+
+    window.lastPayload = payload;
+
+    const results = payload.results;
+    const element = payload.element;
+    const count = payload.subelement_count;
+
+    const title = document.getElementById("pageTitle");
+    if (title) {
+        title.innerText = `Element ${element} Scoring`;
+    }
 
     const resultsDiv = document.getElementById("resultOutput");
     const resultsSection = document.getElementById("results-section");
@@ -123,46 +190,46 @@ function displayResults(results) {
         return;
     }
 
-    console.log("Results length:", results.length);
-
     results.forEach(result => {
+
         const fileName = document.createElement("h4");
         fileName.textContent = result.filename;
         resultsDiv.appendChild(fileName);
 
-        // Detect FINAL subscores like C1_final
-        const finalKeys = Object.keys(result)
-            .filter(k => /^[A-L]\d_final$/.test(k))
-            .sort((a, b) => {
-                const letterCompare = a[0].localeCompare(b[0]);
-                if (letterCompare !== 0) return letterCompare;
-                return parseInt(a.slice(1)) - parseInt(b.slice(1));
-            });
+        for (let i = 1; i <= count; i++) {
 
-        // Render only final scores
-        finalKeys.forEach(k => {
-            const baseKey = k.replace("_final", "");
+            const score = result[`_${i}_final`];
+
             const p = document.createElement("p");
-            p.textContent = `${baseKey}: ${result[k] ?? ""}`;
-            resultsDiv.appendChild(p);
-        });
+            p.textContent = `${element}${i}: ${score ?? ""}`;
 
-        const spacer = document.createElement("br");
-        resultsDiv.appendChild(spacer); 
+            resultsDiv.appendChild(p);
+        }
+
+        if (result.element_score_calibrated !== undefined) {
+
+            const elementScore = document.createElement("p");
+            elementScore.style.fontWeight = "bold";
+
+            elementScore.textContent =
+                `Element Score: ${result.element_score_calibrated}`;
+
+            resultsDiv.appendChild(elementScore);
+        }
 
         if (result.narrative_feedback) {
+
             const rationaleBlock = document.createElement("div");
-            rationaleBlock.style.marginTop = "10px";
 
             const label = document.createElement("strong");
             label.textContent = "Rationale:";
-            rationaleBlock.appendChild(label);
 
             const paragraph = document.createElement("p");
-            paragraph.style.marginTop = "6px";
             paragraph.textContent = result.narrative_feedback;
 
+            rationaleBlock.appendChild(label);
             rationaleBlock.appendChild(paragraph);
+
             resultsDiv.appendChild(rationaleBlock);
         }
 
@@ -170,89 +237,6 @@ function displayResults(results) {
     });
 
     resultsSection.style.display = "block";
-}
-
-async function checkSavedResults() {
-
-    const response = await fetch("/check_saved_results", {
-        method: "POST"
-    });
-
-    const data = await response.json();
-
-    console.log("Drift API response:", data);
-
-    const diagDiv = document.getElementById("adminDiagnostics");
-
-    let warningHTML = "";
-
-    if (data.sample_warning) {
-        warningHTML = `
-        <div style="
-            border:2px solid #f0ad4e;
-            background:#fff8e5;
-            padding:10px;
-            margin-bottom:15px;
-            color:#a66300;
-            font-weight:bold;
-        ">
-        ⚠ ${data.sample_warning}
-        </div>`;
-    }
-        
-    let statusColor = data.status === "PASS" ? "#2e7d32" : "#c62828";
-
-    let metricsHTML = "";
-
-    if (data.report) {
-
-        metricsHTML = `
-        <div style="border:1px solid #ccc; padding:10px;">
-            <b>Model Stability Check</b><br><br>
-
-            Baseline sample size: ${data.sample_size_baseline}<br>
-            Current sample size: ${data.sample_size_current}<br><br>
-
-            API mean diff: ${data.report.api_mean_diff.toFixed(4)}<br>
-            API std diff: ${data.report.api_std_diff.toFixed(4)}<br>
-            Final mean diff: ${data.report.final_mean_diff.toFixed(4)}<br>
-            Final std diff: ${data.report.final_std_diff.toFixed(4)}<br><br>
-
-            <span style="color:${statusColor}; font-weight:bold;">
-            Status: ${data.status}
-            </span>
-        </div>
-        `;
-    } else {
-
-        metricsHTML = `<div style="color:#c62828;font-weight:bold;">
-            No drift metrics available.
-        </div>`;
-    }
-
-    diagDiv.style.display = "block";
-
-    let interpretationHTML = "";
-
-    if (data.diagnostic_interpretation) {
-        interpretationHTML = `
-            <div style="
-                border:1px solid #bbb;
-                background:#f7f7f7;
-                padding:10px;
-                margin-top:15px;
-            ">
-                <b>Root Cause Analysis</b><br><br>
-                ${data.diagnostic_interpretation}
-            </div>
-        `;
-    }
-    
-    diagDiv.innerHTML =
-    `<h3>Admin Diagnostics</h3>` +
-    warningHTML +
-    metricsHTML +
-    interpretationHTML;
 }
 
 function escapeCSV(value) {
@@ -273,45 +257,58 @@ function escapeCSV(value) {
 }
 
 function downloadCSV() {
-    if (!window.lastResults || window.lastResults.length === 0) {
+
+    if (!window.lastPayload || !window.lastPayload.results || window.lastPayload.results.length === 0) {
         alert("No results to download.");
         return;
     }
 
-    const first = window.lastResults[0];
+    const payload = window.lastPayload;
+    const results = payload.results;
+    const element = payload.element;
+    const count = payload.subelement_count;
 
-    // Detect D1–D4 or C1–C6 automatically
-    // Detect raw subscores like C1, D2, etc.
-    const rawKeys = Object.keys(first)
-        .filter(k => /^[A-L]\d$/.test(k))
-        .sort((a, b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
+    const headers = ["filename"];
 
-    // Detect final subscores like C1_final
-    const finalKeys = Object.keys(first)
-        .filter(k => /^[A-L]\d_final$/.test(k))
-        .sort((a, b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
+    for (let i = 1; i <= count; i++) {
+        headers.push(`${element}${i}`);
+    }
 
-    // Detect recommended (if applicable)
-    const recommendedKeys = rawKeys
-        .map(k => `${k}_recommended`)
-        .filter(k => k in first);
-
-    const headers = [
-        "filename",
-        ...rawKeys,
-        ...finalKeys,
+    headers.push(
         "element_score_raw",
         "element_score_calibrated",
         "calibration_delta",
-        ...recommendedKeys,
         "flags",
         "rationales",
         "narrative_feedback"
-    ].filter(h => h in first);
-
-    const rows = window.lastResults.map(result =>
-        headers.map(h => escapeCSV(result[h]))
     );
+
+    const rows = results.map(result => {
+
+        const row = [escapeCSV(result.filename)];
+
+        for (let i = 1; i <= count; i++) {
+
+            let score = result[`_${i}_final`];
+
+            if (score === undefined) {
+                score = result[`${element}${i}_final`];
+            }
+
+            row.push(escapeCSV(score));
+        }
+
+        row.push(
+            escapeCSV(result.element_score_raw),
+            escapeCSV(result.element_score_calibrated),
+            escapeCSV(result.calibration_delta),
+            escapeCSV(result.flags),
+            escapeCSV(result.rationales),
+            escapeCSV(result.narrative_feedback)
+        );
+
+        return row;
+    });
 
     const csvContent = [headers.join(",")]
         .concat(rows.map(r => r.join(",")))

@@ -99,6 +99,18 @@ def check_drift(current_metrics, baseline_file):
         "report": report
     }
 
+    # ------------------------------------------------
+    # SAMPLE SIZE WARNING
+    # ------------------------------------------------
+
+    required_sample = baseline["sample_size"]
+
+    if current_metrics["sample_size"] < required_sample:
+        result["sample_warning"] = (
+            f"Sample size too small: "
+            f"{current_metrics['sample_size']} (baseline {required_sample})"
+        )
+
 # --- Extract text from .docx/doc or .pdf ---
 def extract_text_from_file(filepath):
 

@@ -1,12 +1,9 @@
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Tuple
 import math
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import FastAPI, File, UploadFile, Request, Form, BackgroundTasks
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from fastapi import Request
-from fastapi import Form
 import pandas as pd
 import joblib
 import os
@@ -21,15 +18,19 @@ from scripts.shared.utils import (
 )
 from dataclasses import dataclass
 from typing import Tuple
-from fastapi import BackgroundTasks
+
 from core.job_manager import create_job, update_progress, complete_job, get_job, jobs
 from io import BytesIO
 from core.diagnostics import interpret_diagnostics
+import json
 
 app = FastAPI()
 
 last_metrics = None
 last_mode = "current"
+
+ELEMENT_PREFIX = "C"
+SUBELEMENT_COUNT = 6
 
 # =========================
 # Linear Calibration
@@ -51,14 +52,14 @@ async def check_saved_results():
     global last_mode
 
     if last_mode == "legacy":
-        baseline_file = Path("config/baseline_metrics_legacy.json")
+        baseline_file = Path("config/element_C/baseline_metrics_legacy.json")
     else:
-        baseline_file = Path("config/baseline_metrics_current.json")
+        baseline_file = Path("config/element_C/baseline_metrics_current.json")
 
     if last_mode == "legacy":
-        baseline_file = Path("config/baseline_metrics_legacy.json")
+        baseline_file = Path("config/element_C/baseline_metrics_legacy.json")
     else:
-        baseline_file = Path("config/baseline_metrics_current.json")
+        baseline_file = Path("config/element_C/baseline_metrics_current.json")
 
     drift_result = check_drift(last_metrics, baseline_file)
 
@@ -90,6 +91,8 @@ async def check_saved_results():
 
     print("CURRENT METRICS:", last_metrics)
 
+    drift_result["current_metrics"] = last_metrics
+
     return drift_result
 
 print("### RUNNING THIS scorer_app_C.py ###")
@@ -108,8 +111,14 @@ DATA_DIR = PROJECT_ROOT / "data" / ELEMENT_NAME
 OUTPUTS_DIR = PROJECT_ROOT / "outputs" / ELEMENT_NAME
 
 SIMPLE_UI_DIR = PROJECT_ROOT / "simple_ui"
-ELEMENT_UI_DIR = SIMPLE_UI_DIR / ELEMENT_NAME
 SHARED_UI_DIR = SIMPLE_UI_DIR / "shared"
+
+# Mount shared UI assets
+app.mount(
+    "/static",
+    StaticFiles(directory=SHARED_UI_DIR),
+    name="static"
+)
 
 # Mount static folder for JSfrom fastapi.staticfiles import StaticFiles
 app.mount(
@@ -164,9 +173,16 @@ def compute_gpt_metrics(df: pd.DataFrame) -> dict:
     }
 
 @app.get("/", response_class=HTMLResponse)
-async def root():
-    with open(ELEMENT_UI_DIR / "index.html", "r", encoding="utf-8") as f:
-        return f.read()
+def root():
+
+    element = "C"
+
+    with open(SHARED_UI_DIR / "index.html", encoding="utf-8") as f:
+        html = f.read()
+
+    html = html.replace("__ELEMENT__", element)
+
+    return HTMLResponse(html)
 
 print("=== BACKEND ID ===")
 print("FILE:", __file__)
@@ -351,7 +367,7 @@ async def score_element_c(
             "content": content
         })
 
-    job_id = create_job(len(file_payloads))
+    job_id = create_job(len(file_payloads), ELEMENT_PREFIX, SUBELEMENT_COUNT)
 
     background_tasks.add_task(
         process_files_background,
@@ -556,6 +572,20 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     results = df[safe_cols].to_dict(orient="records")
 
     complete_job(job_id, results)
+
+    # ============================================================
+    # 11) Repeat each time the baseline changes
+    # ============================================================
+    #print("Writing baseline metrics:", last_metrics)
+
+    #if last_metrics is not None and last_mode == "legacy":
+    #    with open("config/element_C/baseline_metrics_legacy.json", "w") as f:
+    #        json.dump(last_metrics, f, indent=2)
+    #elif last_metrics is not None and last_mode == "current":
+    #    with open("config/element_C/baseline_metrics_current.json", "w") as f:
+    #        json.dump(last_metrics, f, indent=2)
+
+    #print("Baseline metrics written for:", last_mode)
 
 @app.get("/progress/{job_id}")
 def progress(job_id: str):

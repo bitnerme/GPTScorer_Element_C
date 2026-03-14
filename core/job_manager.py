@@ -3,12 +3,14 @@ from typing import Dict, Any
 
 jobs: Dict[str, Dict[str, Any]] = {}
 
-def create_job(total: int):
+def create_job(total: int, element: str, subelement_count: int):
     job_id = str(uuid4())
     jobs[job_id] = {
         "completed": 0,
         "total": total,
         "status": "running",
+        "element": element,
+        "subelement_count": subelement_count,
         "results": None,
     }
     return job_id

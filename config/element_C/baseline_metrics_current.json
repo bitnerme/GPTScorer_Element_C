@@ -1,0 +1,10 @@
+{
+  "sample_size": 120,
+  "n_valid_api": 120,
+  "n_valid_final": 120,
+  "api_mean": 2.9680555555555554,
+  "api_std": 0.9647240618084006,
+  "final_mean": 2.559722222222222,
+  "final_std": 1.2503325175012396,
+  "final_source": "C*_final"
+}

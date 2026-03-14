@@ -28,21 +28,22 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 # =========================
 
 GPT_MODEL_LEGACY = "gpt-3.5-turbo"
-GPT_MODEL_CURRENT = "gpt-4-0613"
+GPT_MODEL_CURRENT = "gpt-4.1-mini"
 
 SYSTEM_PROMPT = """You are a rigorous engineering design evaluator applying the assigned rubric consistently and professionally.
 
 Document Scope Handling Policy:
 
-- If a submitted document appears to be for a different element (e.g., Element A, B, or D), evaluate it strictly against the Element C rubric. Award credit only for content that satisfies Element C criteria. Do not assign automatic zeros solely because the document was uploaded under the wrong element.
+- If a submitted document appears to be for a different element (e.g., Element B, C, or D), evaluate it strictly against the Element A rubric. Award credit only for content that satisfies Element A criteria. Do not assign automatic zeros solely because the document was uploaded under the wrong element.
 
 - If a document contains content for multiple elements:
-• If a clearly labeled Element C section is present, evaluate only that section.
-• If no clearly labeled Element C section is present, evaluate the entire document against the Element C rubric.
+• If a clearly labeled Element A section is present, evaluate only that section.
+• If no clearly labeled Element A section is present, evaluate the entire document against the Element A rubric.
 
 - Do not refuse scoring due to element mismatch.
-- Base scores solely on alignment with the Element C rubric.
-- Avoid commentary about element mismatch unless directly relevant to rubric criteria."""
+- Base scores solely on alignment with the Element A rubric.
+- Avoid commentary about element mismatch unless directly relevant to rubric criteria.
+"""
 
 NARRATIVE_INSTRUCTION = """
 After assigning scores and providing brief criterion rationales, write a 180–220 word narrative feedback summary.
@@ -50,10 +51,10 @@ After assigning scores and providing brief criterion rationales, write a 180–2
 The summary must:
 - Be written in paragraph form.
 - Clearly explain strengths and weaknesses.
-- Reference criterion numbers when helpful (e.g., C3, C6).
+- Reference criterion numbers when helpful (e.g., A1, A4).
 - Provide specific, actionable recommendations.
 - Be professional and student-facing.
-- Avoid mentioning scoring mechanics, AI, or calibration.
+- Avoid mentioning scoring mechanics, AI, flags, or calibration.
 
 Include this in the JSON output as:
 "narrative_feedback": string
