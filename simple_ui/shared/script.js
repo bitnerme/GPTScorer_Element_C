@@ -191,17 +191,18 @@ function displayResults(payload) {
     }
 
     results.forEach(result => {
-
+        
         const fileName = document.createElement("h4");
         fileName.textContent = result.filename;
         resultsDiv.appendChild(fileName);
 
         for (let i = 1; i <= count; i++) {
 
-            const score = result[`_${i}_final`];
+            const key = `${element}${i}_final`;
+            const score = result[key] ?? result[`${element}${i}`] ?? "";
 
             const p = document.createElement("p");
-            p.textContent = `${element}${i}: ${score ?? ""}`;
+            p.textContent = `${element}${i}: ${score}`;
 
             resultsDiv.appendChild(p);
         }

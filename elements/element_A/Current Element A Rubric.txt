@@ -1,0 +1,55 @@
+﻿Element A: Presentation and Justification of the Problem
+A1. Problem identification
+Score according to the description that best matches the student’s writing.
+• Score = 0: Missing (cannot be inferred from information included)
+• Score = 1: Unclear
+• Score = 2: Somewhat clear or objective
+• Score = 3: Somewhat clear and objective
+• Score = 4: Clear and objective
+• Score = 5: Very clear and objective
+
+A2. Problem definition
+Score according to the depth of the problem definition provided.
+• Score = 0: Missing (cannot be inferred from information included)
+• Score = 1: Unclear
+• Score = 2: In superficial depth
+• Score = 3: In adequate depth
+• Score = 4: In more than adequate depth
+• Score = 5: In considerable depth
+
+A3. Problem elaboration
+Score according to the level of elaboration present.
+• Score = 0: Not elaborated (cannot be inferred from information included)
+• Score = 1: Unelaborated and/or is clearly subjective
+• Score = 2: Minimally elaborated
+• Score = 3: Imprecisely or generally elaborated
+• Score = 4: Elaborated
+• Score = 5: Well elaborated
+
+A4. Concern of primary stakeholder groups
+Justification of the problem highlights the concerns of primary stakeholder groups.
+• Score = 0: No primary stakeholders or stakeholder groups
+• Score = 1: Only one or two stakeholders or stakeholder groups
+• Score = 2: At least a few primary stakeholders or stakeholder groups
+• Score = 3: Several primary stakeholder groups
+• Score = 4: Many primary stakeholder groups
+• Score = 5: Almost all primary stakeholder groups
+
+A5. Problem justification is based on sources
+Score according to the credibility and variety of sources used.
+• Score = 0: Essentially only the opinion of the researcher
+• Score = 1: Partially credible sources
+• Score = 2: Credible sources
+• Score = 3: Credible and timely sources
+• Score = 4: Timely, credible, and various sources
+• Score = 5: Numerous, timely, credible, and various sources
+
+A6. Problem justification offers objective detail
+Score according to the level of objective detail provided.
+• Score = 0: No objective detail
+• Score = 1: Unclear
+• Score = 2: Somewhat
+• Score = 3: Generally
+• Score = 4: Mostly
+• Score = 5: Consistently
+
