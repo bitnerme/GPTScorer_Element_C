@@ -463,7 +463,7 @@ def process_files_background(job_id: str, file_payloads, mode: str):
             
             # Detect element + subelements
             element = get_element_from_file(__file__)
-            subelement_count = detect_subelement_count(df, element)
+            subelement_count = detect_subelement_count(df_one, element)
 
             # Build schema
             score_cols = build_score_cols(element, subelement_count)
@@ -570,6 +570,12 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     # ============================================================
     # 10) Finalize Output
     # ============================================================
+    element = get_element_from_file(__file__)
+
+    # Detect number of rubric subscores dynamically
+    subelement_count = detect_subelement_count(df, element)
+
+    score_cols = build_score_cols(element, subelement_count)
 
     print("score_cols:", score_cols)
     print("df columns:", df.columns.tolist())
