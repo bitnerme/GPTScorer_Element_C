@@ -1,0 +1,10 @@
+{
+  "sample_size": 112,
+  "n_valid_api": 112,
+  "n_valid_final": 112,
+  "api_mean": 2.1785714285714284,
+  "api_std": 0.6558702740073914,
+  "final_mean": 1.998392857142857,
+  "final_std": 0.9537188054919435,
+  "final_source": "element_score_target"
+}

@@ -396,40 +396,40 @@ def apply_calibration_pipeline(df, mode):
         )
 
 
-        df["element_score_raw"] = df[[f"A{k}" for k in range(1,7)]].mean(axis=1)
+    df["element_score_raw"] = df[[f"A{k}" for k in range(1,7)]].mean(axis=1)
 
-        if mode == "legacy":
-            a = LEGACY_A
-            b = LEGACY_B
-        else:
-            a = CURRENT_A
-            b = CURRENT_B
+    if mode == "legacy":
+        a = LEGACY_A
+        b = LEGACY_B
+    else:
+        a = CURRENT_A
+        b = CURRENT_B
 
-        df["element_score_target"] = (
-            a * df["element_score_raw"] + b
-        ).clip(0.0, 5.0)
+    df["element_score_target"] = (
+        a * df["element_score_raw"] + b
+    ).clip(0.0, 5.0)
 
-        for k in range(1,7):
-            df[f"A{k}_final"] = df[f"A{k}"]
+    for k in range(1,7):
+        df[f"A{k}_final"] = df[f"A{k}"]
 
-        keys = [f"A{k}" for k in range(1,7)]
+    keys = [f"A{k}" for k in range(1,7)]
 
-        for idx,row in df.iterrows():
-            rec = reconcile_integer_subscores(
-                row=row.to_dict(),
-                keys=keys,
-                target_element_col="element_score_target",
-                flag_suffix="_flag",
-                soft_block_nonallowed=True
-            )
-            for k,v in rec.items():
-                df.loc[idx,f"{k}_final"] = v
+    for idx,row in df.iterrows():
+        rec = reconcile_integer_subscores(
+            row=row.to_dict(),
+            keys=keys,
+            target_element_col="element_score_target",
+            flag_suffix="_flag",
+            soft_block_nonallowed=True
+        )
+        for k,v in rec.items():
+            df.loc[idx,f"{k}_final"] = v
 
-            df["element_score_final"] = df[
-                [f"A{k}_final" for k in range(1,7)]
-            ].mean(axis=1)
+        df["element_score_final"] = df[
+            [f"A{k}_final" for k in range(1,7)]
+        ].mean(axis=1)
 
-        return df
+    return df
 
 def process_files_background(job_id: str, file_payloads, mode: str):
     print("ENTERED process_files_background")

@@ -14,7 +14,12 @@ BIAS_THRESHOLD = 0.25
 MAE_THRESHOLD = 0.25
 CI_THRESHOLD = 0.50
 
-REBUILD_CACHE = True
+REBUILD_CACHE = False
+SAVE_INTERMEDIATE = True
+PROMOTE_TO_BASELINE = False
+
+if REBUILD_CACHE and PROMOTE_TO_BASELINE:
+    print("⚠️ WARNING: You are rebuilding cache AND promoting baseline in one run.")
 
 def get_blended_model(el, label):
 
@@ -24,24 +29,36 @@ def get_blended_model(el, label):
     if el == "C":
         return "v1.13" if label == "legacy" else "v1.15"
 
+    if el == "D":
+        return "v1.8d" if label == "legacy" else "v2.0"
+
     return "v1.0"
 
 def element_has_scorer(el):
 
     element_dir = os.path.join(ROOT, "elements", f"element_{el}")
+    config_dir = os.path.join(ROOT, "config", f"element_{el}")
 
-    scorer = os.path.join(element_dir, f"score_with_API_{el}.py")
-    app = os.path.join(element_dir, f"scorer_app_{el}.py")
+    current_dir = os.path.join(element_dir, "golden_current_documents")
+    legacy_dir = os.path.join(element_dir, "golden_legacy_documents")
 
-    return os.path.exists(scorer) and os.path.exists(app)
+    current_json = os.path.join(config_dir, f"golden_{el}_current.json")
+    legacy_json = os.path.join(config_dir, f"golden_{el}_legacy.json")
+
+    return (
+        os.path.exists(current_dir)
+        and os.path.exists(legacy_dir)
+        and os.path.exists(current_json)
+        and os.path.exists(legacy_json)
+    )
 
 def load_modules(el):
     score_mod = importlib.import_module(f"elements.element_{el}.score_with_API_{el}")
     app_mod = importlib.import_module(f"elements.element_{el}.scorer_app_{el}")
 
     score_document = score_mod.score_document
-
     apply_calibration_pipeline = app_mod.apply_calibration_pipeline
+
     return score_document, apply_calibration_pipeline
 
 def run_validation(el, json_path, doc_dir, label):
@@ -150,12 +167,68 @@ def run_validation(el, json_path, doc_dir, label):
 
     mean_score = df["element_score_calibrated"].mean()
 
-    half_ci = 1.96 * std / np.sqrt(len(diffs))
-    full_ci = 2 * half_ci
+    # =========================
+    # TOP ERROR CASES (DEBUG)
+    # =========================
+    df["abs_diff"] = np.abs(df["element_score_calibrated"] - df["expert_score"])
+
+    top5 = df.sort_values("abs_diff", ascending=False).head(5)
+
+    print("\nTop 5 Worst Cases")
+    print("------------------")
+
+    for _, row in top5.iterrows():
+        print(f"{row['filename']}: diff={row['abs_diff']:.3f}")
+
+    print("\nDetailed Debug (Top Case)")
+    print("--------------------------")
+
+    row = top5.iloc[0]
+
+    print("Filename:", row["filename"])
+    print("Expert:", row["expert_score"])
+    print("Model :", row["element_score_calibrated"])
+
+    prefix = el  # "A", "C", or "D"
+
+    # detect subelements dynamically
+    sub_keys = sorted([
+        k for k in df.columns
+        if k.startswith(prefix) and k[1:].isdigit()
+    ])
+
+    for k in sub_keys:
+        raw = row.get(k)
+        final = row.get(f"{k}_final", raw)
+        print(f"{k}: {raw} → {final}")
+
+    BASELINE_FILE = os.path.join(
+        CONFIG_DIR,
+        "golden20_metrics_current.json" if label.lower() == "current"
+        else "golden20_metrics_legacy.json"
+    )
+
+    CANDIDATE_FILE = os.path.join(
+        CONFIG_DIR,
+        "golden20_metrics_current_candidate.json" if label.lower() == "current"
+        else "golden20_metrics_legacy_candidate.json"
+    )
+
+    print("Baseline file path:", BASELINE_FILE)
+    print("Candidate file path:", CANDIDATE_FILE)
+
+    # =========================
+    # SUMMARY
+    # =========================
     n = len(diffs)
 
-    print("\nSummary")
-    print("-------")
+    half_ci = 1.96 * std / np.sqrt(n)
+    full_ci = 2 * half_ci
+
+    title = f"Summary (Element {el} — {label.upper()})"
+    print("\n" + title)
+    print("-" * len(title))
+
     print(f"Sample size: {n}")
     print(f"Bias: {bias:.3f}")
     print(f"MAE: {mae:.3f}")
@@ -163,15 +236,14 @@ def run_validation(el, json_path, doc_dir, label):
     print(f"95% CI full width: {full_ci:.3f}")
     print(f"Mean calibrated score: {df['element_score_calibrated'].mean():.3f}")
 
-    baseline_file = (
-        "../../config/element_C/golden20_metrics_current.json"
-        if label.lower() == "current"
-        else "../../config/element_C/golden20_metrics_legacy.json"
-    )
+    print("DEBUG: reached post-summary")
 
-    if os.path.exists(baseline_file):
+    print("Baseline file path:", BASELINE_FILE)
+    print("Baseline exists:", os.path.exists(BASELINE_FILE))
 
-        with open(baseline_file, "r") as f:
+    if os.path.exists(BASELINE_FILE):
+
+        with open(BASELINE_FILE, "r") as f:
             baseline = json.load(f)
             metrics = {
                 "sample_size": int(len(diffs)),
@@ -186,11 +258,47 @@ def run_validation(el, json_path, doc_dir, label):
         mae_diff = abs(metrics["mae"] - baseline["mae"])
         ci_diff = abs(metrics["ci_full"] - baseline["ci_full"])
 
-        print("\nMetric Deltas")
-        print("-------------")
-        print("Bias Δ:", round(bias_diff,3))
-        print("MAE  Δ:", round(mae_diff,3))
-        print("CI   Δ:", round(ci_diff,3))
+        # =========================
+        # REGRESSION VERDICT
+        # =========================
+        title = f"Regression Verdict (Element {el} — {label.upper()})"
+        print("\n" + title)
+        print("-" * len(title))
+
+        failures = []
+
+        if bias_diff > BIAS_THRESHOLD:
+            failures.append(f"bias_shift ({bias_diff:.3f})")
+
+        if mae_diff > MAE_THRESHOLD:
+            failures.append(f"mae_shift ({mae_diff:.3f})")
+
+        if ci_diff > CI_THRESHOLD:
+            failures.append(f"ci_shift ({ci_diff:.3f})")
+
+        if failures:
+            print("❌ FAIL")
+            for f in failures:
+                print(" -", f)
+        else:
+            print("✅ PASS (within thresholds)")
+
+        print("\nThresholds")
+        print("----------")
+        print(f"Bias threshold: {BIAS_THRESHOLD}")
+        print(f"MAE threshold : {MAE_THRESHOLD}")
+        print(f"CI threshold  : {CI_THRESHOLD}")
+
+        title = f"Metric Deltas (Element {el} — {label.upper()})"
+        print("\n" + title)
+        print("-" * len(title))
+
+        ci_half_diff = abs(half_ci - baseline.get("ci_half", baseline["ci_full"] / 2))
+
+        print(f"Bias Δ: {bias_diff:.3f}")
+        print(f"MAE  Δ: {mae_diff:.3f}")
+        print(f"CI half Δ: {ci_half_diff:.3f}")
+        print(f"CI full Δ: {ci_diff:.3f}")
 
         failures = []
 
@@ -203,26 +311,37 @@ def run_validation(el, json_path, doc_dir, label):
         if ci_diff > CI_THRESHOLD:
             failures.append("ci_shift")
 
-        print("\nGolden20 Regression Check")
-        print("-------------------------")
+        title = f"Golden20 Regression Check (Element {el} — {label.upper()})"
+        print("\n" + title)
+        print("-" * len(title))
 
-        print("Baseline Bias:", baseline["bias"])
-        print("Current Bias :", metrics["bias"])
-        print("Diff:", bias_diff)
+        print(f"Baseline Bias: {baseline['bias']:.3f}")
+        print(f"Current Bias : {bias:.3f}")
+        print(f"Diff         : {bias_diff:.3f}")
 
-        print("\nBaseline MAE:", baseline["mae"])
-        print("Current MAE :", metrics["mae"])
-        print("Diff:", mae_diff)
+        print(f"\nBaseline MAE: {baseline['mae']:.3f}")
+        print(f"Current MAE : {mae:.3f}")
+        print(f"Diff        : {mae_diff:.3f}")
 
-        print("\nBaseline CI:", baseline["ci_full"])
-        print("Current CI :", metrics["ci_full"])
-        print("Diff:", ci_diff)
+        print(f"\nBaseline CI half: ±{baseline.get('ci_half', baseline['ci_full']/2):.3f}")
+        print(f"Current CI half : ±{half_ci:.3f}")
+        print(f"Diff            : {ci_half_diff:.3f}")
 
-    SAVE_BASELINE = False
+        print(f"\nBaseline CI full: {baseline['ci_full']:.3f}")
+        print(f"Current CI full : {full_ci:.3f}")
+        print(f"Diff            : {ci_diff:.3f}")
 
-    SAVE_INTERMEDIATE = True
-
-    #df.to_csv("golden_debug.csv", index=False)
+    if PROMOTE_TO_BASELINE:
+        print(f"\n💾 Saving baseline metrics to {BASELINE_FILE}")
+        with open(BASELINE_FILE, "w") as f:
+            json.dump({
+                "sample_size": int(n),
+                "bias": float(bias),
+                "mae": float(mae),
+                "ci_half": float(half_ci),
+                "ci_full": float(full_ci),
+                "mean_calibrated_score": float(mean_score)
+            }, f, indent=2)
 
     if REBUILD_CACHE:
         print(f"Saving cache to {CACHE_FILE}")

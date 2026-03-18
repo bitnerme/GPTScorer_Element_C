@@ -1,0 +1,32 @@
+﻿Element D:  Design Concept Generation, Analysis, and Selection
+D1. Process for generating & comparing possible solutions. The process for generating possible solutions __________.
+score = 5    was comprehensive, iterative, and consistently defensible (viable design highly likely)
+score = 4    was thorough, iterative, and generally defensible (viable design likely)
+score = 3    was adequate, generally iterative, and generally defensible (viable design is possible)
+score = 2    was partial or overly general and only somewhat iterative and/or defensible (raising issues with the  design viability)
+score = 1    was incomplete or minimally iterative and/or defensible (raising issues with the  design viability)
+score = 0    was not evident that there was an attempt
+.
+D2. Design solution choice. The design solution chosen __________.
+score = 5    was well justified and demonstrated attention to all design requirements
+score = 4    was justified and demonstrated attention to most if not all design requirements
+score = 3    was explained with reference to at least some design requirements
+score = 2    was not sufficiently explained with reference to design requirements
+score = 1    lacked support related to design requirements
+score = 0    was not attempted or evidence not provided
+
+D3. Plan of action. The plan of action __________.
+score = 5    has considerable merit and would easily support repetition and testing for effectiveness by others
+score = 4    would support repetition and testing for effectiveness by others
+score = 3    might not clearly or fully support repetition and testing for effectiveness by others
+score = 2    has insufficient detail to allow for testing for replication of results
+score = 1    is lacking to the point that the design solution cannot be tested
+score = 0    cannot be executed or does not exist
+
+D4. Design blueprint. Attributes of the design solution chosen are presented __________.
+score = 5    in a consistently specific, detailed, and thorough manner
+score = 4    in a generally specific, detailed, and thorough manner
+score = 3    in a somewhat specific and detailed manner, but may not be thorough
+score = 2    in a somewhat specific and/or detailed, but incomplete or overly general manner
+score = 1    in a sparse manner, with few specifics / details
+score = 0    minimally

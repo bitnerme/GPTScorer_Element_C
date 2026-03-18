@@ -48,6 +48,8 @@ async function pollProgress(jobId) {
                     const downloadToggle = document.getElementById("downloadCSVCheckbox");
 
                     if (downloadToggle && downloadToggle.checked) {
+                        // mimic what displayResults normally sets
+                        window.lastPayload = data;
                         window.lastResults = data.results;
                         downloadCSV();
                     } else {

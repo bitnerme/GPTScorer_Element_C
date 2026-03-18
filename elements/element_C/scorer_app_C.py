@@ -387,48 +387,48 @@ async def score_element_c(
 
 def apply_calibration_pipeline(df, mode):
 
-        for k in range(1,7):
-            df[f"C{k}"] = (
-                pd.to_numeric(df.get(f"C{k}"), errors="coerce")
-                .fillna(0)
-                .round()
-                .astype(int)
-            )
+    for k in range(1,7):
+        df[f"C{k}"] = (
+            pd.to_numeric(df.get(f"C{k}"), errors="coerce")
+            .fillna(0)
+            .round()
+            .astype(int)
+        )
 
-        df["element_score_raw"] = df[[f"C{k}" for k in range(1,7)]].mean(axis=1)
+    df["element_score_raw"] = df[[f"C{k}" for k in range(1,7)]].mean(axis=1)
 
-        if mode == "legacy":
-            a = 1.0
-            b = LEGACY_BIAS_OFFSET
-        else:
-            a = CURRENT_A
-            b = CURRENT_B
+    if mode == "legacy":
+        a = 1.0
+        b = LEGACY_BIAS_OFFSET
+    else:
+        a = CURRENT_A
+        b = CURRENT_B
 
-        df["element_score_calibrated"] = (
-            a * df["element_score_raw"] + b
-        ).clip(0.0, 5.0)
+    df["element_score_calibrated"] = (
+        a * df["element_score_raw"] + b
+    ).clip(0.0, 5.0)
 
-        for k in range(1,7):
-            df[f"C{k}_final"] = df[f"C{k}"]
+    for k in range(1,7):
+        df[f"C{k}_final"] = df[f"C{k}"]
 
-        keys = [f"C{k}" for k in range(1,7)]
+    keys = [f"C{k}" for k in range(1,7)]
 
-        for idx,row in df.iterrows():
-            rec = reconcile_integer_subscores(
-                row=row.to_dict(),
-                keys=keys,
-                target_element_col="element_score_calibrated",
-                flag_suffix="_flag",
-                soft_block_nonallowed=True
-            )
-            for k,v in rec.items():
-                df.loc[idx,f"{k}_final"] = v
+    for idx,row in df.iterrows():
+        rec = reconcile_integer_subscores(
+            row=row.to_dict(),
+            keys=keys,
+            target_element_col="element_score_calibrated",
+            flag_suffix="_flag",
+            soft_block_nonallowed=True
+        )
+        for k,v in rec.items():
+            df.loc[idx,f"{k}_final"] = v
 
-        df["element_score_calibrated"] = df[
-            [f"C{k}_final" for k in range(1,7)]
-        ].mean(axis=1)
+    df["element_score_calibrated"] = df[
+        [f"C{k}_final" for k in range(1,7)]
+    ].mean(axis=1)
 
-        return df
+    return df
 
 def process_files_background(job_id: str, file_payloads, mode: str):
     print("ENTERED process_files_background")
