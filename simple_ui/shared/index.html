@@ -2,15 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Element __ELEMENT__ Scoring App</title>
+    <h1 id="title">Element A Scoring</h1>
 </head>
 <body>
-   
-    <h1 id="pageTitle">Element __ELEMENT__ Scoring</h1>
 
     <form id="uploadForm">
+        
+        <label>Select Element:</label>
+        <select id="element" name="element">
+            <option value="A">Element A</option>
+            <option value="B">Element B</option>
+            <option value="C">Element C</option>
+            <option value="D">Element D</option>
+        </select><br>
 
-        <label for="modeSelect">Scoring Mode:</label><br>
+        <label for="modeSelect">Scoring Mode:</label>
         <select id="modeSelect" name="mode">
             <option value="current">Current (Submissions after 10/1/2024)</option>
             <option value="legacy">Legacy (Submissions prior to 10/1/2024)</option>

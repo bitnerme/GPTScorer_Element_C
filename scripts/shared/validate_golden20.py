@@ -8,14 +8,13 @@ import importlib
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, ROOT)
 
-from scripts.shared.utils import extract_text_with_fallback
+from scripts.shared.utils import extract_text_with_fallback, normalize_columns
 
 BIAS_THRESHOLD = 0.25
 MAE_THRESHOLD = 0.25
 CI_THRESHOLD = 0.50
 
 REBUILD_CACHE = False
-SAVE_INTERMEDIATE = True
 PROMOTE_TO_BASELINE = False
 
 if REBUILD_CACHE and PROMOTE_TO_BASELINE:
@@ -25,6 +24,9 @@ def get_blended_model(el, label):
 
     if el == "A":
         return "v1.0" if label == "legacy" else "v1.2"
+
+    if el == "B":
+        return "v1.2" if label == "legacy" else "v1.4b"
 
     if el == "C":
         return "v1.13" if label == "legacy" else "v1.15"
@@ -118,6 +120,9 @@ def run_validation(el, json_path, doc_dir, label):
 
             content = extract_text_with_fallback(path)
 
+            if filename == "Case081_35.docx":
+                print("TEXT SAMPLE:", content[:500])
+
             result = score_document(
                 filename,
                 content,
@@ -137,19 +142,8 @@ def run_validation(el, json_path, doc_dir, label):
     df = pd.DataFrame(rows)
 
     # compatibility bridge for cached schemas
-    for k in range(1,7):
-
-        # new schema (_1,_2)
-        if f"A{k}" not in df.columns and f"_{k}" in df.columns:
-            df[f"A{k}"] = df[f"_{k}"]
-
-        # new schema with _final
-        if f"A{k}" not in df.columns and f"_{k}_final" in df.columns:
-            df[f"A{k}"] = df[f"_{k}_final"]
-
-        # old C schema (C1,C2,...)
-        if f"A{k}" not in df.columns and f"C{k}" in df.columns:
-            df[f"A{k}"] = df[f"C{k}"]
+  
+    df = normalize_columns(df, el) 
 
     df = apply_calibration_pipeline(df, label.lower())
 
@@ -189,7 +183,7 @@ def run_validation(el, json_path, doc_dir, label):
     print("Expert:", row["expert_score"])
     print("Model :", row["element_score_calibrated"])
 
-    prefix = el  # "A", "C", or "D"
+    prefix = el  # "A", "B", "C", or "D"
 
     # detect subelements dynamically
     sub_keys = sorted([

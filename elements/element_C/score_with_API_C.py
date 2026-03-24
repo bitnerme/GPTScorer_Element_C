@@ -64,7 +64,7 @@ The narrative_feedback must be between 180 and 220 words.
 
 RUBRIC_PATH = Path(__file__).resolve().parent / "Current Element C Rubric.txt"
 
-print("RUBRIC PATH:", RUBRIC_PATH)
+("RUBRIC PATH:", RUBRIC_PATH)
 
 with open(RUBRIC_PATH, "r", encoding="utf-8") as f:
     RUBRIC_TEXT = f.read().strip()  
@@ -75,7 +75,7 @@ def detect_solution_like(text: str) -> bool:
     solution_markers = [
         "prototype", "we built", "we made", "we created", "we constructed", "we assembled",
         "how it works", "this works by", "our design", "our solution", "final design",
-        "materials", "wiring", "arduino", "circuit", "3d printed", "printed", "glued"
+        "materials", "wiring", "arduino", "circuit", "3d ed", "ed", "glued"
     ]
 
     requirement_markers = [
@@ -119,7 +119,7 @@ def detect_post_solution_requirements(text: str) -> bool:
     solution_specific = [
         "2x4", "plywood", "steel", "aluminum",
         "arduino", "servo", "motor", "circuit",
-        "3d printed", "bolted", "welded"
+        "3d ed", "bolted", "welded"
     ]
 
     testing_presuppose = [
@@ -355,7 +355,7 @@ def score_document(filename, content, blended_model):
     
     gpt_model = get_gpt_model(blended_model)
 
-    print("MODEL BEING USED:", gpt_model)
+    ("MODEL BEING USED:", gpt_model)
 
     response = openai.ChatCompletion.create(
         model=gpt_model,
@@ -369,11 +369,11 @@ def score_document(filename, content, blended_model):
     try:
         response_str = response.choices[0].message.content
     except Exception as e:
-        print(f"❌ Could not extract message content for {filename}: {e}")
+        (f"❌ Could not extract message content for {filename}: {e}")
         return {}
 
     if response is None:
-        print(f"❌ GPT call returned None for {filename}")
+        (f"❌ GPT call returned None for {filename}")
         return {}
 
    # === Continue with parsing logic ===
@@ -405,11 +405,11 @@ def score_document(filename, content, blended_model):
             response_dict = json5.loads(cleaned)
 
         except Exception as e:
-            print(f"⚠️ First parse failed for {filename}: {e}")
+            (f"⚠️ First parse failed for {filename}: {e}")
 
             # Check for truncation
             if is_truncated_json(cleaned):
-                print("⚠️ Detected truncated JSON. Retrying once...")
+                ("⚠️ Detected truncated JSON. Retrying once...")
 
                 retry_response = openai.ChatCompletion.create(
                     model=gpt_model,
@@ -440,15 +440,15 @@ def score_document(filename, content, blended_model):
                     retry_str = clean_json_string(retry_str)
 
                     response_dict = json5.loads(retry_str)
-                    print("✅ Retry succeeded")
+                    ("✅ Retry succeeded")
 
                 except Exception as retry_error:
-                    print(f"❌ Retry failed for {filename}: {retry_error}")
+                    (f"❌ Retry failed for {filename}: {retry_error}")
                     return {
                         "truncation_detected": 1
                     }
             else:
-                print("❌ Not a truncation case. Skipping document.")
+                ("❌ Not a truncation case. Skipping document.")
                 return {
                     "truncation_detected": 1
                 }
@@ -486,8 +486,8 @@ def score_document(filename, content, blended_model):
         return response_dict
 
     except json.JSONDecodeError as e:
-        print(f"❌ JSON parse failed for {filename}")
-        print(response_str)
+        (f"❌ JSON parse failed for {filename}")
+        (response_str)
         return {
             "truncation_detected": 1
         }
@@ -573,7 +573,7 @@ def classify_structural_class(row):
 
     # Structural Class 0: fundamentally not Element C
     if solution_like:
-        print(filename, "solution_like =", solution_like)
+        (filename, "solution_like =", solution_like)
         return 0
 
     # Structural Class 2: substantively valid Element C
@@ -697,15 +697,15 @@ def main(folder_path, output_path, blended_version):
 
     for idx, filename in enumerate(all_files, start=1):
         full_path = os.path.join(folder_path, filename)
-        print(f"Scoring {filename}...")
+        (f"Scoring {filename}...")
         try:
             text = extract_text_with_fallback(full_path)
-            print("EXTRACTED LENGTH:", len(text))
-            print("EXTRACTED SAMPLE:", text[:300])
+            ("EXTRACTED LENGTH:", len(text))
+            ("EXTRACTED SAMPLE:", text[:300])
             response_dict = score_document(filename, text,blended_version)
 
             if response_dict is None:
-                print(f"❌ score_document returned None for {filename}")
+                (f"❌ score_document returned None for {filename}")
                 continue
 
             # Start from full response_dict so nothing is lost
@@ -752,9 +752,9 @@ def main(folder_path, output_path, blended_version):
             results.append(row)
 
         except Exception:
-            print(f"\nFULL TRACEBACK for {filename}:")
-            traceback.print_exc()
-            print("⚠️ Skipping this document and continuing...")
+            (f"\nFULL TRACEBACK for {filename}:")
+            traceback._exc()
+            ("⚠️ Skipping this document and continuing...")
             continue    
 
     output_df = pd.DataFrame(results)
@@ -766,7 +766,7 @@ def main(folder_path, output_path, blended_version):
 
     for i in range(1, 7):
         if row[f"C{i}"] != row[f"C{i}_api"]:
-            print(f"{filename} C{i} changed by rule engine")
+            (f"{filename} C{i} changed by rule engine")
 
     flags = [f"C{i}_flag" for i in range(1, 7)]
     rationales = [f"C{i}_rationale" for i in range(1, 7)]
@@ -784,7 +784,7 @@ def main(folder_path, output_path, blended_version):
         "narrative_feedback"   # 👈 ADD THIS
     ]
 
-    print("COLUMNS BEFORE REORDER:", output_df.columns.tolist())
+    ("COLUMNS BEFORE REORDER:", output_df.columns.tolist())
 
     ordered_columns = core + scores + api_scores + flags + rationales + extras
 
@@ -793,7 +793,7 @@ def main(folder_path, output_path, blended_version):
 
     output_df.to_csv(output_path, index=False)
     
-    print("\n✅ Scoring complete. Output saved to:", output_path)
+    ("\n✅ Scoring complete. Output saved to:", output_path)
 
 def score_documents_with_api(documents, blended_version):
     results = []
@@ -805,12 +805,12 @@ def score_documents_with_api(documents, blended_version):
 
         # --- Extraction ---
         text = extract_text_with_fallback(file_path)     
-        print("EXTRACTED LENGTH:", len(text))
-        print("EXTRACTED SAMPLE:", text[:300])
+        ("EXTRACTED LENGTH:", len(text))
+        ("EXTRACTED SAMPLE:", text[:300])
 
         response_dict = score_document(filename, text, blended_version)
         if response_dict is None:
-            print(f"Skipping {filename} due to failure.")
+            (f"Skipping {filename} due to failure.")
             continue
 
         row = {
@@ -822,13 +822,13 @@ def score_documents_with_api(documents, blended_version):
         for i in range(1, 7):
             if response_dict is None:
                 raise ValueError(f"response_dict is None for {filename}")
-            print("C key value:", i, type(response_dict.get(f"C{i}")), response_dict.get(f"C{i}"))
+            ("C key value:", i, type(response_dict.get(f"C{i}")), response_dict.get(f"C{i}"))
             row[f"C{i}"] = int(response_dict.get(f"C{i}", 0))
             row[f"C{i}_rationale"] = response_dict.get(f"C{i}_rationale", "")
 
         row["narrative_feedback"] = response_dict.get("narrative_feedback", "")
 
-        print("Narrative in row:", row.get("narrative_feedback"))
+        ("Narrative in row:", row.get("narrative_feedback"))
 
         if blended_version == "v1.13":
             row = postprocess_v113(row, filename)

@@ -1,0 +1,222 @@
+{
+  "Case001_00.docx": {
+    "B1": 2,
+    "B1_rationale": "The student identifies a limited number of prior attempts, mainly specialized mirrors and domes used in warehouses and stores, and a vague mention of mirror use in the library. Sources are not clearly identified or cited, and the variety of sources is minimal.",
+    "B2": 2,
+    "B2_rationale": "The analysis is overly general with minimal detail. Strengths such as increased visibility and reduced physical effort are mentioned, but shortcomings and explicit comparisons between solutions are missing. There is no clear reasoning about why one solution is better.",
+    "narrative_feedback": "The documentation shows some awareness of prior design attempts to address blind spots, such as the use of specialized mirrors and domes in warehouses and stores, and a conceptual idea of mirrors for the librarian. This demonstrates a basic understanding of related solutions (B1). However, the sources are limited and not clearly identified, which restricts the depth and credibility of the research. The analysis of these prior attempts is quite general, mentioning benefits like increased visibility and reduced physical effort but lacking detailed evaluation of strengths and weaknesses or direct comparisons between different solutions (B2).\n\nTo improve, the student should seek out and clearly identify a wider variety of credible sources, including documented examples or studies of prior designs. They should also provide a more detailed analysis that explicitly compares multiple solutions, discussing both advantages and disadvantages. Including relevant data or evidence to support claims would strengthen the justification. Finally, explaining why the chosen design is preferable over others would enhance the clarity and depth of the analysis.",
+    "truncation_detected": 0,
+    "B1_api": 2,
+    "B2_api": 2,
+    "element_score_api": 2.0
+  },
+  "Case010_01.docx": {
+    "B1": 3,
+    "B1_rationale": "The student identifies three prior design attempts, which counts as several sources. These attempts are clearly described and credible as they are actual prototypes developed in class under supervision. However, the sources are not particularly varied in nature, all being iterations of the same project rather than distinct external solutions or diverse approaches.",
+    "B2": 2,
+    "B2_rationale": "The analysis includes some strengths and shortcomings of the designs, such as size, sturdiness, weight, and heat resistance. However, the explanations are overly general and lack detailed supporting data or explicit comparisons. The reasoning about why one design is better than another is implied but not clearly articulated, and advantages and disadvantages are not fully developed or contrasted.",
+    "narrative_feedback": "The student demonstrates a solid effort in documenting multiple prior design attempts (B1), describing three distinct prototypes developed during class. This shows an understanding of iterative design and the importance of refining solutions. The descriptions are credible and clearly identified, which is a strength in establishing a foundation for analysis.\n\nHowever, the analysis of these attempts (B2) is somewhat superficial. While some strengths and weaknesses are mentioned, the discussion lacks depth and explicit comparison. The student does not clearly explain why one design is preferred over another or provide detailed evidence to support their evaluations. This limits the justification of the final design choice.\n\nTo improve, the student should provide more detailed and specific analysis of each design\u2019s performance, including quantitative or qualitative data where possible. Explicitly comparing the advantages and disadvantages of each attempt would strengthen the evaluation. Additionally, clarifying the reasoning behind design decisions and how they address prior shortcomings would enhance the justification. Including references to external or varied sources could also broaden the context and improve the documentation of prior attempts.",
+    "truncation_detected": 0,
+    "B1_api": 3,
+    "B2_api": 2,
+    "element_score_api": 2.5
+  },
+  "Case009_01.docx": {
+    "B1": 2,
+    "B1_rationale": "Only one prior solution (tying a knot) is identified and described. The source is implicitly credible but limited in variety and number.",
+    "B2": 2,
+    "B2_rationale": "The analysis mentions some strengths and shortcomings of the knot solution but is overly general and lacks detailed supporting data or explicit comparison to other solutions.",
+    "narrative_feedback": "The student demonstrates an understanding that prior attempts have been made to solve the problem of trash bags falling into trash cans, specifically identifying the knot-tying method. This shows some awareness of existing solutions (B1). However, the documentation is limited to only one prior attempt, which restricts the depth and breadth of exploration. Expanding the research to include multiple distinct solutions would strengthen this section.\n\nRegarding analysis (B2), the student provides a basic evaluation of the knot method, noting that it is simple and cheap but not permanent. While this shows some recognition of advantages and disadvantages, the explanation is vague and lacks detailed reasoning or data to support claims. There is no explicit comparison to alternative solutions, which weakens the justification for seeking other options.\n\nTo improve, the student should identify and describe several different prior solutions from credible sources to broaden the context. They should also provide a clearer, more detailed analysis of each solution\u2019s strengths and weaknesses, supported by relevant data or examples. Explicitly comparing these solutions and explaining why one might be preferred would enhance the justification and overall quality of the analysis.",
+    "truncation_detected": 0,
+    "B1_api": 2,
+    "B2_api": 2,
+    "element_score_api": 2.0
+  },
+  "Case015_02.docx": {
+    "B1": 3,
+    "B1_rationale": "The student identifies several prior solutions involving different layers and filters such as sand, gravel, charcoal, and activated carbon. These sources are clearly identified and generally credible, but the variety is somewhat limited to filtration methods only.",
+    "B2": 2,
+    "B2_rationale": "The analysis includes some strengths and shortcomings of the filters, such as activated carbon filtering more contaminants but breaking down easily. However, the discussion is overly general, lacks detailed supporting data, and does not explicitly compare multiple solutions or provide clear reasoning about why one is better.",
+    "narrative_feedback": "The student demonstrates a reasonable understanding of prior design attempts by identifying multiple filtration methods, including sand, gravel, charcoal, and activated carbon filters, which shows moderate exploration of related solutions (B1). The sources are clearly named and generally credible, though the range of ideas is somewhat narrow, focusing mainly on filtration layers without exploring alternative approaches.\n\nIn terms of analysis (B2), the student outlines some strengths and weaknesses of these filters, such as the effectiveness of activated carbon and its fragility. However, the evaluation remains quite general and lacks detailed evidence or data to support claims. There is no explicit comparison between the different solutions, nor is there a clear justification for selecting one approach over another. This limits the depth and clarity of the analysis.\n\nTo improve, the student should include more varied prior solutions beyond filtration layers, provide specific data or examples to support their analysis, explicitly compare the advantages and disadvantages of each solution, and clearly explain why one design might be preferable. Adding structured comparisons and more detailed reasoning will strengthen the justification and overall quality of the documentation.",
+    "truncation_detected": 0,
+    "B1_api": 3,
+    "B2_api": 2,
+    "element_score_api": 2.5
+  },
+  "Case016_02.docx": {
+    "B1": 2,
+    "B1_rationale": "The student identifies several types of water filters (activated carbon, sand/gravel/charcoal, multi-stage filters), but sources are not clearly identified or cited. The description suggests some prior knowledge but lacks variety in clearly credible sources.",
+    "B2": 2,
+    "B2_rationale": "The analysis lists some strengths and shortcomings of different filters but is overly general and lacks detailed supporting data or explicit comparisons. The reasoning about why one solution is better than others is minimal and vague.",
+    "narrative_feedback": "The student demonstrates a basic understanding of prior water filtration methods by identifying multiple types of filters and their general functions, which is a positive start for documenting prior design attempts (B1). However, the sources of this information are not clearly identified or referenced, limiting the credibility and variety of the prior attempts discussed. This restricts the score to a limited number of sources with unclear credibility.\n\nRegarding analysis (B2), the student provides a list of what worked and what didn\u2019t, showing some awareness of strengths and weaknesses. Yet, the explanations are quite general and lack detailed evidence or data to support the claims. There is no explicit comparison or reasoning to justify why one filter design might be superior to another, which weakens the analysis.\n\nTo improve, the student should clearly identify and cite multiple credible sources to strengthen B1. For B2, they should provide more detailed, data-supported comparisons of different filter designs, explicitly discussing advantages and disadvantages. Including specific examples or experimental results would enhance clarity. Finally, explaining why a particular design is chosen over others would improve the justification and overall analysis.",
+    "truncation_detected": 0,
+    "B1_api": 2,
+    "B2_api": 2,
+    "element_score_api": 2.0
+  },
+  "Case019_11.docx": {
+    "B1": 2,
+    "B1_rationale": "Only one prior solution (tying a knot) is identified and described. The source is implicitly credible but limited in variety and number.",
+    "B2": 2,
+    "B2_rationale": "The analysis mentions some strengths and shortcomings of the knot solution but is overly general, lacks detailed supporting data, and does not compare multiple solutions.",
+    "narrative_feedback": "The student has identified a prior attempt to solve the problem by describing the use of tying a knot around the trash bag to keep it tight. This shows some understanding of existing solutions and their practical application, which is a strength in addressing Element B1. However, only one prior solution is discussed, limiting the breadth of exploration and resulting in a low score for B1. For Element B2, the student provides a basic analysis of the knot method, noting that it can come undone and is not a permanent fix. While this shows some recognition of the solution's shortcomings, the explanation is vague and lacks detailed evidence or data to support the claims. There is no comparison with alternative solutions, which weakens the justification and analysis overall.\n\nTo improve, the student should research and document multiple prior solutions to the problem, such as clips, elastic bands, or specialized trash can designs, to demonstrate a wider understanding (B1). They should also provide a clearer, more detailed analysis of each solution\u2019s advantages and disadvantages, supported by relevant data or examples (B2). Explicitly comparing these solutions and explaining why one might be preferable would strengthen the justification. Including more precise details and reasoning will enhance the clarity and depth of the analysis.",
+    "truncation_detected": 0,
+    "B1_api": 2,
+    "B2_api": 2,
+    "element_score_api": 2.0
+  },
+  "Case020_11.docx": {
+    "B1": 4,
+    "B1_rationale": "The student identifies multiple prior attempts (at least four) to solve the problem, each from clearly named and credible sources such as Khan Academy, MathisFun, GCSE Maths, and a game-based learning platform. The sources are varied and credible, showing a variety of prior solutions.",
+    "B2": 3,
+    "B2_rationale": "The analysis includes some strengths and shortcomings of each prior attempt, such as accessibility, engagement, and intimidation factors. However, the comparisons between solutions are incomplete and lack detailed reasoning about why one solution might be better than another. The explanations are generally clear but not consistently detailed or fully supported by relevant data.",
+    "narrative_feedback": "This documentation demonstrates a solid effort in identifying multiple prior design attempts from a variety of credible sources, including online educational platforms and interactive learning tools, which is a clear strength (B1). The student provides a reasonable overview of each source\u2019s pros and cons, such as accessibility, engagement, and the challenge of intimidation, showing an understanding of different approaches to the problem.\n\nHowever, the analysis could be improved by providing more explicit and detailed comparisons between the prior attempts. While some advantages and disadvantages are noted, the reasoning about why one solution might be preferable over others is limited, and the supporting evidence is often anecdotal rather than data-driven (B2). To strengthen this section, the student should include clearer explanations of how each solution meets or fails the design requirements and explicitly compare these points across solutions. Additionally, organizing the analysis to highlight key differences and trade-offs would improve clarity and justification.\n\nFor improvement, the student should: 1) deepen the analysis with more detailed evidence and reasoning; 2) explicitly compare multiple solutions to highlight relative strengths and weaknesses; 3) incorporate more data or examples to support claims; and 4) ensure all prior attempts are fully described with clear links to the problem being solved.",
+    "truncation_detected": 0,
+    "B1_api": 4,
+    "B2_api": 3,
+    "element_score_api": 3.5
+  },
+  "Case035_13.docx": {
+    "B1": 2,
+    "B1_rationale": "The student identifies a very limited number of prior attempts or sources, primarily focusing on one website about hanging kinetic art and general observations about the lack of artwork in two locations. The sources are not clearly varied or numerous, and some are not clearly identified or credible.",
+    "B2": 2,
+    "B2_rationale": "The analysis of past and current attempts is overly general with minimal detail. The student mentions some potential issues (e.g., difficulty hanging from tile ceilings, risk of breaking mirrors) but does not provide detailed or data-supported comparisons. Advantages and disadvantages are mentioned but not clearly compared or justified.",
+    "narrative_feedback": "The documentation shows some effort to identify prior design attempts, including a website about hanging kinetic art and observations about the lack of artwork in specific locations (B1). However, the sources are limited in number and variety, and some are not clearly credible or well-identified. This limits the depth of understanding of prior solutions. The analysis (B2) touches on some strengths and weaknesses, such as the reflective qualities of the mirrors and challenges with ceiling installation, but these points are presented in a vague and general manner without detailed comparisons or supporting data.\n\nTo improve, the student should seek out and document a wider array of credible sources, including multiple distinct prior solutions or related projects. They should also provide clearer, more detailed analysis that explicitly compares the advantages and disadvantages of these solutions, supported by relevant data or observations. Including reasoning about why one approach is preferred over others would strengthen the justification. Additionally, clarifying and properly citing sources would enhance credibility and clarity.",
+    "truncation_detected": 0,
+    "B1_api": 2,
+    "B2_api": 2,
+    "element_score_api": 2.0
+  },
+  "Case034_13.docx": {
+    "B1": 4,
+    "B1_rationale": "The student identifies four distinct prior design attempts: shower caddy, shelf with suction cups, shower curtain caddy, and tension rod. Each source is clearly named and described, showing a variety of solutions. The sources appear credible and relevant to the problem context.",
+    "B2": 3,
+    "B2_rationale": "The analysis includes some strengths and shortcomings for each design, such as cost, capacity, space usage, and material concerns. However, the comparisons between solutions are somewhat incomplete and lack explicit reasoning about why one solution might be better overall. Advantages and disadvantages are mentioned but not deeply analyzed or contrasted.",
+    "narrative_feedback": "This documentation demonstrates a solid effort in identifying multiple prior design attempts to address the problem of storing toiletries in communal showers (B1). The student clearly describes four different solutions, providing a variety of credible sources that are relevant to the context. This breadth of exploration is a strength, showing awareness of different approaches.\n\nHowever, the analysis of these prior attempts (B2) could be improved. While the student lists some advantages and disadvantages for each design, the evaluation lacks depth and explicit comparison. The reasoning behind why one solution might be preferred over others is not fully developed, and some points are vague or incomplete. For example, the discussion of suction cup reliability and space usage could be expanded with more detailed evidence or user considerations.\n\nTo improve, the student should provide a clearer, more detailed comparison of the solutions, explicitly weighing pros and cons against each other. Including relevant data or user feedback to support claims would strengthen the analysis. Additionally, explaining the rationale for selecting or rejecting certain designs would enhance justification and clarity.",
+    "truncation_detected": 0,
+    "B1_api": 4,
+    "B2_api": 3,
+    "element_score_api": 3.5
+  },
+  "Case017_04.docx": {
+    "B1": 4,
+    "B1_rationale": "The student identifies three distinct prior design attempts: a catapult for launching frisbees, an automatic baseball pitcher, and a modified walker. These sources are clearly described and credible within the context of adaptive sports equipment. The variety of solutions covers different mechanisms and approaches, demonstrating a solid exploration of alternatives.",
+    "B2": 3,
+    "B2_rationale": "The analysis includes advantages and disadvantages for each design attempt, showing some detail and relevant supporting data. However, the comparisons between solutions are somewhat implicit and lack explicit reasoning about why one design might be superior overall. The discussion of strengths and shortcomings is present but not consistently detailed or clearly connected to the problem context, limiting the depth of justification.",
+    "narrative_feedback": "This documentation demonstrates a commendable effort in identifying multiple prior design attempts relevant to enabling students with disabilities to participate in physical activities, particularly ultimate frisbee. The student effectively presents three distinct concepts\u2014a catapult, an automatic pitcher, and a modified walker\u2014showing a good breadth of exploration (B1). Each design is described with clear advantages and disadvantages, reflecting an understanding of practical considerations such as maneuverability, reliability, and repairability.\n\nHowever, the analysis could be strengthened by providing more explicit comparisons between the solutions and deeper reasoning about their relative merits and drawbacks (B2). For example, the student could clarify why certain trade-offs make one design more suitable than others for the target users. Additionally, some points, such as the impact of modifications on walker stability, would benefit from more detailed explanation or supporting data.\n\nTo improve, the student should explicitly compare the designs to highlight which best meets the problem requirements and why. Including quantitative or qualitative data to support claims would enhance credibility. Finally, discussing potential integration or hybrid solutions could demonstrate more advanced design thinking and justification.",
+    "truncation_detected": 0,
+    "B1_api": 4,
+    "B2_api": 3,
+    "element_score_api": 3.5
+  },
+  "Case045_23.docx": {
+    "B1": 2,
+    "B1_rationale": "The student identifies multiple potential solutions found online, such as using a dehumidifier, avoiding heating vents, and waterproof cases. However, these are presented as general ideas rather than clearly identified, credible sources. The prior attempts by the teacher are minimal (none), and the student-generated ideas are only briefly mentioned without detail or source credibility. Thus, the number of sources is limited and not clearly credible.",
+    "B2": 1,
+    "B2_rationale": "The analysis of past and current attempts is vague and lacks relevant supporting data. While some constraints (e.g., school rules preventing devices) are mentioned, there is no detailed comparison of strengths and weaknesses of the proposed solutions. The reasoning about why one solution might be better than others is missing, and no explicit evaluation or justification is provided.",
+    "narrative_feedback": "The documentation shows some effort to identify prior solutions to the humidity problem, including ideas found online such as dehumidifiers and waterproof cases. However, the sources of these ideas are not clearly identified or credible, and the teacher\u2019s prior attempts are minimal, limiting the breadth of prior design exploration (B1). The student engineers\u2019 own ideas are only briefly mentioned without elaboration or source support.\n\nThe analysis of these prior attempts is weak. While the student notes some constraints, such as school rules preventing certain devices, there is no clear comparison of the advantages and disadvantages of the different solutions. The reasoning behind selecting or rejecting specific ideas is not articulated, resulting in a vague and incomplete evaluation (B2).\n\nTo improve, the student should explicitly identify and cite credible sources for prior solutions, including more varied examples. They should also provide a detailed comparison of multiple solutions, clearly explaining the pros and cons of each. Including relevant data or evidence to support their analysis and justifying why their chosen approach is preferable would strengthen the documentation significantly.",
+    "truncation_detected": 0,
+    "B1_api": 2,
+    "B2_api": 1,
+    "element_score_api": 1.5
+  },
+  "Case073_33.docx": {
+    "B1": 2,
+    "B1_rationale": "The student identifies five prior design attempts, but the sources of these designs are not clearly identified or credible. The descriptions are brief and lack detail, and there is no indication that these are drawn from a wide or varied array of credible sources.",
+    "B2": 1,
+    "B2_rationale": "The analysis of the prior designs is vague and lacks relevant supporting data. While some features are mentioned (e.g., rotating feature, material quality), there is no clear comparison of strengths and weaknesses or reasoning about why one design might be better than another.",
+    "narrative_feedback": "The student demonstrates an effort to document multiple prior design attempts, which is a positive step toward understanding existing solutions (B1). However, the descriptions are very brief and lack clear identification of credible sources, limiting the depth and reliability of the documentation. The designs are presented as successful but without context or evidence supporting their effectiveness.\n\nRegarding analysis (B2), the student provides minimal evaluation of the designs\u2019 strengths and shortcomings. The descriptions mention some features but do not compare the designs explicitly or discuss advantages and disadvantages in detail. This limits the justification for selecting or improving upon any particular design.\n\nTo improve, the student should clearly identify and cite credible sources for each prior design. They should also provide more detailed descriptions and explicitly compare the designs, highlighting both pros and cons. Including relevant data or examples to support the analysis would strengthen the evaluation. Finally, explaining why one design is preferable over others would enhance the justification and overall quality of the analysis.",
+    "truncation_detected": 0,
+    "B1_api": 2,
+    "B2_api": 1,
+    "element_score_api": 1.5
+  },
+  "Case049_24.docx": {
+    "B1": 4,
+    "B1_rationale": "The student identifies two distinct prior solutions from credible sources (Science Direct and Otto Environmental). Both sources are clearly named and described, showing a variety of sources rather than just one or two.",
+    "B2": 3,
+    "B2_rationale": "The analysis includes some clear pros and cons for each solution, with relevant details such as automation, shooting angles, and usability. However, the comparison lacks depth and explicit reasoning about why one solution is better overall. The discussion of advantages and disadvantages is present but incomplete, and the justification for choosing or combining solutions is not fully developed.",
+    "narrative_feedback": "The student demonstrates a solid effort in identifying prior design attempts by referencing two credible and distinct sources, which supports a strong score for B1. The descriptions of each solution include relevant details about their operation and limitations, showing an understanding of the problem context. This variety of sources enriches the exploration of possible design ideas.\n\nHowever, the analysis in B2 could be improved by providing a more explicit and detailed comparison between the two solutions. While pros and cons are listed, the reasoning behind why one design might be preferred or how the designs could be integrated is not fully articulated. The evaluation would benefit from clearer explanations of the trade-offs and a stronger justification for the chosen approach.\n\nTo improve, the student should explicitly compare the strengths and weaknesses of each solution side-by-side, include more detailed supporting data or examples, and clearly explain how these insights inform their design decisions. Additionally, expanding the analysis to cover more prior attempts or related designs could further strengthen the evaluation.",
+    "truncation_detected": 0,
+    "B1_api": 4,
+    "B2_api": 3,
+    "element_score_api": 3.5
+  },
+  "Case037_15.docx": {
+    "B1": 4,
+    "B1_rationale": "The student identifies multiple prior design attempts including corner suction caddy, corner tension rod shelves, wall mounting shelves, and a current portable plastic shower caddy. These sources are clearly identified and credible, with references to Amazon and stakeholder input. The variety of solutions shows a good exploration of alternatives.",
+    "B2": 3,
+    "B2_rationale": "The analysis includes strengths and shortcomings of each design, such as installation ease, storage capacity, cost, and portability. However, the comparisons are somewhat incomplete and lack detailed reasoning about why one solution is better overall. The justification for why some solutions do not meet stakeholder needs is present but could be more explicit and supported by more detailed data or reasoning.",
+    "narrative_feedback": "This documentation demonstrates a solid effort in identifying multiple prior design attempts to address the problem of shower product storage in a dormitory setting. The student clearly describes four distinct solutions, drawing from credible sources and stakeholder input, which strengthens the breadth of exploration (B1). The inclusion of cost, installation, and usability factors shows thoughtful consideration of relevant criteria.\n\nHowever, the analysis of these prior attempts (B2) could be improved by providing more explicit and detailed comparisons. While strengths and weaknesses are noted, the reasoning behind why certain designs are preferred or rejected is somewhat general and lacks depth. For example, more quantitative or contextual data could support claims about storage capacity or durability. Additionally, clearer justification for how the final design choice better meets stakeholder needs would enhance the evaluation.\n\nTo improve, the student should: 1) deepen the comparative analysis by explicitly contrasting advantages and disadvantages across all designs; 2) incorporate more detailed evidence or data to support evaluations; 3) clarify how the final design addresses shortcomings of prior attempts; and 4) ensure all stakeholder needs are explicitly linked to design features. These steps will strengthen both the documentation and the critical analysis.",
+    "truncation_detected": 0,
+    "B1_api": 4,
+    "B2_api": 3,
+    "element_score_api": 3.5
+  },
+  "Case048_24.docx": {
+    "B1": 1,
+    "B1_rationale": "Only one prior design attempt is identified, and the source is partially cited but incomplete and not clearly credible. The design attempt is not named, and details are minimal.",
+    "B2": 0,
+    "B2_rationale": "There is no analysis of the prior design attempt's strengths or shortcomings. No comparison or relevant supporting data is provided.",
+    "narrative_feedback": "The documentation of prior design attempts (B1) is very limited, with only a single prior solution referenced. While the student provides a URL as a source, it is incomplete and lacks clear identification of the design concept or its relevance to the problem. This limits the credibility and variety of sources, which is essential for a strong foundation in prior research. The analysis of this prior attempt (B2) is missing entirely; there is no discussion of the strengths, weaknesses, or any comparison to other solutions. Without this critical evaluation, it is difficult to understand why the chosen design might be appropriate or superior.\n\nTo improve, the student should identify multiple prior design attempts from clearly credible and varied sources to demonstrate a broad understanding of existing solutions. Each design should be named and described in detail. Additionally, the student should provide a clear analysis of each design\u2019s advantages and disadvantages, supported by relevant data or observations. Explicit comparisons between designs would strengthen the justification for their chosen approach. Including these elements will enhance both the documentation and analysis, providing a more comprehensive and convincing foundation for the design process.",
+    "truncation_detected": 0,
+    "B1_api": 1,
+    "B2_api": 0,
+    "element_score_api": 0.5
+  },
+  "Case089_44.docx": {
+    "B1": 3,
+    "B1_rationale": "The student discusses two prior designs: a stationary corrosion-resistant shower head and a detachable adjustable shower head from Amazon. Both sources are clearly identified and generally credible, but the variety is limited to only two designs, and the sources are not diverse.",
+    "B2": 2,
+    "B2_rationale": "The analysis includes some strengths and shortcomings of each design, such as corrosion resistance, adjustability, and mold issues. However, the discussion is overly general, lacks detailed supporting data, and does not explicitly compare the designs or justify why one might be better than the other.",
+    "narrative_feedback": "The student demonstrates a reasonable effort in identifying prior design attempts by describing two different shower head designs, which shows an understanding of relevant existing solutions (B1). The sources are clearly identified, and the student notes some functional features such as corrosion resistance and adjustability. This provides a foundation for understanding the design context.\n\nHowever, the analysis of these prior designs (B2) is somewhat superficial. While some advantages and disadvantages are mentioned, the evaluation lacks depth and detailed evidence. There is no explicit comparison between the two designs, nor is there a clear rationale explaining why one design might be more suitable for the student\u2019s project. The discussion would benefit from more specific data or examples to support claims about effectiveness, mold susceptibility, or cleaning requirements.\n\nTo improve, the student should explore a wider variety of prior designs to broaden the perspective. They should also provide a more detailed and structured comparison of strengths and weaknesses, supported by relevant data or references. Finally, explicitly justifying the choice of design based on this analysis would strengthen the overall evaluation.",
+    "truncation_detected": 0,
+    "B1_api": 3,
+    "B2_api": 2,
+    "element_score_api": 2.5
+  },
+  "Case088_44.docx": {
+    "B1": 4,
+    "B1_rationale": "The student document identifies four distinct prior designs: a basketball dispenser, a golf ball dispenser, a baseball/softball pitching machine, and a frisbee launcher. Each source is clearly identified and relevant to the problem of dispensing lacrosse balls. The sources are credible as they represent existing products or concepts related to ball dispensing. However, the variety, while good, is not exceptionally wide-ranging across different technologies or disciplines, so a score of 4 is appropriate.",
+    "B2": 3,
+    "B2_rationale": "The analysis includes some discussion of strengths and shortcomings of each prior design, such as size and material incompatibility with lacrosse balls and cost considerations. There is some reasoning about why these designs would not work directly and how the team\u2019s design addresses these issues. However, the comparisons are somewhat general and lack detailed, explicit data or thorough evaluation of advantages and disadvantages. The reasoning about why one solution is better than others is present but incomplete.",
+    "narrative_feedback": "This documentation demonstrates a solid effort in identifying multiple prior design attempts relevant to the lacrosse ball dispenser challenge, fulfilling the expectations of criterion B1. The student team clearly names four different existing products, showing an understanding of how these relate to their own design needs. This variety of sources provides a good foundation for their design process. However, while the sources are credible and clearly identified, the range could be expanded to include more diverse technologies or innovative approaches.\n\nRegarding B2, the analysis of these prior designs includes some useful insights into their limitations, such as size incompatibility and cost issues. The team explains why their design is better suited for lacrosse balls, which shows some critical thinking. Yet, the evaluation remains somewhat superficial, lacking detailed comparisons or data to support claims. To improve, the team should provide more explicit advantages and disadvantages for each prior design, include quantitative or qualitative data where possible, and deepen the reasoning behind their design choices. Additionally, a clearer, more structured comparison between the alternatives would strengthen the justification of their final solution.",
+    "truncation_detected": 0,
+    "B1_api": 4,
+    "B2_api": 3,
+    "element_score_api": 3.5
+  },
+  "Case079_35.docx": {
+    "B1": 4,
+    "B1_rationale": "The student document identifies multiple prior design attempts from a variety of credible sources including zoos, dairy farms, and veterinary hospitals. Several distinct designs are described, such as the UC Davis Pulls recumbent horse lift, the Daisy Heavy Duty Cow Lifter, and the SCD09 manatee lift. These sources are clearly identified and credible, showing a variety of prior solutions.",
+    "B2": 3,
+    "B2_rationale": "The analysis includes some strengths and shortcomings of the prior designs, such as the specificity of animal type, weight capacity, and usability limitations. However, the comparisons between designs are somewhat incomplete and lack detailed reasoning about why one design might be better than another. Advantages and disadvantages are mentioned but not fully developed or explicitly compared.",
+    "narrative_feedback": "This documentation demonstrates a solid effort in identifying multiple prior design attempts from a variety of credible and clearly identified sources, including different types of animal lifts used in zoos, dairy farms, and veterinary hospitals. The student effectively describes key features of each design, such as materials, weight capacities, and intended animal species, which strengthens the evidence for B1. This variety shows a good understanding of the design landscape.\n\nHowever, the analysis of these prior attempts (B2) is somewhat limited. While some advantages and disadvantages are noted, the evaluation lacks depth and explicit comparison between the designs. The reasoning behind why one design might be more suitable than another is not fully articulated, and the discussion of shortcomings is brief. To improve, the student should provide a clearer, more detailed comparison of the designs, explicitly stating pros and cons and explaining how these influenced their own design choices. Additionally, including more relevant data or metrics to support the analysis would strengthen the justification. Finally, expanding on how the current design addresses the identified shortcomings would enhance the overall analysis.",
+    "truncation_detected": 0,
+    "B1_api": 4,
+    "B2_api": 3,
+    "element_score_api": 3.5
+  },
+  "Case080_35.docx": {
+    "B1": 5,
+    "B1_rationale": "The student draws from a wide array of clearly identified and consistently credible sources, including case studies, journal articles, and direct observations from multiple zoos. Three distinct prior attempts are described with proper citations.",
+    "B2": 4,
+    "B2_rationale": "The analysis is clear and generally detailed, supported by relevant quantitative data comparing engagement rates, behavioral changes, and durability issues. Advantages and shortcomings of multiple solutions are discussed with reasoning about their effectiveness, though some comparisons could be more explicitly contrasted.",
+    "narrative_feedback": "This submission demonstrates strong research and documentation skills by drawing on a wide variety of credible sources, including case studies and journal articles, to explore multiple prior enrichment solutions for Andean Bears (B1). The student effectively identifies and describes at least three distinct approaches, providing quantitative data that supports their analysis. This breadth and depth of sources strengthen the foundation for their design process.\n\nThe analysis of past and current attempts (B2) is generally clear and well-supported with relevant data, such as engagement rates and behavioral improvements. The student discusses both strengths and weaknesses, including puzzle mastery and durability challenges, and explains how these insights inform their design goals. However, the comparison between solutions could be more explicitly articulated, with clearer contrasts and more detailed reasoning about why one approach may be preferable over others.\n\nTo improve, the student should explicitly compare the advantages and disadvantages of each prior solution side-by-side to strengthen justification. Including more detailed reasoning about trade-offs and how their design addresses specific shortcomings would enhance clarity. Additionally, integrating more direct comparisons of safety considerations and long-term engagement strategies would provide a more comprehensive evaluation.",
+    "truncation_detected": 0,
+    "B1_api": 5,
+    "B2_api": 4,
+    "element_score_api": 4.5
+  },
+  "Case114_55.docx": {
+    "B1": 4,
+    "B1_rationale": "The student document identifies multiple prior portable sink designs from different companies (Boxio, Monsam Enterprises, Washing Hands\u2019 Portable Sinks) and also references research on water flow, plumbing, and bacteria growth. These sources are clearly identified and credible, showing a variety of sources. However, the sources are mostly commercial products and general research rather than a very wide array of distinct types of sources.",
+    "B2": 3,
+    "B2_rationale": "The analysis discusses strengths and weaknesses of multiple sinks, such as portability, size, flow rate, and price. Some comparisons are made between sinks, and reasoning is provided for why certain sinks do not meet the project requirements. However, the analysis lacks consistent, detailed data support and explicit, systematic comparison of advantages and disadvantages. The reasoning is somewhat incomplete and occasionally general.",
+    "narrative_feedback": "The student team demonstrates a solid effort in identifying multiple prior portable sink designs and related research, fulfilling the requirement to explore several plausible prior attempts (B1). They clearly describe different products and relevant technical considerations such as flow rate, portability, and materials, showing a good understanding of the problem context. This variety of sources strengthens their foundation for design decisions.\n\nHowever, the analysis of these prior solutions (B2) could be improved by providing more detailed and explicit comparisons. While strengths and weaknesses are mentioned, the evaluation sometimes lacks depth and supporting data, and the reasoning about why one design is better than another is not consistently clear. For example, quantitative data on flow rates or weight could better justify design choices.\n\nTo improve, the team should include more systematic comparisons with explicit pros and cons for each design, supported by relevant data. They should also clarify how these analyses directly inform their design decisions. Additionally, expanding the range of sources beyond commercial products to include academic or technical literature could enhance credibility and insight.",
+    "truncation_detected": 0,
+    "B1_api": 4,
+    "B2_api": 3,
+    "element_score_api": 3.5
+  }
+}

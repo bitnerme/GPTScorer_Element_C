@@ -76,11 +76,11 @@ async def check_saved_results():
     golden_fail = False
     production_drift = False
 
-    print("\nDEBUG FLAGS")
-    print("api_drift:", api_drift)
-    print("final_drift:", final_drift)
-    print("golden_fail:", golden_fail)
-    print("production_drift:", production_drift)
+    ("\nDEBUG FLAGS")
+    ("api_drift:", api_drift)
+    ("final_drift:", final_drift)
+    ("golden_fail:", golden_fail)
+    ("production_drift:", production_drift)
 
     diagnosis = interpret_diagnostics(
         api_drift,
@@ -89,21 +89,21 @@ async def check_saved_results():
         production_drift
     )
 
-    print("\nROOT CAUSE ANALYSIS")
-    print("-------------------")
-    print(diagnosis)
+    ("\nROOT CAUSE ANALYSIS")
+    ("-------------------")
+    (diagnosis)
 
     # attach interpretation to response sent to UI
     drift_result["diagnostic_interpretation"] = diagnosis
 
-    print("CURRENT METRICS:", last_metrics)
+    ("CURRENT METRICS:", last_metrics)
 
     drift_result["current_metrics"] = last_metrics
 
     return drift_result
 
-print("### RUNNING THIS scorer_app_C.py ###")
-print(__file__)
+("### RUNNING THIS scorer_app_C.py ###")
+(__file__)
 
 # ----------------------------------------------------
 # Project Structure Anchoring
@@ -191,11 +191,11 @@ def root():
 
     return HTMLResponse(html)
 
-print("=== BACKEND ID ===")
-print("FILE:", __file__)
-print("CWD :", os.getcwd())
-print("PID :", os.getpid())
-print("==================")
+("=== BACKEND ID ===")
+("FILE:", __file__)
+("CWD :", os.getcwd())
+("PID :", os.getpid())
+("==================")
 
 
 # ----------------------------------------------------
@@ -431,7 +431,7 @@ def apply_calibration_pipeline(df, mode):
     return df
 
 def process_files_background(job_id: str, file_payloads, mode: str):
-    print("ENTERED process_files_background")
+    ("ENTERED process_files_background")
     mode = (mode or "").strip().lower()
     if mode not in ("legacy", "current"):
         mode = "current"
@@ -448,7 +448,7 @@ def process_files_background(job_id: str, file_payloads, mode: str):
         filename = file_data["filename"]
         content = file_data["content"]
 
-        print("PROCESSING:", filename)
+        ("PROCESSING:", filename)
 
         if filename.lower().endswith(".csv"):
             df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
@@ -463,7 +463,7 @@ def process_files_background(job_id: str, file_payloads, mode: str):
             if "narrative_feedback" not in df_one.columns:
                 df_one["narrative_feedback"] = ""
 
-            print("After CSV load:", df_one["narrative_feedback"].iloc[0][:50])
+            ("After CSV load:", df_one["narrative_feedback"].iloc[0][:50])
 
         elif filename.lower().endswith((".pdf", ".docx")):
             suffix = os.path.splitext(filename)[1]
@@ -512,22 +512,22 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     # 8.5) Compute Metrics for Drift Detection
     # ============================================================
 
-    print("RAW element mean:", df["element_score_raw"].mean())
+    ("RAW element mean:", df["element_score_raw"].mean())
 
     if "element_score_calibrated" in df.columns:
-        print("CALIBRATED element mean:", df["element_score_calibrated"].mean())
+        ("CALIBRATED element mean:", df["element_score_calibrated"].mean())
 
     if "element_score_final" in df.columns:
-        print("FINAL element mean:", df["element_score_final"].mean())
+        ("FINAL element mean:", df["element_score_final"].mean())
 
     # compute from final subscores
     final_cols = [f"C{i}_final" for i in range(1,7)]
     if all(c in df.columns for c in final_cols):
-        print("MEAN(C*_final):", df[final_cols].mean(axis=1).mean())
+        ("MEAN(C*_final):", df[final_cols].mean(axis=1).mean())
 
     raw_cols = [f"C{i}" for i in range(1,7)]
     if all(c in df.columns for c in raw_cols):
-        print("MEAN(C*):", df[raw_cols].mean(axis=1).mean())
+        ("MEAN(C*):", df[raw_cols].mean(axis=1).mean())
 
     if(len(df) > 1):
         gpt_metrics = compute_gpt_metrics(df)
@@ -563,20 +563,20 @@ def process_files_background(job_id: str, file_payloads, mode: str):
 
     score_cols = build_score_cols(element, subelement_count)
 
-    print("score_cols:", score_cols)
-    print("df columns:", df.columns.tolist())
+    ("score_cols:", score_cols)
+    ("df columns:", df.columns.tolist())
 
     safe_cols = [c for c in score_cols if c in df.columns]
     df = df.fillna("")
     results = df[safe_cols].to_dict(orient="records")
 
-    print("SENDING RESULTS TO JOB STORE:", results[0])
+    ("SENDING RESULTS TO JOB STORE:", results[0])
     complete_job(job_id, results)
 
     # ============================================================
     # 11) Repeat each time the baseline changes
     # ============================================================
-    #print("Writing baseline metrics:", last_metrics)
+    #("Writing baseline metrics:", last_metrics)
 
     #if last_metrics is not None and last_mode == "legacy":
     #    with open("config/element_C/baseline_metrics_legacy.json", "w") as f:
@@ -585,14 +585,14 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     #    with open("config/element_C/baseline_metrics_current.json", "w") as f:
     #        json.dump(last_metrics, f, indent=2)
 
-    #print("Baseline metrics written for:", last_mode)
+    #("Baseline metrics written for:", last_mode)
 
 @app.get("/progress/{job_id}")
 def progress(job_id: str):
     job = get_job(job_id)
     if not job:
         return {"error": "Invalid job ID"}
-    print("PROGRESS STATE:", jobs[job_id])
+    ("PROGRESS STATE:", jobs[job_id])
     return job
 
 # CLI run

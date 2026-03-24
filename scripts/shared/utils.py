@@ -16,6 +16,39 @@ from pathlib import Path
 from pathlib import Path
 import json
 
+# scripts/shared/utils.py
+
+def get_blended_model(element, mode):
+    element = element.upper()
+    mode = mode.lower()
+
+    mapping = {
+        "A": ("v1.0", "v1.2"),
+        "B": ("v1.2", "v1.4b"),
+        "C": ("v1.13", "v1.15"),
+        "D": ("v1.8d", "v2.0"),
+    }
+
+    legacy, current = mapping.get(element, ("v1.0", "v1.0"))
+    return legacy if mode == "legacy" else current
+
+def normalize_columns(df, element):
+    for k in range(1,7):
+
+        target = f"{element}{k}"
+
+        if target not in df.columns and f"_{k}" in df.columns:
+            df[target] = df[f"_{k}"]
+
+        if target not in df.columns and f"_{k}_final" in df.columns:
+            df[target] = df[f"_{k}_final"]
+
+        # cross-element fallback
+        for other in ["A", "B", "C", "D"]:
+            if target not in df.columns and f"{other}{k}" in df.columns:
+                df[target] = df[f"{other}{k}"]
+
+    return df 
 
 def check_drift(current_metrics, baseline_file):
 
@@ -89,6 +122,9 @@ def check_drift(current_metrics, baseline_file):
         status = "DRIFT DETECTED"
     else:
         status = "PASS"
+   
+    print("DEBUG failures:", failures)
+    print("DEBUG diffs:", api_mean_diff, api_std_diff, final_mean_diff, final_std_diff)
 
     return {
         "status": status,
@@ -183,10 +219,13 @@ def extract_text_with_fallback(filepath, min_length=50):
     text = extract_text_from_file(filepath)
     text = text.strip()
 
+    print(f"OCR CHECK: {filepath}")
+    print(f"Original Extracted text length: {len(text)}")
     # Trigger OCR if empty or suspiciously short
     if len(text) < min_length:
         print(f"OCR triggered for {filepath}")
         text = run_ocr(filepath).strip()
+        print(f"📄 FINAL TEXT LENGTH (post-OCR): {len(text)} for {filepath}")
 
     return text
 

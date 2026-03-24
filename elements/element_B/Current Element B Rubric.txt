@@ -1,0 +1,16 @@
+﻿Element B:  Documentation and Analysis of Prior Design Attempts			
+B1. Documentation of plausible prior attempts to solve the problem and/or related problems is drawn from __________. 	
+score = 5    a wide array of clearly-identified and consistently-credible sources	
+Score = 4    a variety of clearly-identified and consistently-credible sources	
+score = 3    several—but not necessarily varied—clearly-identified and generally-credible sources	
+score = 2    a limited number of sources, some of which may not be clearly identified and/or credible	
+score = 1    only one or two sources that may not be clearly identified and/or credible	
+score = 0    missing or minimal (a single source that is not clearly identified and/or credible)
+B2. The analysis of past and current attempts to solve the problem — including both strengths and shortcomings —__________.
+score = 5    is consistently clear, detailed, and supported by relevant data	
+score = 4    is clear, generally detailed, and supported by relevant data	
+score = 3    is generally clear and contains some detail and relevant supporting data	
+score = 2    is overly general and contains little detail and/or relevant supporting data	
+score = 1    is vague and is missing any relevant details and/or relevant supporting data	
+score = 0    cannot be inferred from information intended as analysis of past and/or current attempts to solve the problem
+

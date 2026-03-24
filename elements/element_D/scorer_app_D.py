@@ -547,11 +547,11 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     # compute from final subscores
     final_cols = [f"D{i}_final" for i in range(1,5)]
     if all(c in df.columns for c in final_cols):
-        print("MEAN(C*_final):", df[final_cols].mean(axis=1).mean())
+        print("MEAN(D*_final):", df[final_cols].mean(axis=1).mean())
 
     raw_cols = [f"D{i}" for i in range(1,5)]
     if all(c in df.columns for c in raw_cols):
-        print("MEAN(C*):", df[raw_cols].mean(axis=1).mean())
+        print("MEAN(D*):", df[raw_cols].mean(axis=1).mean())
 
     if len(df) > 0:
         gpt_metrics = compute_gpt_metrics(df)

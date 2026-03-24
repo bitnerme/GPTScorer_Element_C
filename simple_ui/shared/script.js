@@ -1,6 +1,21 @@
 console.log("uploadForm at load:", document.getElementById("uploadForm"));
 console.log("script loaded");
 
+// ==========================
+// Title Update
+// ==========================
+const elementDropdown = document.getElementById("element");
+const title = document.getElementById("title");
+
+function updateTitle() {
+    const selected = elementDropdown.value;
+    title.innerText = `Element ${selected} Scoring`;
+}
+
+updateTitle();
+
+elementDropdown.addEventListener("change", updateTitle);
+
 async function pollProgress(jobId) {
     const progressBar = document.getElementById("progressBar");
     const progressText = document.getElementById("progressText");
@@ -9,9 +24,6 @@ async function pollProgress(jobId) {
     if (progressContainer) {
         progressContainer.style.display = "block";
     }
-
-
-
 
     const interval = setInterval(async () => {
         try {
@@ -67,25 +79,31 @@ async function pollProgress(jobId) {
     }, 1000);
 }
 document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-    e.preventDefault();   // <-- REQUIRED
+    e.preventDefault();   
 
     const fileInput = document.getElementById("fileInput");
 
 
     const formData = new FormData();
+
+    const element = document.getElementById("element").value;
+    formData.append("element", element);
+
+    console.log("Selected element:", element);
+
     for (const file of fileInput.files) {
         formData.append("files", file);
     }
     
     if (!fileInput.files.length) {
         alert("No file selected.");
+        return;
     }
 
     const mode = document.getElementById("modeSelect").value;
     formData.append("mode", mode);
-    console.log("Selected mode:", mode);  // ← add this
+    console.log("Selected mode:", mode); 
 
-    const downloadToggle = document.querySelector("#downloadCSVCheckbox");
 
     try {
         const response = await fetch("/score", {
@@ -110,8 +128,13 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
 
 async function checkSavedResults() {
 
+    const formData = new FormData();
+    const element = document.getElementById("element").value;
+    formData.append("element", element);
+
     const response = await fetch("/check_saved_results", {
-        method: "POST"
+        method: "POST",
+        body: formData
     });
 
     const data = await response.json();
@@ -174,7 +197,7 @@ function displayResults(payload) {
     window.lastPayload = payload;
 
     const results = payload.results;
-    const element = Object.keys(results[0]).find(k => /^[A-Z]\d+$/.test(k))?.[0];
+    const element = payload.element;
     
     const title = document.getElementById("pageTitle");
     if (title) {
@@ -216,16 +239,16 @@ function displayResults(payload) {
 
         });
 
-        if (result.element_score_calibrated !== undefined) {
+        //if (result.element_score_calibrated !== undefined) {
 
-            const elementScore = document.createElement("p");
-            elementScore.style.fontWeight = "bold";
+        //    const elementScore = document.createElement("p");
+        //    elementScore.style.fontWeight = "bold";
 
-            elementScore.textContent =
-                `Element Score: ${result.element_score_calibrated}`;
+        //    elementScore.textContent =
+        //        `Element Score: ${result.element_score_calibrated}`;
 
-            resultsDiv.appendChild(elementScore);
-        }
+        //    resultsDiv.appendChild(elementScore);
+        //}
 
         if (result.narrative_feedback) {
 
@@ -275,14 +298,19 @@ function downloadCSV() {
 
     const payload = window.lastPayload;
     const results = payload.results;
-    const element = Object.keys(results[0]).find(k => /^[A-Z]\d+$/.test(k))?.[0];
-    const count = payload.subelement_count;
+    const element = payload.element;
 
-    const headers = ["filename"];
+    const headers = ["filename"];   // ✅ DEFINE FIRST
 
-    for (let i = 1; i <= count; i++) {
-        headers.push(`${element}${i}`);
-    }
+    const subCols = Object.keys(results[0])
+        .filter(k => new RegExp(`^${element}\\d+$`).test(k))
+        .sort((a, b) => {
+            const numA = parseInt(a.replace(element, ""));
+            const numB = parseInt(b.replace(element, ""));
+            return numA - numB;
+        });
+
+    subCols.forEach(col => headers.push(col));   // ✅ NOW SAFE
 
     headers.push(
         "element_score_raw",
@@ -297,16 +325,10 @@ function downloadCSV() {
 
         const row = [escapeCSV(result.filename)];
 
-        for (let i = 1; i <= count; i++) {
-
-            let score = result[`_${i}_final`];
-
-            if (score === undefined) {
-                score = result[`${element}${i}_final`];
-            }
-
+        subCols.forEach(col => {
+            const score = result[`${col}_final`] ?? result[col] ?? "";
             row.push(escapeCSV(score));
-        }
+        });
 
         row.push(
             escapeCSV(result.element_score_raw),

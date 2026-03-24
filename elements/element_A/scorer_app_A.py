@@ -392,9 +392,8 @@ def apply_calibration_pipeline(df, mode):
             pd.to_numeric(df[col], errors="coerce")
             .fillna(0)
             .round()
-            .astype(int)
+            .astype(int) 
         )
-
 
     df["element_score_raw"] = df[[f"A{k}" for k in range(1,7)]].mean(axis=1)
 
