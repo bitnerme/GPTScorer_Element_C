@@ -13,8 +13,6 @@ import traceback
 import json
 from pathlib import Path
 
-from pathlib import Path
-import json
 
 # scripts/shared/utils.py
 
@@ -196,7 +194,7 @@ def run_ocr(filepath):
 
         pages = convert_from_path(
             pdf_path,
-            poppler_path=r"C:\poppler\poppler-25.12.0\Library\bin"
+            poppler_path = shutil.which("pdftoppm")
         )
 
         for page in pages:

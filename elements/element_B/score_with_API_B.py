@@ -12,6 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import openai
+import shutil
 import pytesseract
 from pdf2image import convert_from_path
 import win32com.client
@@ -24,7 +25,11 @@ import traceback
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # Set path to Tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+tesseract_path = shutil.which("tesseract")
+if tesseract_path:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
+else:
+    raise RuntimeError("Tesseract not found. Please install it.")
 
 # =========================
 # GPT MODEL CONFIGURATION

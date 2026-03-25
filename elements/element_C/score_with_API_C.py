@@ -15,13 +15,19 @@ import pythoncom
 from scripts.shared.utils import extract_text_with_fallback
 import traceback
 import re
+import shutil
+import pytesseract
 
 
 # Resolve project root: c:\GPTScorer
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # Set path to Tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+tesseract_path = shutil.which("tesseract")
+if tesseract_path:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
+else:
+    raise RuntimeError("Tesseract not found. Please install it.")
 
 # =========================
 # GPT MODEL CONFIGURATION
