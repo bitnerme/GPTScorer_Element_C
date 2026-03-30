@@ -24,12 +24,27 @@ import traceback
 # Resolve project root: c:\GPTScorer
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-# Set path to Tesseract executable
-tesseract_path = shutil.which("tesseract")
-if tesseract_path:
-    pytesseract.pytesseract.tesseract_cmd = tesseract_path
-else:
-    raise RuntimeError("Tesseract not found. Please install it.")
+def configure_tesseract():
+    # 1. Check environment variable first (best for Mac/Linux)
+    tesseract_path = os.environ.get("TESSERACT_PATH")
+
+    if tesseract_path and os.path.exists(tesseract_path):
+        pytesseract.pytesseract.tesseract_cmd = tesseract_path
+        return
+
+    # 2. Try auto-detect (works if installed via brew/apt)
+    detected = shutil.which("tesseract")
+    if detected:
+        pytesseract.pytesseract.tesseract_cmd = detected
+        return
+
+    # 3. Fallback (Windows default)
+    default_win = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    if os.path.exists(default_win):
+        pytesseract.pytesseract.tesseract_cmd = default_win
+        return
+
+    print("⚠️ Tesseract not found — OCR may fail")
 
 # =========================
 # GPT MODEL CONFIGURATION
@@ -530,9 +545,19 @@ def main(folder_path, output_path, blended_version):
                 k not in response_dict for k in [f"B{i}" for i in range(1, 3)]
             )
 
-            # Ensure D scores are integers
+            # Ensure B scores are integers
             for i in range(1, 3):
                 row[f"B{i}"] = int(row.get(f"B{i}", 0))
+
+            # Add API scores safely
+            for i in range(1, 3):
+                row[f"B{i}_api"] = int(
+                    response_dict.get(f"B{i}_api", row.get(f"B{i}", 0))
+                )
+
+            row["element_score_api"] = float(
+                response_dict.get("element_score_api", 0)
+            )
 
             print(
                 filename,
@@ -598,7 +623,7 @@ def score_documents_with_api(documents, blended_version):
             "filename": filename,
             "text": text,
         }
-        
+        print("DEBUG response_dict:", response_dict)
         for i in range(1, 3):
             if response_dict is None:
                 raise ValueError(f"response_dict is None for {filename}")
@@ -610,11 +635,13 @@ def score_documents_with_api(documents, blended_version):
 
         print("Narrative in row:", row.get("narrative_feedback"))
 
+        print("ROW KEYS:", row.keys())
+
         print(
-                filename,
-                [row[f"B{i}_api"] for i in range(1, 3)],
-                row["element_score_api"]
-            )
+            filename,
+            [response_dict.get(f"B{i}_api", 0) for i in range(1, 3)],
+            response_dict.get("element_score_api", 0)
+        )
 
         results.append(row)
 

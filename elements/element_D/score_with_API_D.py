@@ -19,18 +19,32 @@ import pythoncom
 from scripts.shared.utils import extract_text_with_fallback
 import traceback
 import shutil
-import pytesseract
 
 
 # Resolve project root: c:\GPTScorer
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-# Set path to Tesseract executable
-tesseract_path = shutil.which("tesseract")
-if tesseract_path:
-    pytesseract.pytesseract.tesseract_cmd = tesseract_path
-else:
-    raise RuntimeError("Tesseract not found. Please install it.")
+def configure_tesseract():
+    # 1. Check environment variable first (best for Mac/Linux)
+    tesseract_path = os.environ.get("TESSERACT_PATH")
+
+    if tesseract_path and os.path.exists(tesseract_path):
+        pytesseract.pytesseract.tesseract_cmd = tesseract_path
+        return
+
+    # 2. Try auto-detect (works if installed via brew/apt)
+    detected = shutil.which("tesseract")
+    if detected:
+        pytesseract.pytesseract.tesseract_cmd = detected
+        return
+
+    # 3. Fallback (Windows default)
+    default_win = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    if os.path.exists(default_win):
+        pytesseract.pytesseract.tesseract_cmd = default_win
+        return
+
+    print("⚠️ Tesseract not found — OCR may fail")
 
 # =========================
 # GPT MODEL CONFIGURATION
@@ -576,6 +590,17 @@ def score_documents_with_api(documents, blended_version):
             row[f"D{i}_rationale"] = response_dict.get(f"D{i}_rationale", "")
 
         row["narrative_feedback"] = response_dict.get("narrative_feedback", "")
+
+        # --- Attach API scores ---
+        for i in range(1, 5):
+            row[f"D{i}_api"] = int(
+                response_dict.get(f"D{i}_api", response_dict.get(f"D{i}", 0))
+            )
+
+        # --- Attach element API score ---
+        row["element_score_api"] = float(
+            response_dict.get("element_score_api", 0)
+        )
 
         print("Narrative in row:", row.get("narrative_feedback"))
 

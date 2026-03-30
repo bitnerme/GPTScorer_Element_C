@@ -23,7 +23,6 @@ from core.job_manager import create_job, update_progress, complete_job, get_job,
 from io import BytesIO
 from core.diagnostics import interpret_diagnostics
 import json
-from core.schema import build_score_cols
 import __main__
 from core.schema import (
     get_element_from_file,
@@ -374,7 +373,7 @@ async def score_element_c(
             "content": content
         })
 
-    job_id = create_job(len(file_payloads), ELEMENT_PREFIX, SUBELEMENT_COUNT)
+    job_id = create_job(len(file_payloads), ELEMENT_PREFIX, )
 
     background_tasks.add_task(
         process_files_background,
@@ -413,7 +412,7 @@ def apply_calibration_pipeline(df, mode):
 
     keys = [f"C{k}" for k in range(1,7)]
 
-    for idx,row in df.iterrows():
+    for idx, row in df.iterrows():
         rec = reconcile_integer_subscores(
             row=row.to_dict(),
             keys=keys,
@@ -421,14 +420,16 @@ def apply_calibration_pipeline(df, mode):
             flag_suffix="_flag",
             soft_block_nonallowed=True
         )
-        for k,v in rec.items():
-            df.loc[idx,f"{k}_final"] = v
+        for k, v in rec.items():
+            df.loc[idx, f"{k}_final"] = v
 
-    df["element_score_calibrated"] = df[
+    # ✅ THIS is the correct final score
+    df["element_score_final"] = df[
         [f"C{k}_final" for k in range(1,7)]
     ].mean(axis=1)
 
     return df
+
 
 def process_files_background(job_id: str, file_payloads, mode: str):
     ("ENTERED process_files_background")
@@ -573,20 +574,6 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     ("SENDING RESULTS TO JOB STORE:", results[0])
     complete_job(job_id, results)
 
-    # ============================================================
-    # 11) Repeat each time the baseline changes
-    # ============================================================
-    #("Writing baseline metrics:", last_metrics)
-
-    #if last_metrics is not None and last_mode == "legacy":
-    #    with open("config/element_C/baseline_metrics_legacy.json", "w") as f:
-    #        json.dump(last_metrics, f, indent=2)
-    #elif last_metrics is not None and last_mode == "current":
-    #    with open("config/element_C/baseline_metrics_current.json", "w") as f:
-    #        json.dump(last_metrics, f, indent=2)
-
-    #("Baseline metrics written for:", last_mode)
-
 @app.get("/progress/{job_id}")
 def progress(job_id: str):
     job = get_job(job_id)
@@ -598,4 +585,4 @@ def progress(job_id: str):
 # CLI run
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("scorer_app_C:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("scorer_app_C:app", host="127.0.0.1", port=8000, reload=False)

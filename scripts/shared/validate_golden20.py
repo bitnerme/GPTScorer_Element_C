@@ -14,38 +14,43 @@ BIAS_THRESHOLD = 0.25
 MAE_THRESHOLD = 0.25
 CI_THRESHOLD = 0.50
 
-REBUILD_CACHE = False
-PROMOTE_TO_BASELINE = False
+def validate_golden20(df, element, mode, json_path, doc_dir, recompute=False, rebuild_baseline=False):  
+    report = run_validation(
+        element,
+        json_path,
+        doc_dir,
+        mode,
+        recompute=recompute,
+        rebuild_baseline=rebuild_baseline
+    )
+    return report
 
-if REBUILD_CACHE and PROMOTE_TO_BASELINE:
-    print("⚠️ WARNING: You are rebuilding cache AND promoting baseline in one run.")
+def get_blended_model(element, mode):
 
-def get_blended_model(el, label):
+    if element == "A":
+        return "v1.0" if mode == "legacy" else "v1.2"
 
-    if el == "A":
-        return "v1.0" if label == "legacy" else "v1.2"
+    if element == "B":
+        return "v1.2" if mode == "legacy" else "v1.4b"
 
-    if el == "B":
-        return "v1.2" if label == "legacy" else "v1.4b"
+    if element == "C":
+        return "v1.13" if mode == "legacy" else "v1.15"
 
-    if el == "C":
-        return "v1.13" if label == "legacy" else "v1.15"
-
-    if el == "D":
-        return "v1.8d" if label == "legacy" else "v2.0"
+    if element == "D":
+        return "v1.8d" if mode == "legacy" else "v2.0"
 
     return "v1.0"
 
 def element_has_scorer(el):
 
-    element_dir = os.path.join(ROOT, "elements", f"element_{el}")
-    config_dir = os.path.join(ROOT, "config", f"element_{el}")
+    element_dir = os.path.join(ROOT, "elements", f"element_{element}")
+    config_dir = os.path.join(ROOT, "config", f"element_{element}")
 
     current_dir = os.path.join(element_dir, "golden_current_documents")
     legacy_dir = os.path.join(element_dir, "golden_legacy_documents")
 
-    current_json = os.path.join(config_dir, f"golden_{el}_current.json")
-    legacy_json = os.path.join(config_dir, f"golden_{el}_legacy.json")
+    current_json = os.path.join(config_dir, f"golden_{element}_current.json")
+    legacy_json = os.path.join(config_dir, f"golden_{element}_legacy.json")
 
     return (
         os.path.exists(current_dir)
@@ -54,29 +59,37 @@ def element_has_scorer(el):
         and os.path.exists(legacy_json)
     )
 
-def load_modules(el):
-    score_mod = importlib.import_module(f"elements.element_{el}.score_with_API_{el}")
-    app_mod = importlib.import_module(f"elements.element_{el}.scorer_app_{el}")
+def load_modules(element):
+    score_mod = importlib.import_module(f"elements.element_{element}.score_with_API_{element}")
+    app_mod = importlib.import_module(f"elements.element_{element}.scorer_app_{element}")
 
     score_document = score_mod.score_document
     apply_calibration_pipeline = app_mod.apply_calibration_pipeline
 
     return score_document, apply_calibration_pipeline
 
-def run_validation(el, json_path, doc_dir, label):
+def run_validation(element, json_path, doc_dir, mode, recompute=False, rebuild_baseline=False):
 
-    ELEMENT_DIR = os.path.join(ROOT, "elements", f"element_{el}")
-    CONFIG_DIR = os.path.join(ROOT, "config", f"element_{el}")
+    ELEMENT_DIR = os.path.join(ROOT, "elements", f"element_{element}")
+    CONFIG_DIR = os.path.join(ROOT, "config", f"element_{element}")
     
     CACHE_FILE = os.path.join(
         CONFIG_DIR,
-        "golden20_current_scores.json" if label.lower() == "current" else "golden20_legacy_scores.json"
+        "golden20_current_scores.json" if mode.lower() == "current" else "golden20_legacy_scores.json"
     )
     
-    print("CACHE FILE:", CACHE_FILE)
+    print("MODE:", mode)
+    print("CONFIG_DIR:", CONFIG_DIR)
+    print("CACHE_FILE:", CACHE_FILE)
     print("CACHE EXISTS:", os.path.exists(CACHE_FILE))
 
-    score_document, apply_calibration_pipeline = load_modules(el)
+    REBUILD_CACHE = recompute
+    PROMOTE_TO_BASELINE = rebuild_baseline
+
+    if REBUILD_CACHE and PROMOTE_TO_BASELINE:
+        print("⚠️ WARNING: You are rebuilding cache AND promoting baseline in one run.")
+
+    score_document, apply_calibration_pipeline = load_modules(element)
 
     with open(json_path, encoding="utf-8") as f:
         cases = json.load(f)
@@ -92,7 +105,7 @@ def run_validation(el, json_path, doc_dir, label):
 
     diffs = []
 
-    print(f"\nRunning Golden Validation: {label}")
+    print(f"\nRunning Golden Validation: {mode}")
     print("------------------------------------")
 
     rows = []
@@ -104,7 +117,7 @@ def run_validation(el, json_path, doc_dir, label):
 
         path = os.path.join(doc_dir, filename)
 
-        blended = get_blended_model(el, label) 
+        blended = get_blended_model(element,mode) 
 
         print("OPENING:", repr(path))
 
@@ -119,9 +132,6 @@ def run_validation(el, json_path, doc_dir, label):
                 raise RuntimeError("Cache missing but REBUILD_CACHE is False. Refusing to call API.")
 
             content = extract_text_with_fallback(path)
-
-            if filename == "Case081_35.docx":
-                print("TEXT SAMPLE:", content[:500])
 
             result = score_document(
                 filename,
@@ -143,9 +153,9 @@ def run_validation(el, json_path, doc_dir, label):
 
     # compatibility bridge for cached schemas
   
-    df = normalize_columns(df, el) 
+    df = normalize_columns(df, element) 
 
-    df = apply_calibration_pipeline(df, label.lower())
+    df = apply_calibration_pipeline(df, mode.lower())
 
     if "element_score_final" in df.columns:
         df["element_score_calibrated"] = df["element_score_final"]
@@ -179,11 +189,19 @@ def run_validation(el, json_path, doc_dir, label):
 
     row = top5.iloc[0]
 
+    top_cases = [
+        {
+            "filename": row["filename"],
+            "diff": float(row["abs_diff"])
+        }
+        for _, row in top5.iterrows()
+    ]
+
     print("Filename:", row["filename"])
     print("Expert:", row["expert_score"])
     print("Model :", row["element_score_calibrated"])
 
-    prefix = el  # "A", "B", "C", or "D"
+    prefix = element  # "A", "B", "C", or "D"
 
     # detect subelements dynamically
     sub_keys = sorted([
@@ -198,13 +216,13 @@ def run_validation(el, json_path, doc_dir, label):
 
     BASELINE_FILE = os.path.join(
         CONFIG_DIR,
-        "golden20_metrics_current.json" if label.lower() == "current"
+        "golden20_metrics_current.json" if mode.lower() == "current"
         else "golden20_metrics_legacy.json"
     )
 
     CANDIDATE_FILE = os.path.join(
         CONFIG_DIR,
-        "golden20_metrics_current_candidate.json" if label.lower() == "current"
+        "golden20_metrics_current_candidate.json" if mode == "current"
         else "golden20_metrics_legacy_candidate.json"
     )
 
@@ -219,7 +237,7 @@ def run_validation(el, json_path, doc_dir, label):
     half_ci = 1.96 * std / np.sqrt(n)
     full_ci = 2 * half_ci
 
-    title = f"Summary (Element {el} — {label.upper()})"
+    title = f"Summary (Element {element} — {element.capitalize()})"
     print("\n" + title)
     print("-" * len(title))
 
@@ -255,7 +273,7 @@ def run_validation(el, json_path, doc_dir, label):
         # =========================
         # REGRESSION VERDICT
         # =========================
-        title = f"Regression Verdict (Element {el} — {label.upper()})"
+        title = f"Regression Verdict (Element {element} — {element.capitalize()})"
         print("\n" + title)
         print("-" * len(title))
 
@@ -283,7 +301,7 @@ def run_validation(el, json_path, doc_dir, label):
         print(f"MAE threshold : {MAE_THRESHOLD}")
         print(f"CI threshold  : {CI_THRESHOLD}")
 
-        title = f"Metric Deltas (Element {el} — {label.upper()})"
+        title = f"Metric Deltas (Element {element} — {mode.capitalize()})"
         print("\n" + title)
         print("-" * len(title))
 
@@ -305,7 +323,7 @@ def run_validation(el, json_path, doc_dir, label):
         if ci_diff > CI_THRESHOLD:
             failures.append("ci_shift")
 
-        title = f"Golden20 Regression Check (Element {el} — {label.upper()})"
+        title = f"Golden20 Regression Check (Element {element} — {mode.capitalize()})"
         print("\n" + title)
         print("-" * len(title))
 
@@ -342,6 +360,38 @@ def run_validation(el, json_path, doc_dir, label):
         with open(CACHE_FILE, "w") as f:
             json.dump(cache, f, indent=2)
 
+    status = "PASS"
+    summary_lines = []
+
+    # Example logic (you can refine later)
+    if abs(bias_diff) > 0.01:
+        status = "FAIL"
+        summary_lines.append(f"Bias drift: {bias_diff:.3f}")
+
+    if abs(mae_diff) > 0.01:
+        status = "FAIL"
+        summary_lines.append(f"MAE drift: {mae_diff:.3f}")
+
+    if abs(ci_diff) > 0.01:
+        status = "FAIL"
+        summary_lines.append(f"CI drift: {ci_diff:.3f}")
+
+    summary = "<br>".join(summary_lines) if summary_lines else "No regression issues detected."
+
+    print("Here I am at the correct return", top_cases)
+
+    return {
+        "status": status,
+        "summary": summary,
+        "metrics": {
+            "mae": mae,
+            "mae_diff": mae_diff,
+            "bias": bias,
+            "bias_diff": bias_diff
+        },
+        "top_cases": top_cases   
+    }
+
 if __name__ == "__main__":
 
     elements = [
@@ -354,20 +404,20 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         elements = [sys.argv[1].upper()]
 
-    for el in elements:
+    for element in elements:
 
-        ELEMENT_DIR = os.path.join(ROOT, "elements", f"element_{el}")
+        ELEMENT_DIR = os.path.join(ROOT, "elements", f"element_{element}")
 
-        CONFIG_DIR = os.path.join(ROOT, "config", f"element_{el}")
+        CONFIG_DIR = os.path.join(ROOT, "config", f"element_{element}")
 
         CURRENT_DOC_DIR = os.path.join(ELEMENT_DIR, "golden_current_documents")
         LEGACY_DOC_DIR = os.path.join(ELEMENT_DIR, "golden_legacy_documents")
 
-        CURRENT_JSON = os.path.join(CONFIG_DIR, f"golden_{el}_current.json")
-        LEGACY_JSON = os.path.join(CONFIG_DIR, f"golden_{el}_legacy.json")
+        CURRENT_JSON = os.path.join(CONFIG_DIR, f"golden_{element}_current.json")
+        LEGACY_JSON = os.path.join(CONFIG_DIR, f"golden_{element}_legacy.json")
 
         if not element_has_scorer(el):
-            print(f"Skipping element {el}: scorer not implemented")
+            print(f"Skipping element {element}: scorer not implemented")
             continue
 
         run_validation(el, CURRENT_JSON, CURRENT_DOC_DIR, "current")

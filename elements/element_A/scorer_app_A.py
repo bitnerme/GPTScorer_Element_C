@@ -38,6 +38,7 @@ app = FastAPI()
 
 last_metrics = None
 last_mode = "current"
+last_results = None
 
 ELEMENT_PREFIX = "A"
 SUBELEMENT_COUNT = 6

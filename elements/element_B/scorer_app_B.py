@@ -602,17 +602,18 @@ def process_files_background(job_id: str, file_payloads, mode: str):
     # ============================================================
     # 11) Repeat each time the baseline changes
     # ============================================================
-    if SAVE_BASELINE:
-        print("Writing baseline metrics:", last_metrics)
-
-        if last_metrics is not None and last_mode == "legacy":
-            with open("config/element_B/baseline_metrics_legacy.json", "w") as f:
-                json.dump(last_metrics, f, indent=2)
-        elif last_metrics is not None and last_mode == "current":
-            with open("config/element_B/baseline_metrics_current.json", "w") as f:
-                json.dump(last_metrics, f, indent=2)
-
-        print("Baseline metrics written for:", last_mode)
+    #rebuild_baseline = form.get("rebuild_baseline") == "true"
+    #if rebuild_baseline:
+    #    print("Writing baseline metrics:", last_metrics)
+    #
+    #    if last_metrics is not None and last_mode == "legacy":
+    #        with open("config/element_B/baseline_metrics_legacy.json", "w") as f:
+    #            json.dump(last_metrics, f, indent=2)
+    #    elif last_metrics is not None and last_mode == "current":
+    #        with open("config/element_B/baseline_metrics_current.json", "w") as f:
+    #            json.dump(last_metrics, f, indent=2)
+    #
+    #    print("Baseline metrics written for:", last_mode)
 
 @app.get("/progress/{job_id}")
 def progress(job_id: str):

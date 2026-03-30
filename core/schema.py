@@ -18,22 +18,14 @@ def get_element_from_file(file_path: str) -> str:
 
 
 def detect_subelement_count(df, element: str) -> int:
-    """
-    Detect number of subelements by scanning dataframe columns.
+    element_clean = (element or "").strip().upper()
 
-    Example:
-        A1..A6 → 6
-        C1..C6 → 6
-        D1..D4 → 4
-    """
-
-    raw_cols = [
-        c for c in df.columns
-        if c.startswith(element) and "_" not in c
-    ]
-
-    return len(raw_cols)
-
+    return {
+        "A": 6,
+        "B": 2,
+        "C": 6,
+        "D": 4,
+    }.get(element_clean, 4)
 
 def build_score_cols(element: str, count: int):
 

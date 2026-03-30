@@ -16,18 +16,32 @@ from scripts.shared.utils import extract_text_with_fallback
 import traceback
 import re
 import shutil
-import pytesseract
 
 
 # Resolve project root: c:\GPTScorer
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-# Set path to Tesseract executable
-tesseract_path = shutil.which("tesseract")
-if tesseract_path:
-    pytesseract.pytesseract.tesseract_cmd = tesseract_path
-else:
-    raise RuntimeError("Tesseract not found. Please install it.")
+def configure_tesseract():
+    # 1. Check environment variable first (best for Mac/Linux)
+    tesseract_path = os.environ.get("TESSERACT_PATH")
+
+    if tesseract_path and os.path.exists(tesseract_path):
+        pytesseract.pytesseract.tesseract_cmd = tesseract_path
+        return
+
+    # 2. Try auto-detect (works if installed via brew/apt)
+    detected = shutil.which("tesseract")
+    if detected:
+        pytesseract.pytesseract.tesseract_cmd = detected
+        return
+
+    # 3. Fallback (Windows default)
+    default_win = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    if os.path.exists(default_win):
+        pytesseract.pytesseract.tesseract_cmd = default_win
+        return
+
+    print("⚠️ Tesseract not found — OCR may fail")
 
 # =========================
 # GPT MODEL CONFIGURATION
@@ -805,52 +819,86 @@ def score_documents_with_api(documents, blended_version):
     results = []
 
     for idx, doc in enumerate(documents, start=1):
-     
+
         filename = doc["filename"]
         file_path = doc["path"]
 
         # --- Extraction ---
-        text = extract_text_with_fallback(file_path)     
-        ("EXTRACTED LENGTH:", len(text))
-        ("EXTRACTED SAMPLE:", text[:300])
+        text = extract_text_with_fallback(file_path)
+        print("EXTRACTED LENGTH:", len(text))
+        print("EXTRACTED SAMPLE:", text[:300])
 
         response_dict = score_document(filename, text, blended_version)
         if response_dict is None:
-            (f"Skipping {filename} due to failure.")
+            print(f"Skipping {filename} due to failure.")
             continue
 
+        # --- Base row ---
         row = {
             "Case": idx,
             "filename": filename,
             "text": text,
         }
-        
+
+        # --- Subscores + rationale ---
         for i in range(1, 7):
-            if response_dict is None:
-                raise ValueError(f"response_dict is None for {filename}")
-            ("C key value:", i, type(response_dict.get(f"C{i}")), response_dict.get(f"C{i}"))
-            row[f"C{i}"] = int(response_dict.get(f"C{i}", 0))
+            val = response_dict.get(f"C{i}", 0)
+            print("C key value:", i, type(val), val)
+
+            row[f"C{i}"] = int(val)
             row[f"C{i}_rationale"] = response_dict.get(f"C{i}_rationale", "")
 
+        # --- Narrative ---
         row["narrative_feedback"] = response_dict.get("narrative_feedback", "")
+        print("Narrative in row:", row["narrative_feedback"])
 
-        ("Narrative in row:", row.get("narrative_feedback"))
-
+        # --- Postprocessing ---
         if blended_version == "v1.13":
             row = postprocess_v113(row, filename)
-
         elif blended_version == "v1.14":
             row = postprocess_v114(row, filename)
-
         elif blended_version == "v1.15":
-            # No rule engine for Current mode
-            pass
+            pass  # no rule engine
+
+        # --- FINAL scores ---
+        for i in range(1, 7):
+            row[f"C{i}_final"] = int(
+                response_dict.get(f"C{i}_final", row.get(f"C{i}", 0))
+            )
+
+        # --- API scores ---
+        for i in range(1, 7):
+            row[f"C{i}_api"] = int(
+                response_dict.get(f"C{i}_api", row.get(f"C{i}", 0))
+            )
+
+        # --- Element scores ---
+        row["element_score_final"] = float(
+            response_dict.get("element_score_final", 0)
+        )
+
+        row["element_score_calibrated"] = float(
+            response_dict.get("element_score_calibrated", 0)
+        )
+
+        # --- Diagnostics (if available) ---
+        drift_result = response_dict.get("drift_result", {})
+
+        row["diagnostic_interpretation"] = drift_result.get(
+            "diagnostic_interpretation", ""
+        )
+
+        row["diagnostic_failures"] = str(
+            drift_result.get("failures", [])
+        )
+
+        print("results.append ROW KEYS:", row.keys())
 
         results.append(row)
 
-    # ✅ return is OUTSIDE the loop, INSIDE the function
+    # ✅ RETURN AFTER LOOP (IMPORTANT)
     return pd.DataFrame(results)
-
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Score documents using GPT API and blended model logic.")
     parser.add_argument("--folder", required=True, help="Folder containing documents to score")

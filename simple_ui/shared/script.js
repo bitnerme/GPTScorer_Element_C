@@ -1,22 +1,78 @@
-console.log("uploadForm at load:", document.getElementById("uploadForm"));
-console.log("script loaded");
+console.log("SCRIPT VERSION FINAL 999");
 
-// ==========================
-// Title Update
-// ==========================
-const elementDropdown = document.getElementById("element");
-const title = document.getElementById("title");
+document.addEventListener("DOMContentLoaded", () => {
 
-function updateTitle() {
-    const selected = elementDropdown.value;
-    title.innerText = `Element ${selected} Scoring`;
-}
+    const elementDropdown = document.getElementById("element");
+    const title = document.getElementById("title");
 
-updateTitle();
+    function updateTitle() {
+        if (!elementDropdown || !title) return;
+        const selected = elementDropdown.value;
+        title.innerText = `Element ${selected} Scoring`;
+    }
 
-elementDropdown.addEventListener("change", updateTitle);
+    updateTitle();
 
+    if (elementDropdown) {
+        elementDropdown.addEventListener("change", updateTitle);
+    }
+
+});
+
+window.displayResults = function(payload) {
+    console.log("Rendering payload:", payload);
+    if (window.currentView === "diagnostics") {
+        console.log("Skipping render — diagnostics mode");
+        return;
+    }
+
+    const resultSection = document.getElementById("results-section");
+    const resultOutput = document.getElementById("resultOutput");
+
+    if (!resultSection || !resultOutput) {
+        console.error("Result elements not found in DOM");
+        return;
+    }
+
+    // 🔥 CRITICAL: Handle nested structure
+    const actualResults = payload?.results?.results;
+
+    if (!actualResults || actualResults.length === 0) {
+        console.warn("No scoring results in payload");
+        return;  // 🚫 DO NOT overwrite UI
+    }
+
+    let output = "";
+
+    actualResults.forEach((result, index) => {
+        output += `Document: ${result.filename || `Document ${index + 1}`}\n\n`;
+
+        const prefix = (payload.element || "").toUpperCase();
+
+        Object.keys(result)
+            .filter(key => key.startsWith(prefix) && key.endsWith("_final"))
+            .sort()
+            .forEach(key => {
+                const label = key.replace("_final", "");
+                output += `${label}: ${result[key]}\n`;
+            });
+
+        if (result.narrative_feedback) {
+            output += `\nRationale:\n${result.narrative_feedback}\n`;
+        }
+
+        if (payload.diagnostics?.diagnostic_interpretation) {
+            output += `\nDiagnostics:\n${payload.diagnostics.diagnostic_interpretation}\n`;
+        }
+
+        output += "\n-----------------------------\n\n";
+    });
+
+    resultOutput.textContent = output;
+    resultSection.style.display = "block";
+};
 async function pollProgress(jobId) {
+
     const progressBar = document.getElementById("progressBar");
     const progressText = document.getElementById("progressText");
     const progressContainer = document.getElementById("progressContainer");
@@ -25,7 +81,23 @@ async function pollProgress(jobId) {
         progressContainer.style.display = "block";
     }
 
+    window.pollingActive = true;   // ✅ ensure ON
+
     const interval = setInterval(async () => {
+
+        // 🔥 STOP if polling disabled
+        if (window.pollingActive === false) {
+            console.log("Polling stopped — clearing interval");
+            clearInterval(interval);
+            return;
+        }
+
+        // 🔥 STOP if not in scoring view
+        if (window.currentView !== "scoring" && window.pollingActive === false) {
+            clearInterval(interval);
+            return;
+        }
+
         try {
             const response = await fetch(`/progress/${jobId}`);
             const data = await response.json();
@@ -45,27 +117,46 @@ async function pollProgress(jobId) {
 
             if (data.status === "done") {
 
+                window.pollingActive = false;   // ✅ STOP ALL POLLING
                 clearInterval(interval);
 
                 // Force full progress bar
                 if (progressBar) progressBar.style.width = "100%";
 
-                setTimeout(() => {
+                window.renderTimeout = setTimeout(() => {
+
+                    if (window.currentView !== "scoring") return;
 
                     const progressContainer = document.getElementById("progressContainer");
                     if (progressContainer) {
                         progressContainer.style.display = "none";
                     }
 
+                    const payload = data.output || data;
+
+                    payload.diagnostics = data.diagnostic_interpretation
+                        ? data
+                        : (data.output?.diagnostics || null);
+
+                    // ✅ ONLY store scoring payloads
+                    
+                    if (payload?.results?.results) {
+                        window.lastPayload = payload;
+                        window.lastResults = payload.results.results;
+                    }
+
                     const downloadToggle = document.getElementById("downloadCSVCheckbox");
 
-                    if (downloadToggle && downloadToggle.checked) {
-                        // mimic what displayResults normally sets
-                        window.lastPayload = data;
-                        window.lastResults = data.results;
-                        downloadCSV();
-                    } else {
-                        displayResults(data);
+                    if (
+                        downloadToggle &&
+                        downloadToggle.checked &&
+                        !window.csvDownloaded &&
+                        payload?.results?.results
+                    ) {
+                        window.csvDownloaded = true;
+                        downloadCSV(window.lastPayload);
+                    } else if (payload?.results?.results) {
+                        displayResults(payload);
                     }
 
                 }, 500);
@@ -79,7 +170,10 @@ async function pollProgress(jobId) {
     }, 1000);
 }
 document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-    e.preventDefault();   
+    e.preventDefault(); 
+    
+    window.lockResults = false;
+    window.currentView = "scoring";
 
     const fileInput = document.getElementById("fileInput");
 
@@ -100,10 +194,56 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
         return;
     }
 
-    const mode = document.getElementById("modeSelect").value;
-    formData.append("mode", mode);
-    console.log("Selected mode:", mode); 
+    const legacyChecked = document.getElementById("legacyToggle")?.checked;
 
+    const mode = legacyChecked ? "legacy" : "current";
+
+    formData.append("mode", mode);
+
+    console.log("Selected mode:", mode);
+
+    // ===============================
+    // Diagnostics + Regression Options
+    // ===============================
+
+    const rebuildDrift = document.getElementById("rebuild_drift_baseline").checked;
+    const runRegression = document.getElementById("run_regression").checked;
+    const recomputeRegression = document.getElementById("recompute_regression_scores").checked;
+    const rebuildRegression = document.getElementById("rebuild_regression_baseline").checked;
+
+    // 🔥 Confirmation: Drift baseline
+    if (rebuildDrift) {
+        const confirmed = confirm(
+            "This will overwrite the DRIFT baseline.\n\n" +
+            "Only do this if you are intentionally updating model stability reference metrics.\n\n" +
+            "Continue?"
+        );
+        if (!confirmed) return;
+    }
+
+    // 🔥 Confirmation: Regression baseline
+    if (rebuildRegression) {
+        const confirmed = confirm(
+            "This will overwrite the REGRESSION baseline (Golden dataset).\n\n" +
+            "Only do this if you are intentionally updating validation standards.\n\n" +
+            "Continue?"
+        );
+        if (!confirmed) return;
+    }
+
+    // Append to formData (IMPORTANT)
+    formData.append("rebuild_drift_baseline", rebuildDrift);
+    formData.append("run_regression", runRegression);
+    formData.append("recompute_regression_scores", recomputeRegression);
+    formData.append("rebuild_regression_baseline", rebuildRegression);
+
+    // Debug (optional but very helpful)
+    console.log("Diagnostics options:", {
+        rebuildDrift,
+        runRegression,
+        recomputeRegression,
+        rebuildRegression
+    });
 
     try {
         const response = await fetch("/score", {
@@ -118,6 +258,10 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
             
         const data = await response.json();
         const jobId = data.job_id;
+
+        window.currentView = "scoring";  
+        window.pollingActive = true;      
+
         pollProgress(jobId);
 
     } catch (error) {
@@ -126,7 +270,71 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
     }
 });
 
+function safeFixed(value) {
+    const num = Number(value);
+    return isFinite(num) ? num.toFixed(4) : "N/A";
+}
+
+function toggleRegressionDetails() {
+    const el = document.getElementById("regressionDetails");
+    if (!el) return;
+
+    el.style.display = el.style.display === "none" ? "block" : "none";
+}
+
+
+function renderTopCases(cases) {
+    if (!cases || !cases.length) return "";
+
+    let html = "<b>Top 5 Worst Cases</b><br><br>";
+
+    cases.forEach(c => {
+        html += `
+            ${c.filename}: diff=${safeFixed(c.diff)}<br>
+        `;
+    });
+
+    return html;
+}
+
+window.toggleRegressionDetails = function (id) {
+    const el = document.getElementById(id);
+    if (!el) {
+        console.warn("No element found for:", id);
+        return;
+    }
+
+    el.style.display = (el.style.display === "none") ? "block" : "none";
+};
+
 async function checkSavedResults() {
+
+    const resultsSection = document.getElementById("results-section");
+    const resultOutput = document.getElementById("resultOutput");
+
+    window.currentView = "diagnostics";
+    window.pollingActive = false;
+
+    // 🔥 HARD STOP any scoring UI updates
+    window.lockResults = true;
+
+    if (window.renderTimeout) {
+        clearTimeout(window.renderTimeout);
+    }
+
+    // Switch UI to diagnostics mode
+    const progressBar = document.getElementById("progressBarContainer");
+    const progressText = document.getElementById("progressText");
+    const diagnosticsPanel = document.getElementById("diagnosticsContainer");
+
+if (progressBar) progressBar.style.display = "none";
+if (progressText) progressText.style.display = "none";
+if (diagnosticsPanel) diagnosticsPanel.style.display = "block";
+
+    const progressContainer = document.getElementById("progressContainer");
+    if (progressContainer) {
+        progressContainer.style.display = "none";
+    }
 
     const formData = new FormData();
     const element = document.getElementById("element").value;
@@ -136,83 +344,120 @@ async function checkSavedResults() {
         method: "POST",
         body: formData
     });
-
     const data = await response.json();
+    const payload = data;  
+
+    console.log("FULL RESPONSE:", data);
+    console.log("GOLDEN VALIDATION:", data.golden_validation);
 
     const diagDiv = document.getElementById("adminDiagnostics");
-
     if (!diagDiv) return;
 
     diagDiv.style.display = "block";
 
+    // ==========================
+    // Build content progressively
+    // ==========================
+    let infoMessage = data?.diagnostic_interpretation ?? "";
+    let html = `
+        <h3>Admin Diagnostics</h3>
+        ${infoMessage || ""}
+    `;
+    // --------------------------
+    // No drift metrics case
+    // --------------------------
     if (!data.report) {
-        diagDiv.innerHTML = `
-            <h3>Admin Diagnostics</h3>
+        html += `
             <div style="color:#c62828;font-weight:bold;">
                 No drift metrics available.
             </div>
         `;
-        return;
     }
+    // --------------------------
+    // Drift section
+    // --------------------------
+    const statusColor = data.status === "PASS" ? "#2e7d32" : "#c62828";
 
-    let statusColor = data.status === "PASS" ? "#2e7d32" : "#c62828";
-
-    diagDiv.innerHTML = `
-        <h3>Admin Diagnostics</h3>
-
+    html += `
         <div style="border:1px solid #ccc; padding:10px;">
-        <b>Model Stability Check</b><br><br>
+            <b>Model Stability Check</b><br><br>
 
-        <b>Absolute Metrics</b><br>
-        API mean: ${data.current_metrics.api_mean.toFixed(4)}<br>
-        API std: ${data.current_metrics.api_std.toFixed(4)}<br>
-        Final mean: ${data.current_metrics.final_mean.toFixed(4)}<br>
-        Final std: ${data.current_metrics.final_std.toFixed(4)}<br><br>
+            <b>Absolute Metrics</b><br>
+            API mean: ${safeFixed(data.current_metrics.api_mean)}<br> 
+            API std: ${safeFixed(data.current_metrics.api_std)}<br>   
+            Final mean: ${safeFixed(data.current_metrics.final_mean)}<br>  
+            Final std: ${safeFixed(data.current_metrics.final_std)}<br><br> 
 
-        <b>Drift vs Baseline</b><br>
-        API mean diff: ${data.report.api_mean_diff.toFixed(4)}<br>
-        API std diff: ${data.report.api_std_diff.toFixed(4)}<br>
-        Final mean diff: ${data.report.final_mean_diff.toFixed(4)}<br>
-        Final std diff: ${data.report.final_std_diff.toFixed(4)}<br><br>
+            API mean diff: ${safeFixed(data.report.api_mean_diff)}<br> 
+            API std diff: ${safeFixed(data.report.api_std_diff)}<br>  
+            Final mean diff: ${safeFixed(data.report.final_mean_diff)}<br>  
+            Final std diff: ${safeFixed(data.report.final_std_diff)}<br>  
 
-        <span style="color:${statusColor}; font-weight:bold;">
-        Status: ${data.status}
-        </span>
+            <span style="color:${statusColor}; font-weight:bold;">
+                Status: ${data.status}
+            </span>
         </div>
-
-        ${
-            data.diagnostic_interpretation
-            ? `<div style="border:1px solid #bbb;background:#f7f7f7;padding:10px;margin-top:15px;">
-               <b>Root Cause Analysis</b><br><br>
-               ${data.diagnostic_interpretation}
-               </div>`
-            : ""
-        }
     `;
 
-}
+    // --------------------------
+    // Root cause section
+    // --------------------------
+    if (data.diagnostic_interpretation) {
+        html += `
+            <div style="border:1px solid #bbb;background:#f7f7f7;padding:10px;margin-top:15px;">
+                <b>Root Cause Analysis</b><br><br>
+                ${data.diagnostic_interpretation}
+            </div>
+        `
+    };
+   
+    // --------------------------
+    // (Optional) Golden validation
+    // --------------------------
+    if (data.golden_validation) {
+        const gv = data.golden_validation;
+        const color = gv.status === "PASS" ? "#2e7d32" : "#c62828";
 
-function displayResults(payload) {
+        html += `
+            <div style="border:1px solid #ccc; padding:10px; margin-top:10px;">
+                <b>Golden20 Validation</b><br><br>
 
-    window.lastPayload = payload;
+                Status: <span style="color:${color}; font-weight:bold;">
+                    ${gv.status}
+                </span><br><br>
 
-    const results = payload.results;
-    const element = payload.element;
-    
+                ${gv.summary || ""}<br><br>
+
+                MAE: ${safeFixed(gv.metrics?.mae)} (Δ ${safeFixed(gv.metrics?.mae_diff)})<br>
+                Bias: ${safeFixed(gv.metrics?.bias)} (Δ ${safeFixed(gv.metrics?.bias_diff)})<br><br>
+
+                <div style="cursor:pointer; color:#1565c0;" onclick="toggleRegressionDetails('regressionDetails')">
+                    ▶ Show detailed diagnostics
+                </div>
+
+                <div id="regressionDetails" style="display:none; margin-top:10px;">
+                    ${renderTopCases(gv.top_cases)}
+                </div>
+            </div>
+        `;
+    }
+
+    // ==========================
+    // Final render (ONLY ONCE)
+    // ==========================
+    diagDiv.innerHTML = html;
+
+    if (payload?.results?.results) {
+        window.lastPayload = payload;
+        window.lastResults = payload.results.results;
+    }
+        
     const title = document.getElementById("pageTitle");
     if (title) {
         title.innerText = `Element ${element} Scoring`;
     }
 
-    const resultsDiv = document.getElementById("resultOutput");
-    const resultsSection = document.getElementById("results-section");
-
-    resultsDiv.innerHTML = "";
-
-    if (!results || results.length === 0) {
-        resultsDiv.textContent = "No results returned.";
-        return;
-    }
+    const results = payload?.results?.results || [];
 
     results.forEach(result => {
         
@@ -239,17 +484,6 @@ function displayResults(payload) {
 
         });
 
-        //if (result.element_score_calibrated !== undefined) {
-
-        //    const elementScore = document.createElement("p");
-        //    elementScore.style.fontWeight = "bold";
-
-        //    elementScore.textContent =
-        //        `Element Score: ${result.element_score_calibrated}`;
-
-        //    resultsDiv.appendChild(elementScore);
-        //}
-
         if (result.narrative_feedback) {
 
             const rationaleBlock = document.createElement("div");
@@ -275,9 +509,13 @@ function displayResults(payload) {
 function escapeCSV(value) {
     if (value === null || value === undefined) return "";
 
+    // 🔥 handle arrays (THIS is your missing piece)
+    if (Array.isArray(value)) {
+        value = value.join(" | ");
+    }
+
     const stringValue = String(value);
 
-    // If value contains comma, quote, or newline → wrap in quotes
     if (
         stringValue.includes(",") ||
         stringValue.includes('"') ||
@@ -291,68 +529,76 @@ function escapeCSV(value) {
 
 function downloadCSV() {
 
-    if (!window.lastPayload || !window.lastPayload.results || window.lastPayload.results.length === 0) {
-        alert("No results to download.");
+    const payload = window.lastPayload;
+
+    if (!payload) {
+        alert("No results available.");
         return;
     }
 
-    const payload = window.lastPayload;
-    const results = payload.results;
-    const element = payload.element;
+    const element = (payload.element || "A").toUpperCase();
 
-    const headers = ["filename"];   // ✅ DEFINE FIRST
+    const countMap = { A: 6, B: 2, C: 6, D: 4 };
+    const count = countMap[element] || 6;
 
-    const subCols = Object.keys(results[0])
-        .filter(k => new RegExp(`^${element}\\d+$`).test(k))
-        .sort((a, b) => {
-            const numA = parseInt(a.replace(element, ""));
-            const numB = parseInt(b.replace(element, ""));
-            return numA - numB;
-        });
+    const rawKeys = Array.from({ length: count }, (_, i) => `${element}${i+1}`);
+    const finalKeys = rawKeys.map(k => `${k}_final`);
 
-    subCols.forEach(col => headers.push(col));   // ✅ NOW SAFE
+    // 🔥 unwrap nested results
+    const results = payload?.results?.results || payload?.results;
 
-    headers.push(
+    if (!Array.isArray(results)) {
+        alert("Invalid results format.");
+        console.error("Bad payload:", payload);
+        return;
+    }
+
+    // Build CSV
+    const headers = [
+        "filename",
+        ...rawKeys.map(k => `${k}_raw`),
+        ...finalKeys,
         "element_score_raw",
-        "element_score_calibrated",
-        "calibration_delta",
-        "flags",
-        "rationales",
+        "element_score_final",
+        "element_score_delta",
         "narrative_feedback"
-    );
+    ];
+    const rows = results.map(r => {
 
-    const rows = results.map(result => {
+        const delta = (
+            (Number(r.element_score_final) || 0) -
+            (Number(r.element_score_raw) || 0)
+        ).toFixed(2);
 
-        const row = [escapeCSV(result.filename)];
+        return [
+            escapeCSV(r.filename),
 
-        subCols.forEach(col => {
-            const score = result[`${col}_final`] ?? result[col] ?? "";
-            row.push(escapeCSV(score));
-        });
+            // Raw (API)
+            ...rawKeys.map(k => escapeCSV(r[k])),
 
-        row.push(
-            escapeCSV(result.element_score_raw),
-            escapeCSV(result.element_score_calibrated),
-            escapeCSV(result.calibration_delta),
-            escapeCSV(result.flags),
-            escapeCSV(result.rationales),
-            escapeCSV(result.narrative_feedback)
-        );
+            // Final
+            ...finalKeys.map(k => escapeCSV(r[k])),
 
-        return row;
+            escapeCSV(r.element_score_raw),
+            escapeCSV(r.element_score_final),
+            escapeCSV(delta),
+            escapeCSV(r.narrative_feedback)
+        ];
     });
 
-    const csvContent = [headers.join(",")]
-        .concat(rows.map(r => r.join(",")))
-        .join("\n");
+    let csvContent = [
+        headers.join(","),
+        ...rows.map(row => row.join(","))
+    ].join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv" });
+    // Download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "scoring_results.csv";
-    a.click();
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "results.csv";
+    link.click();
 
     URL.revokeObjectURL(url);
 }

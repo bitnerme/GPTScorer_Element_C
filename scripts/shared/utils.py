@@ -12,6 +12,30 @@ import subprocess
 import traceback
 import json
 from pathlib import Path
+import shutil
+
+def configure_tesseract():
+    # 1. Env var override
+    tesseract_path = os.environ.get("TESSERACT_PATH")
+    if tesseract_path and os.path.exists(tesseract_path):
+        pytesseract.pytesseract.tesseract_cmd = tesseract_path
+        return
+
+    # 2. System path (Mac/Linux or properly configured Windows)
+    detected = shutil.which("tesseract")
+    if detected:
+        pytesseract.pytesseract.tesseract_cmd = detected
+        return
+
+    # 3. Windows fallback (YOU MUST MATCH YOUR INSTALL)
+    default_win = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    if os.path.exists(default_win):
+        pytesseract.pytesseract.tesseract_cmd = default_win
+        return
+
+    print("⚠️ Tesseract not found — OCR will fail")
+
+configure_tesseract()
 
 
 # scripts/shared/utils.py
@@ -161,6 +185,27 @@ def extract_text_from_file(filepath):
     else:
         raise ValueError(f"Unsupported file format: {repr(ext)}")
 
+import shutil
+import os
+
+def get_poppler_path():
+    # 1. Environment variable (optional override)
+    poppler_path = os.environ.get("POPPLER_PATH")
+    if poppler_path and os.path.exists(poppler_path):
+        return poppler_path
+
+    # 2. If installed system-wide (Mac/Linux via brew)
+    if shutil.which("pdftoppm"):
+        return None  # Let pdf2image use system path
+
+    # 3. Windows fallback
+    default_win = r"C:\poppler\poppler-25.12.0\Library\bin"
+    if os.path.exists(default_win):
+        return default_win
+
+    print("⚠️ Poppler not found — PDF OCR may fail")
+    return None
+
 def run_ocr(filepath):
     pythoncom.CoInitialize()
 
@@ -194,7 +239,7 @@ def run_ocr(filepath):
 
         pages = convert_from_path(
             pdf_path,
-            poppler_path = shutil.which("pdftoppm")
+            poppler_path=get_poppler_path()
         )
 
         for page in pages:

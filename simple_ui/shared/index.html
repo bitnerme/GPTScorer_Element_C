@@ -2,12 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <h1 id="title">Element A Scoring</h1>
+    <title>Element Scoring</title>
+
+    <style>
+        .section-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .diagnostics-card {
+            background: #f5f7fa;
+            border: 1px dashed #bbb;
+        }
+
+        .diagnostics-header {
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .diagnostics-header:hover {
+            color: #1565c0;
+        }
+
+        .helper-text {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+  
+        #resultOutput {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 100%;
+            line-height: 1.4;
+            font-family: monospace;
+        }
+        
+    </style>
 </head>
 <body>
 
+<h1 id="title">Element A Scoring</h1>
+
+<!-- ========================= -->
+<!-- SCORING SECTION -->
+<!-- ========================= -->
+<div class="section-card">
+
     <form id="uploadForm">
-        
+
         <label>Select Element:</label>
         <select id="element" name="element">
             <option value="A">Element A</option>
@@ -17,56 +65,125 @@
         </select><br>
 
         <label for="modeSelect">Scoring Mode:</label>
-        <select id="modeSelect" name="mode">
-            <option value="current">Current (Submissions after 10/1/2024)</option>
-            <option value="legacy">Legacy (Submissions prior to 10/1/2024)</option>
-        </select><br><br>
-
-        <label for="fileInput">Upload a File</label><br>
-        <input type="file" id="fileInput" name="files" multiple><br><br>
-
-        <!-- Checkbox on its own line -->
-        <label>
-            <input type="checkbox" id="downloadCSVCheckbox">
-            Download results as CSV instead of viewing
+        <label title="Uses legacy scoring rules for older submissions">
+            <input type="checkbox" id="legacyToggle">
+            🗓️ These documents were submitted before 2025
         </label><br><br>
 
-        <!-- Submit button below the checkbox -->
-        <button type="submit">Score Documents</button>
+        <label for="fileInput">📄 Upload a File</label><br>
+        <input type="file" id="fileInput" name="files" multiple><br><br>
+
+        <label>
+            <input type="checkbox" id="downloadCSVCheckbox">
+            ⬇️ Download results as CSV instead of viewing
+        </label><br><br>
+
+        <button type="">▶️ Score Documents</button>
+
     </form>
 
-    <div id="progressContainer" style="display:none; margin-top:20px;">
-    
-        <div style="width:100%; background:#ddd; height:20px;">
-            <div id="progressBar"
-                style="width:0%; height:100%; background:#4CAF50;">
+</div>
+
+<!-- ========================= -->
+<!-- PROGRESS -->
+<!-- ========================= -->
+<div id="progressContainer" style="display:none; margin-top:20px;">
+
+    <div style="width:100%; background:#ddd; height:20px;">
+        <div id="progressBar" style="width:0%; height:100%; background:#4CAF50;"></div>
+    </div>
+
+    <div id="progressText" style="margin-top:6px;"></div>
+
+</div>
+
+<!-- ========================= -->
+<!-- RESULTS -->
+<!-- ========================= -->
+<div id="results-section" style="display:none;">
+    <h3>Scoring Results</h3>
+    <pre id="resultOutput"></pre>
+    <button onclick="downloadCSV()">⬇️ Download Results CSV</button>
+</div>
+
+<!-- ========================= -->
+<!-- DIAGNOSTICS (COLLAPSIBLE) -->
+<!-- ========================= -->
+<div class="section-card diagnostics-card">
+
+    <div class="diagnostics-header" onclick="toggleDiagnostics()">
+        🛠 Admin Diagnostics (Advanced) <span id="diagToggleIcon">▶</span>
+    </div>
+
+    <div id="diagnosticsPanel" style="display:none; margin-top:10px;">
+
+        <p class="helper-text">
+            These tools validate scoring accuracy and model stability.
+        </p>
+
+        <!-- ===================== -->
+        <!-- DIAGNOSTICS CONTROLS -->
+        <!-- ===================== -->
+        <div id="diagnosticsControlPanel">
+
+            <h4>📊 Model Stability (Drift)</h4>
+            <label>
+                <input type="checkbox" id="rebuild_drift_baseline">
+                Rebuild drift baseline (advanced)
+            </label>
+            <div class="helper-text">
+                Updates the reference metrics used to detect scoring drift.
             </div>
+
+            <br>
+
+            <h4>🧪 Regression Testing</h4>
+            <label>
+                <input type="checkbox" id="run_regression" checked>
+                Run regression test
+            </label><br>
+
+            <label>
+                <input type="checkbox" id="recompute_regression_scores">
+                Recompute test set scores (ignore cache)
+            </label><br>
+
+            <label>
+                <input type="checkbox" id="rebuild_regression_baseline">
+                Rebuild regression baseline (advanced)
+            </label>
+
+            <div class="helper-text">
+                Controls validation against the Golden dataset.
+            </div>
+
         </div>
 
-        <div id="progressText" style="margin-top:6px;"></div>
+        <br>
+
+        <!-- ACTION BUTTON -->
+        <button onclick="checkSavedResults()">📊 Check Saved Results</button>
+
+        <!-- OUTPUT -->
+        <div id="adminDiagnostics" style="margin-top:15px;"></div>
 
     </div>
 
-    <div id="results-section" style="display: none;">
-        <h3>Scoring Results</h3>
-        <pre id="resultOutput"></pre>
-        <button onclick="downloadCSV()">Download Results CSV</button>
-    </div>
+</div>
 
-    <button onclick="checkSavedResults()">Check Saved Results</button>
+<script>
+function toggleDiagnostics() {
+    const panel = document.getElementById("diagnosticsPanel");
+    const icon = document.getElementById("diagToggleIcon");
 
-    <div id="adminDiagnostics" style="margin-top:20px;"></div>
+    const isHidden = panel.style.display === "none";
 
-    <pre id="metricsBox" style="margin-top:10px;"></pre>
+    panel.style.display = isHidden ? "block" : "none";
+    icon.textContent = isHidden ? "▼" : "▶";
+}
+</script>
 
-    <div id="sampleSizeStatus" style="margin-bottom:15px; display:none;">
-        <strong>Sample Size</strong><br>
-        Required sample size: <span id="requiredSample"></span><br>
-        Actual records analyzed: <span id="actualSample"></span><br>
-        <span id="sampleStatus"></span>
-    </div>
-
-    <script src="/static/script.js"></script>
+<script src="/static/script.js"></script>
 
 </body>
 </html>

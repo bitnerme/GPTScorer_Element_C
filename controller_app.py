@@ -14,20 +14,22 @@ from scripts.shared.utils import (
     check_drift,
     get_blended_model
 )
+from core.schema import detect_subelement_count
 import json
+from fastapi import FastAPI, Form
+from scripts.shared.validate_golden20 import validate_golden20
 
 app = FastAPI()
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
+global LAST_RUN_WAS_SCORING
+global last_metrics, last_mode, last_results
 
-SUBELEMENT_MAP = {
-    "A": 6,
-    "B": 2,
-    "C": 6,
-    "D": 4,
-}
-
+last_results = None
+last_metrics = None
+last_mode = None
+LAST_RUN_WAS_SCORING = False
 SAVE_BASELINE = False
 
 def save_drift_metrics(element, mode, metrics):
@@ -47,6 +49,21 @@ def save_drift_metrics(element, mode, metrics):
         json.dump(metrics, f, indent=2)
 
     print(f"📊 Baseline metrics written: {path}")
+
+def get_golden_paths(element, mode):
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    label = element.lower()
+
+    if mode == "current":
+        return (
+            os.path.join(BASE_DIR, "config", f"element_{label}", f"golden_{label}_current.json"),
+            os.path.join(BASE_DIR, "elements", f"element_{label}", "golden_current_documents"),
+        )
+    else:
+        return (
+            os.path.join(BASE_DIR, "config", f"element_{label}", f"golden_{label}_legacy.json"),
+            os.path.join(BASE_DIR, "elements", f"element_{label}", "golden_legacy_documents"),
+        )
 
 # Mount UI
 app.mount(
@@ -138,11 +155,21 @@ async def score(
     background_tasks: BackgroundTasks,
     element: str = Form(...),
     mode: str = Form(...),
-    files: List[UploadFile] = File(...)
-):
-    element = element.upper()
+    files: List[UploadFile] = File(...),
 
-    subelement_count = SUBELEMENT_MAP.get(element, 4)
+    # 🔥 NEW FLAGS
+    rebuild_drift_baseline: bool = Form(False),
+    run_regression: bool = Form(True),
+    recompute_regression_scores: bool = Form(False),
+    rebuild_regression_baseline: bool = Form(False),
+):
+
+    element_clean = (element or "").strip().upper()
+    subelement_count = detect_subelement_count(None, element)
+
+    print("ELEMENT RAW:", repr(element))
+    print("ELEMENT CLEAN:", repr(element_clean))
+    print("SUBELEMENT COUNT:", subelement_count)
 
     score_mod, app_mod = load_element_modules(element)
 
@@ -167,7 +194,13 @@ async def score(
         element,
         mode,
         score_documents_with_api,
-        apply_calibration_pipeline
+        apply_calibration_pipeline,
+
+        # 🔥 ADD THESE
+        rebuild_drift_baseline,
+        run_regression,
+        recompute_regression_scores,
+        rebuild_regression_baseline,
     )
 
     return {
@@ -185,8 +218,21 @@ def process_files_background(
     element,
     mode,
     score_documents_with_api,
-    apply_calibration_pipeline
+    apply_calibration_pipeline,
+
+    # 🔥 NEW
+    rebuild_drift_baseline,
+    run_regression,
+    recompute_regression_scores,
+    rebuild_regression_baseline,
 ):
+
+    global last_run_regression, last_recompute_regression, last_rebuild_regression
+    global last_results, last_metrics, last_mode, LAST_RUN_WAS_SCORING
+
+    last_run_regression = run_regression
+    last_recompute_regression = recompute_regression_scores
+    last_rebuild_regression = rebuild_regression_baseline
 
     dfs = []
 
@@ -225,6 +271,8 @@ def process_files_background(
     if not dfs:
         complete_job(job_id, [])
         return
+
+    LAST_RUN_WAS_SCORING = True
 
     df = pd.concat(dfs, ignore_index=True)
 
@@ -272,8 +320,6 @@ def process_files_background(
     print("🚨 FINAL PAYLOAD KEYS:")
     print(df.columns.tolist())
 
-    global last_metrics, last_mode
-
     last_mode = mode.lower()
     last_metrics = compute_gpt_metrics(df.copy(), element)
     print("METRICS:", last_metrics)
@@ -305,7 +351,9 @@ def process_files_background(
 
     print("METRICS SET:", last_metrics)
 
-    if SAVE_BASELINE:
+    if rebuild_drift_baseline:
+        print("Writing baseline metrics:", last_metrics)
+        save_drift_metrics(element, mode, last_metrics)
         print("Writing baseline metrics:", last_metrics)
         save_drift_metrics(element, mode, last_metrics)
 
@@ -336,13 +384,28 @@ def process_files_background(
 
     results = df.to_dict(orient="records")
 
-    # recursively clean all values
     results = [
         {k: clean_nan(v) for k, v in row.items()}
         for row in results
     ]
 
-    complete_job(job_id, results)
+    last_results = results  
+
+    clean_metrics = {k: clean_nan(v) for k, v in last_metrics.items()}
+
+    job_output = {
+        "results": results,
+        "metrics": clean_metrics,
+        "status": "COMPLETE"
+    }
+
+    # ✅ mark that scoring just happened
+    LAST_RUN_WAS_SCORING = True
+    last_results = results
+    last_metrics = clean_metrics
+    last_mode = mode.lower()   
+
+    complete_job(job_id, job_output)
 
 # =========================
 # Progress Endpoint
@@ -356,11 +419,21 @@ def progress(job_id: str):
 # Diagnostics Endpoint
 # =========================
 @app.post("/check_saved_results")
-async def check_saved_results(element: str = Form(...)):
-    global last_metrics, last_mode
+async def check_saved_results(
+    element: str = Form(...),
+    check_golden: bool = Form(True)
+):
+    
+    global LAST_RUN_WAS_SCORING, last_results, last_metrics, last_mode
+    global last_run_regression, last_recompute_regression, last_rebuild_regression
 
-    if last_metrics is None:
-        return {"status": "NO RESULTS", "message": "Run scoring first."}
+    used_previous_results = not LAST_RUN_WAS_SCORING
+    last_run_regression = True
+    last_recompute_regression = False
+    last_rebuild_regression = False
+
+    if last_results is None:
+        return {"status": "NO RESULTS", "message": "No scoring results available."}
 
     element = element.upper()
     mode = (last_mode or "current").lower()
@@ -372,54 +445,53 @@ async def check_saved_results(element: str = Form(...)):
 
     drift_result = check_drift(last_metrics, baseline_file)
 
-    report = {
-        "api_mean_diff": drift_result.get("api_mean_diff", 0),
-        "api_std_diff": drift_result.get("api_std_diff", 0),
-        "final_mean_diff": drift_result.get("final_mean_diff", 0),
-        "final_std_diff": drift_result.get("final_std_diff", 0),
-    }
+    print("DEBUG last_results:", type(last_results))
+    df = pd.DataFrame(last_results)
+
+    if last_run_regression:
+        json_path, doc_dir = get_golden_paths(element, mode)
+        golden_validation = validate_golden20(
+            df,
+            element,
+            mode,
+            json_path,
+            doc_dir,
+            recompute=last_recompute_regression,
+            rebuild_baseline=last_rebuild_regression
+        )
+    else:
+        golden_validation = {"status": "SKIPPED"}
+
+    # ✅ reset BEFORE returning
+    LAST_RUN_WAS_SCORING = False
+
+    combined_failures = list(drift_result.get("failures", []))
+
+    status = "PASS" if not combined_failures else "FAIL"
+
+    if status == "FAIL":
+        combined_failures.append("golden_validation_failed")
+
+    drift_status = drift_result.get("status", "UNKNOWN")
+
+    print("CONTROLLER golden_validation:", golden_validation)
 
     return {
-        "status": drift_result.get("status", "FAIL"),
+        "status": status,
+        "drift_status": drift_status,
         "report": drift_result.get("report", {}),
         "current_metrics": last_metrics,
         "diagnostic_interpretation": drift_result.get("diagnostic_interpretation"),
         "element": element,
-        "mode": mode
+        "mode": mode,
+        "golden_validation": golden_validation,   
+        "used_previous_results": used_previous_results,
+        "failures": combined_failures,
     }
-
-    #return {
-    #    "status": "PASS" if not drift_result.get("failures") else "FAIL",
-    #    "report": report,
-    #    "current_metrics": last_metrics,
-    #    "diagnostic_interpretation": drift_result.get("diagnostic_interpretation"),
-    #    "element": element,
-    #    "mode": mode
-    #}
-
-# =========================
-# Admin: Validation
-# =========================
-@app.post("/validate")
-async def validate(element: str = Form(None)):
-    import subprocess
-
-    cmd = ["python", "scripts/shared/validate_golden20.py"]
-
-    if element:
-        cmd.append(element.upper())
-
-    result = subprocess.run(cmd, capture_output=True, text=True)
-
-    return {
-        "stdout": result.stdout,
-        "stderr": result.stderr
-    }
-
 
 # =========================
 # Run
 # =========================
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("controller_app:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("controller_app:app", host="127.0.0.1", port=8000, reload=False)
