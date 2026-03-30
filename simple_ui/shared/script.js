@@ -134,9 +134,13 @@ async function pollProgress(jobId) {
 
                     const payload = data.output || data;
 
-                    payload.diagnostics = data.diagnostic_interpretation
-                        ? data
-                        : (data.output?.diagnostics || null);
+                    payload.diagnostics = {
+                        diagnostic_interpretation:
+                            data.diagnostic_interpretation ||
+                            data.output?.diagnostic_interpretation ||
+                            data.output?.diagnostics?.diagnostic_interpretation ||
+                            null
+                    };
 
                     // ✅ ONLY store scoring payloads
                     
@@ -259,6 +263,8 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
         const data = await response.json();
         const jobId = data.job_id;
 
+        window.subelementCount = data.subelement_count || window.subelementCount || 6;
+
         window.currentView = "scoring";  
         window.pollingActive = true;      
 
@@ -309,11 +315,74 @@ window.toggleRegressionDetails = function (id) {
 
 async function checkSavedResults() {
 
+    if (window.diagnosticsRunning) return;
+    window.diagnosticsRunning = true;
+
+
+    console.log("CHECK SAVED RESULTS TRIGGERED");
+
+    const btn = document.getElementById("checkSavedResultsBtn");
+
+    // 🛡️ SAFETY GUARD: prevent crash if button not found
+    if (!btn) {
+        console.error("Check Saved Results button not found");
+        return;
+    }
+
+    // 🛡️ SAFETY GUARD: prevent double-clicks
+    if (btn.disabled) return;
+
+    btn.disabled = true;
+    const originalText = btn.innerText;
+    btn.innerText = "Running...";
+
+    try {
+
+        window.currentView = "diagnostics";
+        window.pollingActive = false;
+
+        const formData = new FormData();
+        const element = document.getElementById("element").value;
+        formData.append("element", element);
+
+        const response = await fetch("/check_saved_results", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        // 👉 your existing rendering logic here
+
+    } catch (err) {
+        console.error("Diagnostics error:", err);
+    } finally {
+
+        // 🛡️ SAFETY GUARD: always restore button state
+        btn.disabled = false;
+        btn.innerText = originalText;
+        window.diagnosticsRunning = false;
+    }
+
     const resultsSection = document.getElementById("results-section");
     const resultOutput = document.getElementById("resultOutput");
 
+    const checkBtn = document.getElementById("checkSavedResultsBtn");
+
+    checkBtn.disabled = true;
+    checkBtn.innerText = "Running...";
+
+    try {
+        await checkSavedResults();
+    } finally {
+        checkBtn.disabled = false;
+        checkBtn.innerText = "Check Saved Results";
+    }
+
     window.currentView = "diagnostics";
     window.pollingActive = false;
+
+    const resultsDiv = document.getElementById("resultOutput");
 
     // 🔥 HARD STOP any scoring UI updates
     window.lockResults = true;
@@ -396,8 +465,36 @@ if (diagnosticsPanel) diagnosticsPanel.style.display = "block";
             <span style="color:${statusColor}; font-weight:bold;">
                 Status: ${data.status}
             </span>
+
         </div>
     `;
+
+    if (data.failures && data.failures.length) {
+        html += `
+            <div style="margin-top:10px;">
+                <b>Triggered Drift Signals:</b><br>
+                ${data.failures.map(f => {
+                    const labels = {
+                        api_mean_shift: "API mean shifted",
+                        api_std_shift: "API variability changed",
+                        final_mean_shift: "Final score average shifted",
+                        final_std_shift: "Final score variability changed",
+                        golden_validation_failed: "Regression validation failed"
+                    };
+                    return labels[f] || f;
+                }).join("<br>")}
+            </div>
+        `;
+    }
+
+    if (data.sample_warning) {
+        html += `
+            <div style="margin-top:10px; color:#ef6c00;">
+                <b>Sample Size Warning:</b><br>
+                ${data.sample_warning}
+            </div>
+        `;
+    }
 
     // --------------------------
     // Root cause section
@@ -411,6 +508,7 @@ if (diagnosticsPanel) diagnosticsPanel.style.display = "block";
         `
     };
    
+    console.log("DIAG INTERPRETATION:", data.diagnostic_interpretation);
     // --------------------------
     // (Optional) Golden validation
     // --------------------------
@@ -538,8 +636,7 @@ function downloadCSV() {
 
     const element = (payload.element || "A").toUpperCase();
 
-    const countMap = { A: 6, B: 2, C: 6, D: 4 };
-    const count = countMap[element] || 6;
+    const count = window.subelementCount || 6;
 
     const rawKeys = Array.from({ length: count }, (_, i) => `${element}${i+1}`);
     const finalKeys = rawKeys.map(k => `${k}_final`);

@@ -428,9 +428,6 @@ async def check_saved_results(
     global last_run_regression, last_recompute_regression, last_rebuild_regression
 
     used_previous_results = not LAST_RUN_WAS_SCORING
-    last_run_regression = True
-    last_recompute_regression = False
-    last_rebuild_regression = False
 
     if last_results is None:
         return {"status": "NO RESULTS", "message": "No scoring results available."}
@@ -469,12 +466,15 @@ async def check_saved_results(
 
     status = "PASS" if not combined_failures else "FAIL"
 
-    if status == "FAIL":
+    # Add regression failure ONLY if regression actually failed
+    if golden_validation.get("status") == "FAIL":
         combined_failures.append("golden_validation_failed")
 
     drift_status = drift_result.get("status", "UNKNOWN")
 
     print("CONTROLLER golden_validation:", golden_validation)
+
+    print("DIAG INTERPRETATION:", drift_result.get("diagnostic_interpretation"))
 
     return {
         "status": status,
@@ -482,6 +482,7 @@ async def check_saved_results(
         "report": drift_result.get("report", {}),
         "current_metrics": last_metrics,
         "diagnostic_interpretation": drift_result.get("diagnostic_interpretation"),
+        "sample_warning": drift_result.get("sample_warning"),
         "element": element,
         "mode": mode,
         "golden_validation": golden_validation,   

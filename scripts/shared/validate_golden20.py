@@ -288,7 +288,9 @@ def run_validation(element, json_path, doc_dir, mode, recompute=False, rebuild_b
         if ci_diff > CI_THRESHOLD:
             failures.append(f"ci_shift ({ci_diff:.3f})")
 
-        if failures:
+        status = "FAIL" if failures else "PASS"
+
+        if status == "FAIL":
             print("❌ FAIL")
             for f in failures:
                 print(" -", f)
@@ -311,17 +313,6 @@ def run_validation(element, json_path, doc_dir, mode, recompute=False, rebuild_b
         print(f"MAE  Δ: {mae_diff:.3f}")
         print(f"CI half Δ: {ci_half_diff:.3f}")
         print(f"CI full Δ: {ci_diff:.3f}")
-
-        failures = []
-
-        if bias_diff > BIAS_THRESHOLD:
-            failures.append("bias_shift")
-
-        if mae_diff > MAE_THRESHOLD:
-            failures.append("mae_shift")
-
-        if ci_diff > CI_THRESHOLD:
-            failures.append("ci_shift")
 
         title = f"Golden20 Regression Check (Element {element} — {mode.capitalize()})"
         print("\n" + title)
@@ -360,25 +351,22 @@ def run_validation(element, json_path, doc_dir, mode, recompute=False, rebuild_b
         with open(CACHE_FILE, "w") as f:
             json.dump(cache, f, indent=2)
 
-    status = "PASS"
+    # -----------------------------
+    # Regression summary (KEEP THIS)
+    # -----------------------------
     summary_lines = []
 
-    # Example logic (you can refine later)
-    if abs(bias_diff) > 0.01:
-        status = "FAIL"
-        summary_lines.append(f"Bias drift: {bias_diff:.3f}")
-
-    if abs(mae_diff) > 0.01:
-        status = "FAIL"
-        summary_lines.append(f"MAE drift: {mae_diff:.3f}")
-
-    if abs(ci_diff) > 0.01:
-        status = "FAIL"
-        summary_lines.append(f"CI drift: {ci_diff:.3f}")
+    summary_lines.append(f"Bias drift: {bias_diff:.3f}")
+    summary_lines.append(f"MAE drift: {mae_diff:.3f}")
+    summary_lines.append(f"CI drift: {ci_diff:.3f}")
 
     summary = "<br>".join(summary_lines) if summary_lines else "No regression issues detected."
 
-    print("Here I am at the correct return", top_cases)
+    print("DEBUG REGRESSION:")
+    print("mae_diff:", mae_diff)
+    print("bias_diff:", bias_diff)
+    print("ci_diff:", ci_diff)
+    print("status:", status)
 
     return {
         "status": status,

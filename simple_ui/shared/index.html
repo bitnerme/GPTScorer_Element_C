@@ -70,7 +70,7 @@
             🗓️ These documents were submitted before 2025
         </label><br><br>
 
-        <label for="fileInput">📄 Upload a File</label><br>
+        <label for="fileInput">📄 Upload File(s)</label><br>
         <input type="file" id="fileInput" name="files" multiple><br><br>
 
         <label>
@@ -162,7 +162,9 @@
         <br>
 
         <!-- ACTION BUTTON -->
-        <button onclick="checkSavedResults()">📊 Check Saved Results</button>
+        <button id="checkSavedResultsBtn" onclick="checkSavedResults()">
+            Check Saved Results
+        </button>
 
         <!-- OUTPUT -->
         <div id="adminDiagnostics" style="margin-top:15px;"></div>

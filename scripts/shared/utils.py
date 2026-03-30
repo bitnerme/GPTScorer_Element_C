@@ -129,11 +129,40 @@ def check_drift(current_metrics, baseline_file):
     baseline_n = baseline.get("sample_size")
     current_n = current_metrics.get("sample_size")
 
+    print("DEBUG sample sizes:", current_n, baseline_n)
+
+    # -----------------------------
+    # Sample size guard (NEW)
+    # -----------------------------
+    MIN_SAMPLE_RATIO = 0.5
+
+    if baseline_n and current_n:
+        if current_n < baseline_n * MIN_SAMPLE_RATIO:
+            return {
+                "status": "LOW SAMPLE",
+                "sample_size_current": current_n,
+                "sample_size_baseline": baseline_n,
+                "sample_warning": (
+                    f"Sample size too small: {current_n} vs baseline {baseline_n}. "
+                    "Drift detection skipped due to low statistical power."
+                ),
+                "diagnostic_interpretation": (
+                    "Drift check not reliable due to insufficient sample size."
+                ),
+                "failures": [],
+                "report": report
+            }
+
     if baseline_n and current_n:
         if current_n < baseline_n * 0.5:
             sample_warning = (
                 f"WARNING: current sample size ({current_n}) is much smaller "
                 f"than baseline ({baseline_n}). Drift metrics may be unstable."
+            )
+        elif current_n < baseline_n:
+            sample_warning = (
+                f"Note: current sample size ({current_n}) is smaller than "
+                f"baseline ({baseline_n})."
             )
 
     # -----------------------------
@@ -148,26 +177,33 @@ def check_drift(current_metrics, baseline_file):
     print("DEBUG failures:", failures)
     print("DEBUG diffs:", api_mean_diff, api_std_diff, final_mean_diff, final_std_diff)
 
+    # -----------------------------
+    # Diagnostic interpretation (NEW)
+    # -----------------------------
+    if failures:
+        labels = {
+            "api_mean_shift": "API mean shifted",
+            "api_std_shift": "API variability changed",
+            "final_mean_shift": "Final score average shifted",
+            "final_std_shift": "Final score variability changed"
+        }
+
+        readable = [labels.get(f, f) for f in failures]
+
+        diagnostic_interpretation = "Drift detected: " + "; ".join(readable)
+
+    else:
+        diagnostic_interpretation = "No significant drift detected."
+
     return {
         "status": status,
         "sample_size_current": current_n,
         "sample_size_baseline": baseline_n,
         "sample_warning": sample_warning,
         "failures": failures,
+        "diagnostic_interpretation": diagnostic_interpretation,
         "report": report
     }
-
-    # ------------------------------------------------
-    # SAMPLE SIZE WARNING
-    # ------------------------------------------------
-
-    required_sample = baseline["sample_size"]
-
-    if current_metrics["sample_size"] < required_sample:
-        result["sample_warning"] = (
-            f"Sample size too small: "
-            f"{current_metrics['sample_size']} (baseline {required_sample})"
-        )
 
 # --- Extract text from .docx/doc or .pdf ---
 def extract_text_from_file(filepath):
