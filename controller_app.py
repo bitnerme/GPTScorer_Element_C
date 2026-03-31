@@ -18,6 +18,7 @@ from core.schema import detect_subelement_count
 import json
 from fastapi import FastAPI, Form
 from scripts.shared.validate_golden20 import validate_golden20
+from flask import request
 
 app = FastAPI()
 
@@ -32,24 +33,25 @@ last_mode = None
 LAST_RUN_WAS_SCORING = False
 SAVE_BASELINE = False
 
-def save_drift_metrics(element, mode, metrics):
-    if metrics is None:
-        return
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    element = element.upper()
-    mode = mode.lower()
+def save_drift_baseline_to_file(current_metrics, baseline_file):
 
-    base_path = os.path.join("config", f"element_{element}")
-    os.makedirs(base_path, exist_ok=True)
+    baseline_data = {
+        "sample_size": current_metrics.get("sample_size"),
+        "n_valid_api": current_metrics.get("n_valid_api"),
+        "n_valid_final": current_metrics.get("n_valid_final"),
+        "api_mean": current_metrics.get("api_mean"),
+        "api_std": current_metrics.get("api_std"),
+        "final_mean": current_metrics.get("final_mean"),
+        "final_std": current_metrics.get("final_std")
+    }
 
-    filename = f"baseline_metrics_{mode}.json"
-    path = os.path.join(base_path, filename)
+    with open(baseline_file, "w") as f:
+        json.dump(baseline_data, f, indent=4)
 
-    with open(path, "w") as f:
-        json.dump(metrics, f, indent=2)
-
-    print(f"📊 Baseline metrics written: {path}")
-
+    print(f"✅ Drift baseline saved to {baseline_file}")
+    
 def get_golden_paths(element, mode):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     label = element.lower()
@@ -351,12 +353,6 @@ def process_files_background(
 
     print("METRICS SET:", last_metrics)
 
-    if rebuild_drift_baseline:
-        print("Writing baseline metrics:", last_metrics)
-        save_drift_metrics(element, mode, last_metrics)
-        print("Writing baseline metrics:", last_metrics)
-        save_drift_metrics(element, mode, last_metrics)
-
     # calibrated score + delta
     if "element_score_raw" in df.columns and "element_score_final" in df.columns:
         df["calibration_delta"] = df["element_score_final"] - df["element_score_raw"]
@@ -421,13 +417,18 @@ def progress(job_id: str):
 @app.post("/check_saved_results")
 async def check_saved_results(
     element: str = Form(...),
-    check_golden: bool = Form(True)
+    check_golden: bool = Form(True),
+    save_drift_baseline: bool = Form(False)
 ):
     
     global LAST_RUN_WAS_SCORING, last_results, last_metrics, last_mode
     global last_run_regression, last_recompute_regression, last_rebuild_regression
 
     used_previous_results = not LAST_RUN_WAS_SCORING
+
+    global last_save_drift_baseline
+
+    last_save_drift_baseline = save_drift_baseline
 
     if last_results is None:
         return {"status": "NO RESULTS", "message": "No scoring results available."}
@@ -440,9 +441,17 @@ async def check_saved_results(
     else:
         baseline_file = PROJECT_ROOT / "config" / f"element_{element}" / "baseline_metrics_current.json"
 
-    drift_result = check_drift(last_metrics, baseline_file)
+    # Recompute metrics from current results
 
-    print("DEBUG last_results:", type(last_results))
+    current_metrics = last_metrics
+    
+    drift_result = check_drift(current_metrics, baseline_file)
+    if last_save_drift_baseline:
+        save_drift_baseline_to_file(current_metrics, baseline_file)
+        last_save_drift_baseline = False
+
+    print("Saving baseline with metrics:", current_metrics)
+
     df = pd.DataFrame(last_results)
 
     if last_run_regression:

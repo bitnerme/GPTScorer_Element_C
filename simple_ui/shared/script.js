@@ -315,22 +315,12 @@ window.toggleRegressionDetails = function (id) {
 
 async function checkSavedResults() {
 
+    // --- LOCK ---
     if (window.diagnosticsRunning) return;
     window.diagnosticsRunning = true;
 
-
-    console.log("CHECK SAVED RESULTS TRIGGERED");
-
     const btn = document.getElementById("checkSavedResultsBtn");
-
-    // 🛡️ SAFETY GUARD: prevent crash if button not found
-    if (!btn) {
-        console.error("Check Saved Results button not found");
-        return;
-    }
-
-    // 🛡️ SAFETY GUARD: prevent double-clicks
-    if (btn.disabled) return;
+    if (!btn) return;
 
     btn.disabled = true;
     const originalText = btn.innerText;
@@ -338,270 +328,244 @@ async function checkSavedResults() {
 
     try {
 
+        const resultsSection = document.getElementById("results-section");
+        const resultOutput = document.getElementById("resultOutput");
+
         window.currentView = "diagnostics";
         window.pollingActive = false;
+
+        const resultsDiv = document.getElementById("resultOutput");
+
+        // 🔥 HARD STOP any scoring UI updates
+        window.lockResults = true;
+
+        if (window.renderTimeout) {
+            clearTimeout(window.renderTimeout);
+        }
+
+        // Switch UI to diagnostics mode
+        const progressBar = document.getElementById("progressBarContainer");
+        const progressText = document.getElementById("progressText");
+        const diagnosticsPanel = document.getElementById("diagnosticsContainer");
+
+        if (progressBar) progressBar.style.display = "none";
+        if (progressText) progressText.style.display = "none";
+        if (diagnosticsPanel) diagnosticsPanel.style.display = "block";
+
+        const progressContainer = document.getElementById("progressContainer");
+        if (progressContainer) {
+            progressContainer.style.display = "none";
+        }
 
         const formData = new FormData();
         const element = document.getElementById("element").value;
         formData.append("element", element);
 
+        const saveDrift = document.getElementById("rebuild_drift_baseline").checked;
+        formData.append("save_drift_baseline", saveDrift);
+
         const response = await fetch("/check_saved_results", {
             method: "POST",
             body: formData
         });
-
         const data = await response.json();
+        const payload = data;  
 
-        // 👉 your existing rendering logic here
+        console.log("FULL RESPONSE:", data);
+        console.log("GOLDEN VALIDATION:", data.golden_validation);
+
+        const diagDiv = document.getElementById("adminDiagnostics");
+        if (!diagDiv) return;
+
+        diagDiv.style.display = "block";
+
+        // ==========================
+        // Build content progressively
+        // ==========================
+        let infoMessage = data?.diagnostic_interpretation ?? "";
+        let html = `
+            <h3>Admin Diagnostics</h3>
+            ${infoMessage || ""}
+        `;
+        // --------------------------
+        // No drift metrics case
+        // --------------------------
+        if (!data.report) {
+            html += `
+                <div style="color:#c62828;font-weight:bold;">
+                    No drift metrics available.
+                </div>
+            `;
+        }
+        // --------------------------
+        // Drift section
+        // --------------------------
+        const statusColor = data.status === "PASS" ? "#2e7d32" : "#c62828";
+
+        html += `
+            <div style="border:1px solid #ccc; padding:10px;">
+                <b>Model Stability Check</b><br><br>
+
+                <b>Absolute Metrics</b><br>
+                API mean: ${safeFixed(data.current_metrics.api_mean)}<br> 
+                API std: ${safeFixed(data.current_metrics.api_std)}<br>   
+                Final mean: ${safeFixed(data.current_metrics.final_mean)}<br>  
+                Final std: ${safeFixed(data.current_metrics.final_std)}<br><br> 
+
+                API mean diff: ${safeFixed(data.report.api_mean_diff)}<br> 
+                API std diff: ${safeFixed(data.report.api_std_diff)}<br>  
+                Final mean diff: ${safeFixed(data.report.final_mean_diff)}<br>  
+                Final std diff: ${safeFixed(data.report.final_std_diff)}<br>  
+
+                <span style="color:${statusColor}; font-weight:bold;">
+                    Status: ${data.status}
+                </span>
+
+            </div>
+        `;
+
+        if (data.failures && data.failures.length) {
+            html += `
+                <div style="margin-top:10px;">
+                    <b>Triggered Drift Signals:</b><br>
+                    ${data.failures.map(f => {
+                        const labels = {
+                            api_mean_shift: "API mean shifted",
+                            api_std_shift: "API variability changed",
+                            final_mean_shift: "Final score average shifted",
+                            final_std_shift: "Final score variability changed",
+                            golden_validation_failed: "Regression validation failed"
+                        };
+                        return labels[f] || f;
+                    }).join("<br>")}
+                </div>
+            `;
+        }
+
+        if (data.sample_warning) {
+            html += `
+                <div style="margin-top:10px; color:#ef6c00;">
+                    <b>Sample Size Warning:</b><br>
+                    ${data.sample_warning}
+                </div>
+            `;
+        }
+
+        // --------------------------
+        // Root cause section
+        // --------------------------
+        if (data.diagnostic_interpretation) {
+            html += `
+                <div style="border:1px solid #bbb;background:#f7f7f7;padding:10px;margin-top:15px;">
+                    <b>Root Cause Analysis</b><br><br>
+                    ${data.diagnostic_interpretation}
+                </div>
+            `
+        };
+    
+        console.log("DIAG INTERPRETATION:", data.diagnostic_interpretation);
+        // --------------------------
+        // (Optional) Golden validation
+        // --------------------------
+        if (data.golden_validation) {
+            const gv = data.golden_validation;
+            const color = gv.status === "PASS" ? "#2e7d32" : "#c62828";
+
+            html += `
+                <div style="border:1px solid #ccc; padding:10px; margin-top:10px;">
+                    <b>Golden20 Validation</b><br><br>
+
+                    Status: <span style="color:${color}; font-weight:bold;">
+                        ${gv.status}
+                    </span><br><br>
+
+                    ${gv.summary || ""}<br><br>
+
+                    MAE: ${safeFixed(gv.metrics?.mae)} (Δ ${safeFixed(gv.metrics?.mae_diff)})<br>
+                    Bias: ${safeFixed(gv.metrics?.bias)} (Δ ${safeFixed(gv.metrics?.bias_diff)})<br><br>
+
+                    <div style="cursor:pointer; color:#1565c0;" onclick="toggleRegressionDetails('regressionDetails')">
+                        ▶ Show detailed diagnostics
+                    </div>
+
+                    <div id="regressionDetails" style="display:none; margin-top:10px;">
+                        ${renderTopCases(gv.top_cases)}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==========================
+        // Final render (ONLY ONCE)
+        // ==========================
+        diagDiv.innerHTML = html;
+
+        if (payload?.results?.results) {
+            window.lastPayload = payload;
+            window.lastResults = payload.results.results;
+        }
+            
+        const title = document.getElementById("pageTitle");
+        if (title) {
+            title.innerText = `Element ${element} Scoring`;
+        }
+
+        const results = payload?.results?.results || [];
+
+        results.forEach(result => {
+            
+            const fileName = document.createElement("h4");
+            fileName.textContent = result.filename;
+            resultsDiv.appendChild(fileName);
+
+            const subKeys = Object.keys(result)
+                .filter(k => k.startsWith(element) && !k.includes("_"))
+                .sort((a, b) => {
+                    const na = parseInt(a.slice(1));
+                    const nb = parseInt(b.slice(1));
+                    return na - nb;
+                });
+
+            subKeys.forEach(k => {
+
+                const score = result[`${k}_final`] ?? result[k] ?? "";
+
+                const p = document.createElement("p");
+                p.textContent = `${k}: ${score}`;
+
+                resultsDiv.appendChild(p);
+
+            });
+
+            if (result.narrative_feedback) {
+
+                const rationaleBlock = document.createElement("div");
+
+                const label = document.createElement("strong");
+                label.textContent = "Rationale:";
+
+                const paragraph = document.createElement("p");
+                paragraph.textContent = result.narrative_feedback;
+
+                rationaleBlock.appendChild(label);
+                rationaleBlock.appendChild(paragraph);
+
+                resultsDiv.appendChild(rationaleBlock);
+            }
+
+            resultsDiv.appendChild(document.createElement("hr"));
+        });
+
+        resultsSection.style.display = "block";
 
     } catch (err) {
-        console.error("Diagnostics error:", err);
+        console.error(err);
     } finally {
 
-        // 🛡️ SAFETY GUARD: always restore button state
         btn.disabled = false;
         btn.innerText = originalText;
         window.diagnosticsRunning = false;
     }
-
-    const resultsSection = document.getElementById("results-section");
-    const resultOutput = document.getElementById("resultOutput");
-
-    const checkBtn = document.getElementById("checkSavedResultsBtn");
-
-    checkBtn.disabled = true;
-    checkBtn.innerText = "Running...";
-
-    try {
-        await checkSavedResults();
-    } finally {
-        checkBtn.disabled = false;
-        checkBtn.innerText = "Check Saved Results";
-    }
-
-    window.currentView = "diagnostics";
-    window.pollingActive = false;
-
-    const resultsDiv = document.getElementById("resultOutput");
-
-    // 🔥 HARD STOP any scoring UI updates
-    window.lockResults = true;
-
-    if (window.renderTimeout) {
-        clearTimeout(window.renderTimeout);
-    }
-
-    // Switch UI to diagnostics mode
-    const progressBar = document.getElementById("progressBarContainer");
-    const progressText = document.getElementById("progressText");
-    const diagnosticsPanel = document.getElementById("diagnosticsContainer");
-
-if (progressBar) progressBar.style.display = "none";
-if (progressText) progressText.style.display = "none";
-if (diagnosticsPanel) diagnosticsPanel.style.display = "block";
-
-    const progressContainer = document.getElementById("progressContainer");
-    if (progressContainer) {
-        progressContainer.style.display = "none";
-    }
-
-    const formData = new FormData();
-    const element = document.getElementById("element").value;
-    formData.append("element", element);
-
-    const response = await fetch("/check_saved_results", {
-        method: "POST",
-        body: formData
-    });
-    const data = await response.json();
-    const payload = data;  
-
-    console.log("FULL RESPONSE:", data);
-    console.log("GOLDEN VALIDATION:", data.golden_validation);
-
-    const diagDiv = document.getElementById("adminDiagnostics");
-    if (!diagDiv) return;
-
-    diagDiv.style.display = "block";
-
-    // ==========================
-    // Build content progressively
-    // ==========================
-    let infoMessage = data?.diagnostic_interpretation ?? "";
-    let html = `
-        <h3>Admin Diagnostics</h3>
-        ${infoMessage || ""}
-    `;
-    // --------------------------
-    // No drift metrics case
-    // --------------------------
-    if (!data.report) {
-        html += `
-            <div style="color:#c62828;font-weight:bold;">
-                No drift metrics available.
-            </div>
-        `;
-    }
-    // --------------------------
-    // Drift section
-    // --------------------------
-    const statusColor = data.status === "PASS" ? "#2e7d32" : "#c62828";
-
-    html += `
-        <div style="border:1px solid #ccc; padding:10px;">
-            <b>Model Stability Check</b><br><br>
-
-            <b>Absolute Metrics</b><br>
-            API mean: ${safeFixed(data.current_metrics.api_mean)}<br> 
-            API std: ${safeFixed(data.current_metrics.api_std)}<br>   
-            Final mean: ${safeFixed(data.current_metrics.final_mean)}<br>  
-            Final std: ${safeFixed(data.current_metrics.final_std)}<br><br> 
-
-            API mean diff: ${safeFixed(data.report.api_mean_diff)}<br> 
-            API std diff: ${safeFixed(data.report.api_std_diff)}<br>  
-            Final mean diff: ${safeFixed(data.report.final_mean_diff)}<br>  
-            Final std diff: ${safeFixed(data.report.final_std_diff)}<br>  
-
-            <span style="color:${statusColor}; font-weight:bold;">
-                Status: ${data.status}
-            </span>
-
-        </div>
-    `;
-
-    if (data.failures && data.failures.length) {
-        html += `
-            <div style="margin-top:10px;">
-                <b>Triggered Drift Signals:</b><br>
-                ${data.failures.map(f => {
-                    const labels = {
-                        api_mean_shift: "API mean shifted",
-                        api_std_shift: "API variability changed",
-                        final_mean_shift: "Final score average shifted",
-                        final_std_shift: "Final score variability changed",
-                        golden_validation_failed: "Regression validation failed"
-                    };
-                    return labels[f] || f;
-                }).join("<br>")}
-            </div>
-        `;
-    }
-
-    if (data.sample_warning) {
-        html += `
-            <div style="margin-top:10px; color:#ef6c00;">
-                <b>Sample Size Warning:</b><br>
-                ${data.sample_warning}
-            </div>
-        `;
-    }
-
-    // --------------------------
-    // Root cause section
-    // --------------------------
-    if (data.diagnostic_interpretation) {
-        html += `
-            <div style="border:1px solid #bbb;background:#f7f7f7;padding:10px;margin-top:15px;">
-                <b>Root Cause Analysis</b><br><br>
-                ${data.diagnostic_interpretation}
-            </div>
-        `
-    };
-   
-    console.log("DIAG INTERPRETATION:", data.diagnostic_interpretation);
-    // --------------------------
-    // (Optional) Golden validation
-    // --------------------------
-    if (data.golden_validation) {
-        const gv = data.golden_validation;
-        const color = gv.status === "PASS" ? "#2e7d32" : "#c62828";
-
-        html += `
-            <div style="border:1px solid #ccc; padding:10px; margin-top:10px;">
-                <b>Golden20 Validation</b><br><br>
-
-                Status: <span style="color:${color}; font-weight:bold;">
-                    ${gv.status}
-                </span><br><br>
-
-                ${gv.summary || ""}<br><br>
-
-                MAE: ${safeFixed(gv.metrics?.mae)} (Δ ${safeFixed(gv.metrics?.mae_diff)})<br>
-                Bias: ${safeFixed(gv.metrics?.bias)} (Δ ${safeFixed(gv.metrics?.bias_diff)})<br><br>
-
-                <div style="cursor:pointer; color:#1565c0;" onclick="toggleRegressionDetails('regressionDetails')">
-                    ▶ Show detailed diagnostics
-                </div>
-
-                <div id="regressionDetails" style="display:none; margin-top:10px;">
-                    ${renderTopCases(gv.top_cases)}
-                </div>
-            </div>
-        `;
-    }
-
-    // ==========================
-    // Final render (ONLY ONCE)
-    // ==========================
-    diagDiv.innerHTML = html;
-
-    if (payload?.results?.results) {
-        window.lastPayload = payload;
-        window.lastResults = payload.results.results;
-    }
-        
-    const title = document.getElementById("pageTitle");
-    if (title) {
-        title.innerText = `Element ${element} Scoring`;
-    }
-
-    const results = payload?.results?.results || [];
-
-    results.forEach(result => {
-        
-        const fileName = document.createElement("h4");
-        fileName.textContent = result.filename;
-        resultsDiv.appendChild(fileName);
-
-        const subKeys = Object.keys(result)
-            .filter(k => k.startsWith(element) && !k.includes("_"))
-            .sort((a, b) => {
-                const na = parseInt(a.slice(1));
-                const nb = parseInt(b.slice(1));
-                return na - nb;
-            });
-
-        subKeys.forEach(k => {
-
-            const score = result[`${k}_final`] ?? result[k] ?? "";
-
-            const p = document.createElement("p");
-            p.textContent = `${k}: ${score}`;
-
-            resultsDiv.appendChild(p);
-
-        });
-
-        if (result.narrative_feedback) {
-
-            const rationaleBlock = document.createElement("div");
-
-            const label = document.createElement("strong");
-            label.textContent = "Rationale:";
-
-            const paragraph = document.createElement("p");
-            paragraph.textContent = result.narrative_feedback;
-
-            rationaleBlock.appendChild(label);
-            rationaleBlock.appendChild(paragraph);
-
-            resultsDiv.appendChild(rationaleBlock);
-        }
-
-        resultsDiv.appendChild(document.createElement("hr"));
-    });
-
-    resultsSection.style.display = "block";
 }
 
 function escapeCSV(value) {
