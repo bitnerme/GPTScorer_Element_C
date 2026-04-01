@@ -2,7 +2,6 @@ import os
 import json5
 import json
 import re
-import time
 import argparse
 import pandas as pd
 import sys
@@ -13,38 +12,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 import openai
 import pytesseract
-from pdf2image import convert_from_path
-import win32com.client
-import pythoncom
 from scripts.shared.utils import extract_text_with_fallback
 import traceback
 import shutil
-
-
-# Resolve project root: c:\GPTScorer
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-def configure_tesseract():
-    # 1. Check environment variable first (best for Mac/Linux)
-    tesseract_path = os.environ.get("TESSERACT_PATH")
-
-    if tesseract_path and os.path.exists(tesseract_path):
-        pytesseract.pytesseract.tesseract_cmd = tesseract_path
-        return
-
-    # 2. Try auto-detect (works if installed via brew/apt)
-    detected = shutil.which("tesseract")
-    if detected:
-        pytesseract.pytesseract.tesseract_cmd = detected
-        return
-
-    # 3. Fallback (Windows default)
-    default_win = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-    if os.path.exists(default_win):
-        pytesseract.pytesseract.tesseract_cmd = default_win
-        return
-
-    print("⚠️ Tesseract not found — OCR may fail")
 
 # =========================
 # GPT MODEL CONFIGURATION

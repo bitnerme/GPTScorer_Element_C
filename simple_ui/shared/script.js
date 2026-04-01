@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.displayResults = function(payload) {
     console.log("Rendering payload:", payload);
+    if (window.lockResults) return;
     if (window.currentView === "diagnostics") {
         console.log("Skipping render — diagnostics mode");
         return;
@@ -38,8 +39,9 @@ window.displayResults = function(payload) {
     const actualResults = payload?.results?.results;
 
     if (!actualResults || actualResults.length === 0) {
-        console.warn("No scoring results in payload");
-        return;  // 🚫 DO NOT overwrite UI
+        resultOutput.textContent = "No results returned.";
+        resultSection.style.display = "block";
+        return;
     }
 
     let output = "";
@@ -135,6 +137,12 @@ async function pollProgress(jobId) {
                     const payload = data.output || data;
 
                     payload.diagnostics = {
+                        failures:
+                            data.failures ||
+                            data.output?.failures ||
+                            data.output?.diagnostics?.failures ||
+                            [],
+
                         diagnostic_interpretation:
                             data.diagnostic_interpretation ||
                             data.output?.diagnostic_interpretation ||
@@ -181,16 +189,15 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
 
     const fileInput = document.getElementById("fileInput");
 
-
-    const formData = new FormData();
+    const scoreFormData = new FormData();
 
     const element = document.getElementById("element").value;
-    formData.append("element", element);
+    scoreFormData.append("element", element);
 
     console.log("Selected element:", element);
 
     for (const file of fileInput.files) {
-        formData.append("files", file);
+        scoreFormData.append("files", file);
     }
     
     if (!fileInput.files.length) {
@@ -202,57 +209,14 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
 
     const mode = legacyChecked ? "legacy" : "current";
 
-    formData.append("mode", mode);
+    scoreFormData.append("mode", mode);
 
     console.log("Selected mode:", mode);
-
-    // ===============================
-    // Diagnostics + Regression Options
-    // ===============================
-
-    const rebuildDrift = document.getElementById("rebuild_drift_baseline").checked;
-    const runRegression = document.getElementById("run_regression").checked;
-    const recomputeRegression = document.getElementById("recompute_regression_scores").checked;
-    const rebuildRegression = document.getElementById("rebuild_regression_baseline").checked;
-
-    // 🔥 Confirmation: Drift baseline
-    if (rebuildDrift) {
-        const confirmed = confirm(
-            "This will overwrite the DRIFT baseline.\n\n" +
-            "Only do this if you are intentionally updating model stability reference metrics.\n\n" +
-            "Continue?"
-        );
-        if (!confirmed) return;
-    }
-
-    // 🔥 Confirmation: Regression baseline
-    if (rebuildRegression) {
-        const confirmed = confirm(
-            "This will overwrite the REGRESSION baseline (Golden dataset).\n\n" +
-            "Only do this if you are intentionally updating validation standards.\n\n" +
-            "Continue?"
-        );
-        if (!confirmed) return;
-    }
-
-    // Append to formData (IMPORTANT)
-    formData.append("rebuild_drift_baseline", rebuildDrift);
-    formData.append("run_regression", runRegression);
-    formData.append("recompute_regression_scores", recomputeRegression);
-    formData.append("rebuild_regression_baseline", rebuildRegression);
-
-    // Debug (optional but very helpful)
-    console.log("Diagnostics options:", {
-        rebuildDrift,
-        runRegression,
-        recomputeRegression,
-        rebuildRegression
-    });
 
     try {
         const response = await fetch("/score", {
             method: "POST",
-            body: formData,
+            body: scoreFormData,
         });
 
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
@@ -281,12 +245,12 @@ function safeFixed(value) {
     return isFinite(num) ? num.toFixed(4) : "N/A";
 }
 
-function toggleRegressionDetails() {
-    const el = document.getElementById("regressionDetails");
-    if (!el) return;
+//function toggleRegressionDetails() {
+//    const el = document.getElementById("regressionDetails");
+//    if (!el) return;
 
-    el.style.display = el.style.display === "none" ? "block" : "none";
-}
+//   el.style.display = el.style.display === "none" ? "block" : "none";
+//}
 
 
 function renderTopCases(cases) {
@@ -313,7 +277,48 @@ window.toggleRegressionDetails = function (id) {
     el.style.display = (el.style.display === "none") ? "block" : "none";
 };
 
+
 async function checkSavedResults() {
+    const diagnosticsFormData = new FormData();
+    const element = document.getElementById("element").value;
+
+    const rebuildDrift = document.getElementById("rebuild_drift_baseline").checked;
+    const runRegression = document.getElementById("run_regression").checked;
+    const recomputeRegression = document.getElementById("recompute_regression_scores").checked;
+    const rebuildRegression = document.getElementById("rebuild_regression_baseline").checked;
+
+    if (rebuildDrift) {
+        const confirmed = confirm(
+            "This will overwrite the DRIFT baseline.\n\n" +
+            "Only do this if you are intentionally updating model stability reference metrics.\n\n" +
+            "Continue?"
+        );
+        if (!confirmed) return;
+    }
+
+    if (rebuildRegression) {
+        const confirmed = confirm(
+            "This will overwrite the REGRESSION baseline (Golden dataset).\n\n" +
+            "Only do this if you are intentionally updating validation standards.\n\n" +
+            "Continue?"
+        );
+        if (!confirmed) return;
+    }
+
+    diagnosticsFormData.append("element", element);
+    diagnosticsFormData.append("rebuild_drift_baseline", rebuildDrift ? "true" : "false");
+    diagnosticsFormData.append("run_regression", runRegression ? "true" : "false");
+    diagnosticsFormData.append("recompute_regression_scores", recomputeRegression ? "true" : "false");
+    diagnosticsFormData.append("rebuild_regression_baseline", rebuildRegression ? "true" : "false");
+
+    console.log("Diagnostics options:", {
+        rebuildDrift,
+        runRegression,
+        recomputeRegression,
+        rebuildRegression
+    });
+
+   
 
     // --- LOCK ---
     if (window.diagnosticsRunning) return;
@@ -344,6 +349,7 @@ async function checkSavedResults() {
         }
 
         // Switch UI to diagnostics mode
+        //const progressBar = document.getElementById("progressBarContainer");
         const progressBar = document.getElementById("progressBarContainer");
         const progressText = document.getElementById("progressText");
         const diagnosticsPanel = document.getElementById("diagnosticsContainer");
@@ -357,22 +363,38 @@ async function checkSavedResults() {
             progressContainer.style.display = "none";
         }
 
-        const formData = new FormData();
-        const element = document.getElementById("element").value;
-        formData.append("element", element);
-
         const saveDrift = document.getElementById("rebuild_drift_baseline").checked;
-        formData.append("save_drift_baseline", saveDrift);
+        diagnosticsFormData.append(
+            "rebuild_drift_baseline",
+            saveDrift ? "true" : "false"
+        );
+
+        for (const [k, v] of diagnosticsFormData.entries()) {
+            console.log("FORMDATA", k, v);
+        }
 
         const response = await fetch("/check_saved_results", {
             method: "POST",
-            body: formData
+            body: diagnosticsFormData
         });
+
+         for (const [k, v] of diagnosticsFormData.entries()) {
+            console.log("FORMDATA", k, v);
+        }
+
         const data = await response.json();
         const payload = data;  
 
         console.log("FULL RESPONSE:", data);
         console.log("GOLDEN VALIDATION:", data.golden_validation);
+
+         // Debug (optional but very helpful)
+        console.log("Diagnostics options:", {
+            rebuildDrift,
+            runRegression,
+            recomputeRegression,
+            rebuildRegression
+        });
 
         const diagDiv = document.getElementById("adminDiagnostics");
         if (!diagDiv) return;
@@ -382,7 +404,24 @@ async function checkSavedResults() {
         // ==========================
         // Build content progressively
         // ==========================
-        let infoMessage = data?.diagnostic_interpretation ?? "";
+        let infoMessage = "";
+
+        if (data.failures && data.failures.length > 0) {
+            const labels = {
+                api_mean_shift: "API mean shifted",
+                api_std_shift: "API variability changed",
+                final_mean_shift: "Final score average shifted",
+                final_std_shift: "Final score variability changed",
+                golden_validation_failed: "Regression validation failed"
+            };
+
+            const readable = data.failures.map(f => labels[f] || f);
+
+            infoMessage = "Drift detected: " + readable.join("; ");
+        } else {
+            infoMessage = "No significant drift detected.";
+        }
+        
         let html = `
             <h3>Admin Diagnostics</h3>
             ${infoMessage || ""}
@@ -505,7 +544,8 @@ async function checkSavedResults() {
             window.lastResults = payload.results.results;
         }
             
-        const title = document.getElementById("pageTitle");
+        //const title = document.getElementById("pageTitle");
+        const title = document.getElementById("title");
         if (title) {
             title.innerText = `Element ${element} Scoring`;
         }
@@ -566,6 +606,10 @@ async function checkSavedResults() {
         btn.innerText = originalText;
         window.diagnosticsRunning = false;
     }
+    document.getElementById("checkSavedResultsBtn").scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
 }
 
 function escapeCSV(value) {

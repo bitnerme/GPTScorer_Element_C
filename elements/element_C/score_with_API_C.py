@@ -14,9 +14,17 @@ import win32com.client
 import pythoncom
 from scripts.shared.utils import extract_text_with_fallback
 import traceback
-import re
 import shutil
 
+# =====================================================
+# SCORE FIELD DEFINITIONS
+# =====================================================
+# C{i}       = post-rule scores (input to calibration)
+# C{i}_api   = raw GPT API output (used for drift detection)
+#
+# NOTE:
+# In v1.15, rules are inactive, so C{i} == C{i}_api
+# =====================================================
 
 # Resolve project root: c:\GPTScorer
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -89,86 +97,9 @@ RUBRIC_PATH = Path(__file__).resolve().parent / "Current Element C Rubric.txt"
 with open(RUBRIC_PATH, "r", encoding="utf-8") as f:
     RUBRIC_TEXT = f.read().strip()  
 
-def detect_solution_like(text: str) -> bool:
-    t = (text or "").lower()
-
-    solution_markers = [
-        "prototype", "we built", "we made", "we created", "we constructed", "we assembled",
-        "how it works", "this works by", "our design", "our solution", "final design",
-        "materials", "wiring", "arduino", "circuit", "3d ed", "ed", "glued"
-    ]
-
-    requirement_markers = [
-        "must", "should", "need to", "needs to", "requirement", "design requirement",
-        "criteria", "constraint"
-    ]
-
-    sol_hits = sum(t.count(k) for k in solution_markers)
-    req_hits = sum(t.count(k) for k in requirement_markers)
-
-    # “solution-like” if solution language dominates AND requirement language is scarce
-    return (sol_hits >= 2 and sol_hits >= req_hits + 1) or (sol_hits >= 3 and req_hits == 0)
-
-
 def clean_json_string(raw):
     # Remove trailing commas before } or ]
     return re.sub(r',\s*([}\]])', r'\1', raw)
-
-def detect_solution_specification(text: str) -> bool:
-    t = (text or "").lower()
-
-    constraint_terms = [
-        "must allow", "must accommodate", "must not exceed",
-        "should be able", "needs to", "requirement is to"
-    ]
-
-    specification_terms = [
-        "will be made of", "is made of", "built with",
-        "includes", "uses", "consists of", "constructed from"
-    ]
-
-    constraint_hits = sum(t.count(k) for k in constraint_terms)
-    spec_hits = sum(t.count(k) for k in specification_terms)
-
-    # Specification-dominant → invalid Element C per experts
-    return spec_hits >= max(1, constraint_hits)
-
-def detect_post_solution_requirements(text: str) -> bool:
-    t = (text or "").lower()
-
-    solution_specific = [
-        "2x4", "plywood", "steel", "aluminum",
-        "arduino", "servo", "motor", "circuit",
-        "3d ed", "bolted", "welded"
-    ]
-
-    testing_presuppose = [
-        "test by placing",
-        "verify by installing",
-        "measure after building",
-        "once constructed"
-    ]
-
-    exploratory_terms = [
-        "explore", "consider", "investigate",
-        "evaluate", "compare", "tradeoff",
-        "alternative"
-    ]
-
-    sol_hits = sum(t.count(k) for k in solution_specific)
-    test_hits = sum(t.count(k) for k in testing_presuppose)
-    has_exploration = any(k in t for k in exploratory_terms)
-
-    signals = 0
-    if sol_hits >= 2:
-        signals += 1
-    if test_hits >= 1:
-        signals += 1
-    if not has_exploration:
-        signals += 1
-
-    return signals >= 2
-
 
 def get_gpt_model(blended_version: str) -> str:
     """
@@ -176,7 +107,7 @@ def get_gpt_model(blended_version: str) -> str:
     """
     if blended_version == "v1.13":
         return GPT_MODEL_LEGACY
-    elif blended_version in ("v1.14", "v1.15"):
+    elif blended_version in ("v1.15"):
         return GPT_MODEL_CURRENT
     else:
         raise ValueError(f"Unknown blended model version: {blended_version}")
@@ -271,7 +202,7 @@ def score_document(filename, content, blended_model):
         "narrative_feedback": "150–220 word single-paragraph rationale for teachers, referencing the scores and giving specific improvement suggestions."
         }}
         """
-    elif blended_model in ("v1.14", "v1.15"):
+    elif blended_model in ("v1.15"):
         prompt = f"""
         Rubric:
         {RUBRIC_TEXT}
@@ -374,8 +305,6 @@ def score_document(filename, content, blended_model):
     # === Call the API ===
     
     gpt_model = get_gpt_model(blended_model)
-
-    ("MODEL BEING USED:", gpt_model)
 
     response = openai.ChatCompletion.create(
         model=gpt_model,
@@ -514,6 +443,26 @@ def score_document(filename, content, blended_model):
 
     response_dict["truncation_detected"] = 0
 
+# =====================================================
+# RULE PROCESSING
+# =====================================================
+# v1.13 → minimal rule adjustments (rare)
+# v1.15 → no rules (passthrough)
+#
+# NOTE:
+# Rules modify C{i} (input to calibration)
+# C{i}_api always preserves raw GPT output
+# =====================================================
+
+def apply_rules(row, blended_version, filename):
+    print("🔥 APPLY_RULES CALLED")
+    if blended_version == "v1.13":
+        return postprocess_v113(row, filename)
+    elif blended_version == "v1.15":
+        return row  # no rules
+    else:
+        return row
+
 def postprocess_v113(row, filename):
     for i in range(1, 7):
         rationale = row.get(f"C{i}_rationale", "").strip().lower()
@@ -527,180 +476,8 @@ def postprocess_v113(row, filename):
         row[f"C{i}_flag"] = flag
     return row
 
-
-def postprocess_v114(row, filename):
-    for i in range(1, 7):
-        rationale = row.get(f"C{i}_rationale", "").strip().lower()
-        score = row.get(f"C{i}", 0)
-        flag = "CI-ok"
-        if (not rationale or len(rationale.split()) < 5 or
-                any(weak in rationale for weak in ["not clear", "vague", "uncertain"])):
-            flag = "flag"
-            if score >= 3:
-                score -= 1
-        row[f"C{i}"] = score
-        row[f"C{i}_flag"] = flag
-    return row
-
-def classify_structural_class(row):
-    text = row.get("text", "")
-
-    if (
-        detect_solution_specification(text)
-        or detect_post_solution_requirements(text)
-    ):
-        return 0
-
-    return 1
-
-
-
-    """
-    Returns structural_class ∈ {0, 1, 2}
-    0 = fundamentally not Element C
-    1 = partial / emerging
-    2 = substantively valid Element C
-    """
-    solution_like = detect_solution_like(row.get("text", ""))
-
-    scores = [row.get(f"C{i}", 0) for i in range(1, 7)]
-    flags = [row.get(f"C{i}_flag", "") for i in range(1, 7)]
-    rationales = " ".join(
-        row.get(f"C{i}_rationale", "").lower()
-        for i in range(1, 7)
-    )
-
-    # --- Strong negative signals ---
-    low_score_count = sum(s <= 1 for s in scores)
-    flagged_count = sum(f == "flag" for f in flags)
-
-    negative_keywords = [
-        "solution",
-        "prototype",
-        "built",
-        "actual design",
-        "final product",
-        "wrong element",
-        "not design requirements"
-    ]
-
-    has_negative_language = any(k in rationales for k in negative_keywords)
-
-    # --- Strong positive signals ---
-    sufficient_scores = sum(s >= 2 for s in scores)
-
-    # ---- Classification rules ----
-
-    # Structural Class 0: fundamentally not Element C
-    if solution_like:
-        (filename, "solution_like =", solution_like)
-        return 0
-
-    # Structural Class 2: substantively valid Element C
-    if (
-        sufficient_scores >= 3 and
-        row.get("C2", 0) >= 2 and
-        row.get("C3", 0) >= 2 and
-        not has_negative_language
-    ):
-        return 2
-
-    # Structural Class 1: everything else
-    return 1
-
-def apply_structural_gating(element_raw, structural_class):
-    """
-    Applies conservative bounds based on structural class.
-    """
-
-    # Class 0: fundamentally not Element C
-    if structural_class == 0:
-        return min(element_raw, 1.2)
-
-    # Class 2: substantively valid Element C
-    if structural_class == 2:
-        return min(
-            max(element_raw, 2.2),  # floor
-            3.8                     # ceiling
-        )
-
-    # Class 1: no structural adjustment
-    return element_raw
-
-
-def postprocess_v115(row, filename):
-    row = postprocess_v114(row, filename)
-
-    text = row.get("text", "") or ""
-
-    solution_like = (
-        detect_solution_like(text)
-        or detect_post_solution_requirements(text)
-        or detect_solution_specification(text)
-    )
-
-    row["v115_solution_like"] = int(solution_like)
-
-    if solution_like:
-        for i in (2, 3, 5):
-            key = f"C{i}"
-            row[key] = min(int(row.get(key, 0)), 2)
-            row[f"{key}_flag"] = "red flag"
-            row[f"{key}_rationale"] += (
-                " Content primarily describes a solution or implementation rather than design requirements."
-            )
-
-    c2 = int(row.get("C2", 0))
-    c4 = int(row.get("C4", 0))
-    weak_trigger = (c2 <= 1 and c4 <= 1)
-
-    row["v115_weak_trigger_c2c4"] = int(weak_trigger)
-
-    element_raw = sum(int(row.get(f"C{i}", 0)) for i in range(1, 7)) / 6.0
-    element_adjust = 0.0
-
-    if solution_like:
-        element_adjust -= 1.0
-    if weak_trigger:
-        element_adjust -= 0.5
-
-    row["element_score_raw"] = round(element_raw, 2)
-    row["element_adjustment_total"] = round(element_adjust, 2)
-    row["element_penalty_pvg"] = int(solution_like)
-    row["element_penalty_weak_c2c4"] = int(weak_trigger)
-    row["element_score_adjusted"] = round(max(0.0, element_raw + element_adjust), 2)
-
-    ("DEBUG v115 keys:", sorted(row.keys()))
-
-    return row
-
-
-def is_solution_description(text):
-    """
-    Detects whether content primarily describes solution behavior
-    rather than design requirements.
-    """
-    solution_keywords = [
-        "the device will",
-        "we built",
-        "we designed",
-        "we implemented",
-        "this prototype",
-        "how it works",
-        "steps",
-        "procedure",
-        "strategy",
-        "process"
-    ]
-
-    text = text.lower()
-    hits = sum(1 for k in solution_keywords if k in text)
-    return hits >= 2
-
 def natural_sort_key(s):
     return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
-
-
 
 def main(folder_path, output_path, blended_version):
 
@@ -745,29 +522,12 @@ def main(folder_path, output_path, blended_version):
             # Ensure C scores are integers
             for i in range(1, 7):
                 row[f"C{i}"] = int(row.get(f"C{i}", 0))
+            
+            response_dict = apply_rules(response_dict, blended_version, filename)
 
-            # --- Version-specific postprocessing ---
-            if blended_version == "v1.13":
-                row = postprocess_v113(row, filename)
-            elif blended_version == "v1.14":
-                row = postprocess_v114(row, filename)
-            elif blended_version == "v1.15":
-                # No rule engine for Current
-                pass
-
-            # --- Structural classification & gating (v1.14 only, for now) ---
-            if blended_version == "v1.14":
-                # Structural classification
-                row["structural_class"] = classify_structural_class(row)
-
-                # Element aggregation
-                row["element_raw"] = sum(row[f"C{i}"] for i in range(1, 7)) / 6.0
-
-                # Structural gating
-                row["element_structured"] = apply_structural_gating(
-                    row["element_raw"],
-                    row["structural_class"]
-                )
+            for i in range(1, 7):
+                row[f"C{i}"] = response_dict.get(f"C{i}", 0)
+                row[f"C{i}_api"] = response_dict.get(f"C{i}_api", 0)
 
             results.append(row)
 
@@ -778,15 +538,15 @@ def main(folder_path, output_path, blended_version):
             continue    
 
     output_df = pd.DataFrame(results)
+    print("CHECK PIPELINE:")
+    print(output_df[[f"C{i}_api" for i in range(1,subelement_count+1)]].head(1))
+    print(output_df[[f"C{i}" for i in range(1,subelement_count+1)]].head(1))
+
     # Reorder columns
     core = ["Case", "filename", "text", "incomplete_response"]
 
     scores = [f"C{i}" for i in range(1, 7)]
     api_scores = [f"C{i}_api" for i in range(1, 7)]  # 👈 NEW
-
-    for i in range(1, 7):
-        if row[f"C{i}"] != row[f"C{i}_api"]:
-            (f"{filename} C{i} changed by rule engine")
 
     flags = [f"C{i}_flag" for i in range(1, 7)]
     rationales = [f"C{i}_rationale" for i in range(1, 7)]
@@ -798,17 +558,15 @@ def main(folder_path, output_path, blended_version):
         "element_adjustment_total",
         "element_penalty_pvg",
         "element_penalty_weak_c2c4",
-        "element_score_adjusted",
-        "v115_solution_like",
+        "element_score_adjusted"
         "v115_weak_trigger_c2c4",
         "narrative_feedback"   # 👈 ADD THIS
     ]
 
-    ("COLUMNS BEFORE REORDER:", output_df.columns.tolist())
-
     ordered_columns = core + scores + api_scores + flags + rationales + extras
 
     ordered_columns = [c for c in ordered_columns if c in output_df.columns]
+
     output_df = output_df[ordered_columns]
 
     output_df.to_csv(output_path, index=False)
@@ -850,13 +608,10 @@ def score_documents_with_api(documents, blended_version):
 
         # --- Narrative ---
         row["narrative_feedback"] = response_dict.get("narrative_feedback", "")
-        print("Narrative in row:", row["narrative_feedback"])
 
         # --- Postprocessing ---
         if blended_version == "v1.13":
             row = postprocess_v113(row, filename)
-        elif blended_version == "v1.14":
-            row = postprocess_v114(row, filename)
         elif blended_version == "v1.15":
             pass  # no rule engine
 
@@ -892,7 +647,18 @@ def score_documents_with_api(documents, blended_version):
             drift_result.get("failures", [])
         )
 
-        print("results.append ROW KEYS:", row.keys())
+        # ✅ Update ONLY score-related fields
+        for i in range(1, 7):
+            row[f"C{i}"] = response_dict.get(f"C{i}", 0)
+            row[f"C{i}_api"] = response_dict.get(f"C{i}_api", 0)
+
+            # preserve rationale (already in response_dict or row)
+            row[f"C{i}_rationale"] = response_dict.get(f"C{i}_rationale", row.get(f"A{i}_rationale", ""))
+
+        # optional fields
+        row["truncation_detected"] = response_dict.get("truncation_detected", False)
+        row["element_score_api"] = response_dict.get("element_score_api", row.get("element_score_api", 0))
+        row["narrative_feedback"] = response_dict.get("narrative_feedback", row.get("narrative_feedback", ""))
 
         results.append(row)
 
@@ -903,8 +669,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Score documents using GPT API and blended model logic.")
     parser.add_argument("--folder", required=True, help="Folder containing documents to score")
     parser.add_argument("--output", required=True, help="Path to output CSV file")
-    parser.add_argument("--blended-model", choices=["v1.13", "v1.14", "v1.15", "v1.15b"], default="v1.14",
-                        help="Which blended model logic to apply (default: v1.14)")
+    parser.add_argument("--blended-model", choices=["v1.13", "v1.15"], default="v1.15",
+                        help="Which blended model logic to apply (default: v1.15)")
     args = parser.parse_args()
 
 

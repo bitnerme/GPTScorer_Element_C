@@ -19,10 +19,13 @@ import json
 from fastapi import FastAPI, Form
 from scripts.shared.validate_golden20 import validate_golden20
 from flask import request
+from core.diagnostics import interpret_diagnostics
 
 app = FastAPI()
 
 PROJECT_ROOT = Path(__file__).resolve().parent
+
+# NOTE: globals used for single-user/local environment (not thread-safe)
 
 global LAST_RUN_WAS_SCORING
 global last_metrics, last_mode, last_results
@@ -51,7 +54,7 @@ def save_drift_baseline_to_file(current_metrics, baseline_file):
         json.dump(baseline_data, f, indent=4)
 
     print(f"✅ Drift baseline saved to {baseline_file}")
-    
+
 def get_golden_paths(element, mode):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     label = element.lower()
@@ -92,9 +95,6 @@ def load_element_modules(element):
 # =========================
 # Get Diagnostic Metrics
 # =========================
-
-last_metrics = None
-last_mode = None
 
 def compute_gpt_metrics(df: pd.DataFrame, element: str) -> dict:
     sub_cols = sorted([
@@ -158,12 +158,6 @@ async def score(
     element: str = Form(...),
     mode: str = Form(...),
     files: List[UploadFile] = File(...),
-
-    # 🔥 NEW FLAGS
-    rebuild_drift_baseline: bool = Form(False),
-    run_regression: bool = Form(True),
-    recompute_regression_scores: bool = Form(False),
-    rebuild_regression_baseline: bool = Form(False),
 ):
 
     element_clean = (element or "").strip().upper()
@@ -176,6 +170,8 @@ async def score(
     score_mod, app_mod = load_element_modules(element)
 
     score_documents_with_api = score_mod.score_documents_with_api
+    # C{i} = post-rule scores (input to calibration)
+    # C{i}_api = raw GPT output (used for drift detection)
     apply_calibration_pipeline = app_mod.apply_calibration_pipeline
 
     file_payloads = []
@@ -197,12 +193,6 @@ async def score(
         mode,
         score_documents_with_api,
         apply_calibration_pipeline,
-
-        # 🔥 ADD THESE
-        rebuild_drift_baseline,
-        run_regression,
-        recompute_regression_scores,
-        rebuild_regression_baseline,
     )
 
     return {
@@ -221,20 +211,9 @@ def process_files_background(
     mode,
     score_documents_with_api,
     apply_calibration_pipeline,
-
-    # 🔥 NEW
-    rebuild_drift_baseline,
-    run_regression,
-    recompute_regression_scores,
-    rebuild_regression_baseline,
 ):
 
-    global last_run_regression, last_recompute_regression, last_rebuild_regression
     global last_results, last_metrics, last_mode, LAST_RUN_WAS_SCORING
-
-    last_run_regression = run_regression
-    last_recompute_regression = recompute_regression_scores
-    last_rebuild_regression = rebuild_regression_baseline
 
     dfs = []
 
@@ -252,7 +231,7 @@ def process_files_background(
         blended = get_blended_model(element, mode)
 
         if filename.lower().endswith(".csv"):
-            print("Processing CSV:", filename)
+            print("Processing CSV:", filename)  # CSV inputs are assumed pre-scored (bypass API + rules pipeline)
 
             df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
 
@@ -279,6 +258,7 @@ def process_files_background(
     df = pd.concat(dfs, ignore_index=True)
 
     # Map GPT scores to base scores (critical step)
+    # Legacy support: map *_gpt columns to base score columns if present
     for col in df.columns:
         if col.endswith("_gpt"):
             base_col = col.replace("_gpt", "")
@@ -287,7 +267,28 @@ def process_files_background(
     gpt_cols = [c for c in df.columns if c.endswith("_gpt")]
     base_cols = [c.replace("_gpt", "") for c in gpt_cols if c.replace("_gpt", "") in df.columns]
 
+    subelement_count = detect_subelement_count(None, element)
+
+    base_cols = [f"{element}{i}" for i in range(1, subelement_count+1)]
+    api_cols = [f"{element}{i}_api" for i in range(1, subelement_count+1)]
+
+    base_cols = [c for c in base_cols if c in df.columns]
+    api_cols = [c for c in api_cols if c in df.columns]
+
+    print("=== CALIBRATION INPUT CHECK ===")
+    if api_cols:
+        print(df[api_cols].head(1))
+    else:
+        print("No API columns found (likely CSV input)")
+
+    if base_cols:
+        print(df[base_cols].head(1))
+    else:
+        print("No base score columns found")
+
     df = apply_calibration_pipeline(df, mode.lower())  
+    
+    print(df[[f"{element}{i}_final" for i in range(1,subelement_count+1)]].head(1))
 
     valid_cols = ["filename"]
 
@@ -322,7 +323,6 @@ def process_files_background(
     print("🚨 FINAL PAYLOAD KEYS:")
     print(df.columns.tolist())
 
-    last_mode = mode.lower()
     last_metrics = compute_gpt_metrics(df.copy(), element)
     print("METRICS:", last_metrics)
 
@@ -340,16 +340,6 @@ def process_files_background(
 
     api_s = df["element_score_raw"].dropna()
     fin_s = df["element_score_final"].dropna()
-
-    last_metrics = {
-        "sample_size": int(len(df)),
-        "n_valid_api": int(api_s.shape[0]),
-        "n_valid_final": int(fin_s.shape[0]),
-        "api_mean": float(api_s.mean()) if len(api_s) else 0,
-        "api_std": float(api_s.std(ddof=0)) if len(api_s) else 0,
-        "final_mean": float(fin_s.mean()) if len(fin_s) else 0,
-        "final_std": float(fin_s.std(ddof=0)) if len(fin_s) else 0,
-    }
 
     print("METRICS SET:", last_metrics)
 
@@ -417,18 +407,29 @@ def progress(job_id: str):
 @app.post("/check_saved_results")
 async def check_saved_results(
     element: str = Form(...),
-    check_golden: bool = Form(True),
-    save_drift_baseline: bool = Form(False)
+    rebuild_drift_baseline: str = Form("false"),
+    run_regression: str = Form("true"),
+    recompute_regression_scores: str = Form("false"),
+    rebuild_regression_baseline: str = Form("false"),
 ):
-    
+
+    golden_validation = None
+
+    # ✅ normalize here
+    rebuild_drift_baseline = rebuild_drift_baseline == "true"
+    run_regression = run_regression == "true"
+    recompute_regression_scores = recompute_regression_scores == "true"
+    rebuild_regression_baseline = rebuild_regression_baseline == "true"
+
+    print("🔥 ENTERED check_saved_results")
     global LAST_RUN_WAS_SCORING, last_results, last_metrics, last_mode
-    global last_run_regression, last_recompute_regression, last_rebuild_regression
+ 
 
     used_previous_results = not LAST_RUN_WAS_SCORING
 
     global last_save_drift_baseline
 
-    last_save_drift_baseline = save_drift_baseline
+    last_save_drift_baseline = rebuild_drift_baseline
 
     if last_results is None:
         return {"status": "NO RESULTS", "message": "No scoring results available."}
@@ -446,15 +447,40 @@ async def check_saved_results(
     current_metrics = last_metrics
     
     drift_result = check_drift(current_metrics, baseline_file)
+    print("CONTROLLER check_drift ID:", id(check_drift))
+    if drift_result is None:
+        raise ValueError("check_drift() returned None — expected dict")
+
     if last_save_drift_baseline:
         save_drift_baseline_to_file(current_metrics, baseline_file)
         last_save_drift_baseline = False
+        print("Saving baseline with metrics:", current_metrics)
 
-    print("Saving baseline with metrics:", current_metrics)
+    failures = drift_result.get("failures", [])
+
+    api_drift = any(f in failures for f in ["api_mean_shift", "api_std_shift"])
+    final_drift = any(f in failures for f in ["final_mean_shift", "final_std_shift"])
+
+    # You may already have these — keep consistent with your system
+    golden_fail = golden_validation.get("status") == "FAIL" if golden_validation else False
+    production_drift = False  # or whatever logic you use
+
+    diagnosis = interpret_diagnostics(
+        api_drift,
+        final_drift,
+        golden_fail,
+        production_drift
+    )
+
+    drift_result["diagnostic_interpretation"] = diagnosis
+
 
     df = pd.DataFrame(last_results)
 
-    if last_run_regression:
+    print("RECOMPUTE FLAG (controller):", recompute_regression_scores)
+    print("LAST_RUN_WAS_SCORING:", LAST_RUN_WAS_SCORING)
+
+    if run_regression:
         json_path, doc_dir = get_golden_paths(element, mode)
         golden_validation = validate_golden20(
             df,
@@ -462,9 +488,8 @@ async def check_saved_results(
             mode,
             json_path,
             doc_dir,
-            recompute=last_recompute_regression,
-            rebuild_baseline=last_rebuild_regression
-        )
+            recompute=recompute_regression_scores,
+            rebuild_baseline=rebuild_regression_baseline)
     else:
         golden_validation = {"status": "SKIPPED"}
 
@@ -484,6 +509,8 @@ async def check_saved_results(
     print("CONTROLLER golden_validation:", golden_validation)
 
     print("DIAG INTERPRETATION:", drift_result.get("diagnostic_interpretation"))
+
+    print("RETURNING drift_result:", drift_result)
 
     return {
         "status": status,

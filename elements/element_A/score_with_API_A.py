@@ -434,7 +434,33 @@ def score_document(filename, content, blended_model):
 def natural_sort_key(s):
     return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
 
+def build_result_row(filename, text, response_dict, idx):
+    """
+    Shared row construction for BOTH CLI and controller paths.
 
+    Ensures identical schema regardless of entry point.
+    """
+
+    row = response_dict.copy()
+
+    # Metadata
+    row["Case"] = idx
+    row["filename"] = filename
+    row["text"] = text
+
+    # Truncation flag
+    row["truncation_detected"] = response_dict.get("truncation_detected", 0)
+
+    # Incomplete response detection
+    row["incomplete_response"] = any(
+        k not in response_dict for k in [f"A{i}" for i in range(1, 7)]
+    )
+
+    # Ensure integer scores
+    for i in range(1, 7):
+        row[f"A{i}"] = int(row.get(f"A{i}", 0))
+
+    return row
 
 def main(folder_path, output_path, blended_version):
 
@@ -463,18 +489,7 @@ def main(folder_path, output_path, blended_version):
                 continue
 
             # Start from full response_dict so nothing is lost
-            row = response_dict.copy()
-
-            row["truncation_detected"] = response_dict.get("truncation_detected", 0)
-
-            # Add metadata fields
-            row["Case"] = idx
-            row["filename"] = filename
-            row["text"] = text
-
-            row["incomplete_response"] = any(
-                k not in response_dict for k in [f"A{i}" for i in range(1, 7)]
-            )
+            row = build_result_row(filename, text, response_dict, idx)
 
             # Ensure A scores are integers
             for i in range(1, 7):
@@ -533,22 +548,19 @@ def score_documents_with_api(documents, blended_version):
             print(f"Skipping {filename} due to failure.")
             continue
 
-        row = {
-            "Case": idx,
-            "filename": filename,
-            "text": text,
-        }
-        
-        for i in range(1, 7):
-            if response_dict is None:
-                raise ValueError(f"response_dict is None for {filename}")
-            print("A key value:", i, type(response_dict.get(f"A{i}")), response_dict.get(f"A{i}"))
-            row[f"A{i}"] = int(response_dict.get(f"A{i}", 0))
-            row[f"A{i}_rationale"] = response_dict.get(f"A{i}_rationale", "")
+        row = build_result_row(filename, text, response_dict, idx)
 
         row["narrative_feedback"] = response_dict.get("narrative_feedback", "")
 
         print("Narrative in row:", row.get("narrative_feedback"))
+
+        # NOTE: No rule processing currently implemented for Element A.
+        # Placeholder for future blended model rule logic (e.g., v1.x adjustments).
+        # If rules are added later, they should modify A{i} (not A{i}_api).
+
+        # Ensure API scores are present in output
+        for i in range(1, 7):
+            row[f"A{i}_api"] = response_dict.get(f"A{i}_api", row.get(f"A{i}", 0))
 
         results.append(row)
 

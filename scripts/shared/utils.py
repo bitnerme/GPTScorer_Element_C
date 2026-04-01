@@ -73,6 +73,8 @@ def normalize_columns(df, element):
     return df 
 
 def check_drift(current_metrics, baseline_file):
+    print("ENTER check_drift")
+    print("CHECK_DRIFT FUNCTION ID:", id(check_drift))
 
     baseline_path = Path(baseline_file)
 
@@ -153,18 +155,6 @@ def check_drift(current_metrics, baseline_file):
                 "report": report
             }
 
-    if baseline_n and current_n:
-        if current_n < baseline_n * 0.5:
-            sample_warning = (
-                f"WARNING: current sample size ({current_n}) is much smaller "
-                f"than baseline ({baseline_n}). Drift metrics may be unstable."
-            )
-        elif current_n < baseline_n:
-            sample_warning = (
-                f"Note: current sample size ({current_n}) is smaller than "
-                f"baseline ({baseline_n})."
-            )
-
     # -----------------------------
     # Final result
     # -----------------------------
@@ -180,20 +170,13 @@ def check_drift(current_metrics, baseline_file):
     # -----------------------------
     # Diagnostic interpretation (NEW)
     # -----------------------------
-    if failures:
-        labels = {
-            "api_mean_shift": "API mean shifted",
-            "api_std_shift": "API variability changed",
-            "final_mean_shift": "Final score average shifted",
-            "final_std_shift": "Final score variability changed"
-        }
+    diagnostic_interpretation = None  # handled in controller
 
-        readable = [labels.get(f, f) for f in failures]
-
-        diagnostic_interpretation = "Drift detected: " + "; ".join(readable)
-
-    else:
-        diagnostic_interpretation = "No significant drift detected."
+    print("DEBUG check_drift RETURN:", {
+        "status": status,
+        "failures": failures,
+        "sample_size_current": current_n,
+    })
 
     return {
         "status": status,
@@ -201,7 +184,7 @@ def check_drift(current_metrics, baseline_file):
         "sample_size_baseline": baseline_n,
         "sample_warning": sample_warning,
         "failures": failures,
-        "diagnostic_interpretation": diagnostic_interpretation,
+        "diagnostic_interpretation": None,  # handled in controller
         "report": report
     }
 
@@ -220,9 +203,6 @@ def extract_text_from_file(filepath):
         return extract_text_from_pdf(filepath)
     else:
         raise ValueError(f"Unsupported file format: {repr(ext)}")
-
-import shutil
-import os
 
 def get_poppler_path():
     # 1. Environment variable (optional override)
@@ -325,7 +305,7 @@ def extract_text_from_pdf(filepath):
     return text
 
 # --- GPT call with retries ---
-@backoff.on_exception(backoff.expo, (openai.error.OpenAIError, Exception), max_tries=5)
+@backoff.on_exception(backoff.expo, openai.error.OpenAIError, max_tries=5)
 def call_gpt_with_backoff(prompt, system="You are a helpful assistant.",
                           model_order=None, temperature=0.0, max_tokens=3500):
 
