@@ -25,6 +25,14 @@ def detect_subelement_count(df, element: str) -> int:
         "B": 2,
         "C": 6,
         "D": 4,
+        "E": 5,
+        "F": 1,
+        "G": 4,
+        "H": 5,
+        "I": 4,
+        "J": 3,
+        "K": 3,
+        "L": 2,
     }.get(element_clean, 4)
 
 def build_score_cols(element: str, count: int):

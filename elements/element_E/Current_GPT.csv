@@ -1,0 +1,217 @@
+filename,source_type,text,E1__expert,E2__expert,E3__expert,E4__expert,E5__expert,E1,E2,E3,E4,E5,E1_flag,E2_flag,E3_flag,E4_flag,E5_flag,E1_rationale,E2_rationale,E3_rationale,E4_rationale,E5_rationale,narrative_feedback,element_score_raw
+Case001_03342.pdf,,Placeholder text for scoring.,0,3,3,4,2,3,3,2,2,2,,,,,,,,,,,"E1: There are no connections made between STEM principles/practices and the design requirements. 
+E2: The design process is related to STEM principles/practices, though not the propose solution itself. 
+E3 & E4: There is some evidence that the process was reviewed by experts; one with valid credentials.
+E5: There is a vague mention of feedback from experts, but nothing specific.",1.8
+Case002_45231.pdf,,Placeholder text for scoring.,4,5,2,3,1,4,4,2,2,1,,,,,,,,,,,"Your work could be improved by connecting the STEM principles directly to more of your high priority criteria, such as segmenting the box, guillotine, connecting to visibility, and maybe how handles impact weight management and mvoement of the box. For E3, 4, 5 we need to know more what your engineering teacher told you about your connections to the STEM principles, how that feedback impacted your design,  and ideally have more than one expert.",2.2
+Case003_45434.pdf,,Placeholder text for scoring.,4,5,4,3,4,4,4,2,2,1,,,,,,,,,,,"This section was fantastic.  The engineers clearly demonstrated an understanding of physics and mathematical principles as they pertained to their design. To support all of the design requirements, they would needed to have discussed the 3-box design and how they planned to keep them together, as well as the door and it's locking mechanism. 
+There is evidence that an expert reviewed the principles but no detailed evaluation or suggestions for corrective measures.",2.2
+Case004_01223.pdf,,Placeholder text for scoring.,0,1,2,2,3,3,4,3,2,2,,,,,,,,,,,"no credit given for E1- not enough about materials science to give credit, no mention of other principles outside the design process",2.4
+Case005_24555.pdf,,Placeholder text for scoring.,2,4,5,5,5,4,4,4,4,3,,,,,,,,,,,Comprehensive review from experts with solid reflection.,3.8
+Case006_01000.pdf,,Placeholder text for scoring.,0,1,0,0,0,3,3,1,1,1,,,,,,,,,,,"E1. None of the STEM principles here relate to the design requirements of AI accuracy and decreasing workload for healthcare workers.
+E2. The STEM principles listed relate to the general application of AI to solve the problem but not to the student's specific attempt to use AI in their solution.
+E3-5. There is no evidence of expert review.",1
+Case007_20000.pdf,,Placeholder text for scoring.,2,0,0,0,0,3,3,1,1,1,,,,,,,,,,,"Statistical analysis on big amounts of data to find trends IS how AI works, so some credit given for E1",1
+Case008_01211.pdf,,Placeholder text for scoring.,0,1,2,1,1,2,2,2,1,2,,,,,,,,,,,"mentions stem principles like graph theory and coordinates, software but that's it",1
+Case009_30000.pdf,,Placeholder text for scoring.,3,0,0,0,0,3,2,1,1,1,,,,,,,,,,,"E1: Some of the connections between STEM practices/principles and the design requirements could use a bit more depth (though each high priority design requirements is linked to a STEM practices/principle). 
+E2: There are no connections between STEM practices/principles and the design solution. 
+E3-E5: There is no evidence of expert review.",0.8
+Case010_33555.docx,,Placeholder text for scoring.,3,3,5,5,5,2,3,2,3,3,,,,,,,,,,,"E1 & E2: Each design solution and design requirements is linked to a STEM principle. These connections are just sometimes vague, and could use more detail to really understand the author's thinking and understanding of STEM principles. 
+E3: There are summaries of the responses from each field expert. 
+E4: There is documentation of what makes each expert an expert. 
+E5: In general, there is a summary of the corrective response after the feedback from each of the field experts.",2.2
+Case011_32454.docx,,Placeholder text for scoring.,3,2,4,5,4,2,3,2,4,3,,,,,,,,,,,STEM principle connections are not well developed. Expert review is summarized,2.4
+Case012_32243.docx,,Placeholder text for scoring.,3,2,2,4,3,3,3,2,2,2,,,,,,,,,,,"E1. The STEM principles (""calculating what soil moisture levels were considered wet and dry, and finding the average to include into our code"") are indirectly related to accuracy of the device as well as real-time feedback.
+E2. Students go into detail describing the moisture calculations and how these figure into their design decisions.
+E3. Students describe asking these experts to review their STEM practices, but it appears that they've only reviewed the design overall.
+E4. The students' teacher as well as an IT person at their school reviewed their STEM principles.
+E5. The students describe creating an enclosure for their wiring based on the experts' feedback. However, it's unclear if this feedback is related specifically to these STEM principles or to the design overall.",1.8
+Case013_22233.pdf,,Placeholder text for scoring.,2,2,2,3,3,3,3,2,3,3,,,,,,,,,,,"Credit given for geometry and measurement connections to designing the room, but more detail about scale model (was it a scale model? how were these measurements determined?) would substantiate claims. Still at a very elementary level.
+Feedback from experts is about specific design (plastic bags with water or coding on notificaiton tool) . Could have used notes  from the convos as evidence.",2.4
+Case014_12333.pdf,,Placeholder text for scoring.,1,2,3,3,3,3,3,2,4,3,,,,,,,,,,,"E1: There was an attempt to match requirements to principles, but the principles were not well explained and didn't rise to the level or theory / law. 
+E2: some discussion about the use of 4th grade math, geometry, coding, and material science. No mention of any STEM priniples related to supression.",2.6
+Case015_00220.pdf,,Placeholder text for scoring.,0,0,2,2,0,2,2,2,2,1,,,,,,,,,,,"onlly ""Experts"" were classroom teachers (2)
+mentions math and engineering but no specifics no evidence",1
+Case016_01001.pdf,,Placeholder text for scoring.,0,1,0,0,1,2,2,2,2,1,,,,,,,,,,,"E1: There are no connections made between STEM concepts and design requirements.
+E2: There are some connections made between the design solution/process and STEM concepts. These could be expanded on and connected to specific parts of the project. 
+E3:Stakeholders cannot second as field experts. 
+E4: Stakeholders cannot second as field experts. 
+E5: It is mentioned that the field experts (stakeholders) reviewed the work, but no indication of what feedback they gave.",1
+Case017_34343.pdf,,Placeholder text for scoring.,3,4,3,4,3,4,4,3,2,3,,,,,,,,,,,"E1 not able to determine bc criteria are not here (this is a stand-alone component)
+E4, 5 Calculatorions and application of Force diagram were reviewed by teachers, research assistant helped with butterfly clips, and civil engineer aided in determining stability of load. No further documenting of credentials",3
+Case018_33303.docx,,Placeholder text for scoring.,3,3,3,0,3,1,1,1,1,1,,,,,,,,,,,"Team included ""expert"" reviews, but all are stakeholders - not experts in game design.",0
+Case019_00013.pdf,,Placeholder text for scoring.,0,0,0,1,3,4,4,3,3,2,,,,,,,,,,,"Seems like the feedback was not about STEM principles- but rather about the design itself. (feedback on allowing pipe to shift, use of duct tape, grips).",3
+Case020_11203.docx,,Placeholder text for scoring.,1,1,2,0,3,2,2,2,2,2,,,,,,,,,,,"E1. Students articulated STEM principles for only 3 of their 5 high-priority design requirements. These STEM principles are only stated plainly, not described in detail. For instance, students mention that fault tolerance and immutable data would be necessary to apply when designing a functionally-coded notification system, but they don't provide any detail about how or why this concepts are important to their specific design process.
+E2. Again, students articulate STEM principles (physics, precision, critical thinking) but do not go into any specifics about how they are applied. For instance, students could have given a detailed example of going through a systematic trial-and-error process when encountering a problem and how they made an effort to isolate one variable at a time in their process. Such an example would have more concretely reflected how they applied ""critical thinking"" to their proposed solution.
+E3. We get some sense of what the reviewers said in connection to the students' STEM principles, such as other fire suppressing materials besides water.
+E4. Because students didn't document their reviewers' credentials, I don't know if they are double-counted as stakeholders.
+E4. It appears that one of the reviewer's feedback informed the students' decision to change their notification system.",1.4
+Case021_44343.docx,,Placeholder text for scoring.,4,4,3,4,3,2,2,2,2,2,,,,,,,,,,,Credentials for the experts would have been helpful,1.4
+Case022_55553.pdf,,Placeholder text for scoring.,5,5,5,5,3,4,4,3,2,3,,,,,,,,,,,"E1 - E4: A substantial amount of detail throughout around how they considered the STEM principles in the design solution and the principles. 
+E5: It is clear that there was input from experts, but it isn't always clear what their feedback was.",3
+Case023_25053.pdf,,Placeholder text for scoring.,2,5,0,5,3,4,4,3,2,2,,,,,,,,,,,"E1: There is little connection between the STEM principles and design requirements, though there is some connection to the battery operation/power. 
+E2: The design solution is well supported by STEM principles - lots of explanation here!
+E3: The STEM principles have been signed off by one expert (though it seems that this expert is also listed as a stakeholder, so the score for this sub-element is a zero). 
+E4: Two other experts, with credentials, are said to have given feedback. 
+E5: It is clear that the experts have supported some of the thinking of the STEM connections, it just isn't necessarily clear what the feedback was, or how it provided a corrective response.",2.6
+Case024_00212.pdf,,Placeholder text for scoring.,0,0,2,1,2,3,3,2,1,1,,,,,,,,,,,"experts listed are IT workers who gave feedback ""about things we had not thought about prevoiusly."" Unclear what the feedback was but credit given for connective wires. FEedback about design (am and pm rows) is not explicitly connected to STEM principles",1.4
+Case025_00013.pdf,,Placeholder text for scoring.,0,0,0,1,3,3,2,2,1,1,,,,,,,,,,,Did not address STEM principles. Did discuss modifications due to feedback from experts and IT workers.,1
+Case026_00013.pdf,,Placeholder text for scoring.,0,0,0,1,3,3,2,2,1,1,,,,,,,,,,,"STEM principles are not mentioned and only vaguely eluded to.  
+The engineers mention the design being reviewed by experts, but make no mention of who was reviewing it except for one mention of the ""IT workers."" 
+There is no evidence that the STEM principles were reviewed by experts, as there are no STEM principles explained.",1
+Case027_10000.docx,,Placeholder text for scoring.,1,0,0,0,0,3,2,1,0,0,,,,,,,,,,,"These are not STEM principles- rather, restating the design requriements",0.2
+Case028_11000.docx,,Placeholder text for scoring.,1,1,0,0,0,3,2,1,0,0,,,,,,,,,,,STEM principles are not clearly articulated nor described.,0.2
+Case029_22212.pdf,,Placeholder text for scoring.,2,2,2,1,2,2,2,2,2,1,,,,,,,,,,,"E1 & E2: There is a start to identifying some STEM principles to the design requirements and solution. Some of what is identified as a principle was actually just a restatement of the design requirement or feature. 
+E3: There is mention of a field expert review and feedback, but there is no evidence of the feedback, or confirmation that the field expert is an expert. 
+E4: It seems that the field expert reviewed the design, not the STEM connections. 
+E5: There is no evidence of the feedback from experts, but a mention of one piece of advice they had.",1
+Case030_22222.pdf,,Placeholder text for scoring.,2,2,2,2,2,2,2,2,2,1,,,,,,,,,,,"Connection to STEM principles is vague. 
+Expert review lacks details and credentials are inadequate.",1
+Case031_54353.pdf,,Placeholder text for scoring.,5,4,3,5,3,4,4,3,3,3,,,,,,,,,,,"E1: Though there could be more detail, each high priority design requirement is linked to STEM principles/practices. 
+E2: Though there could be more detail, several of the design solutions are linked to STEM principles/practices. 
+E3: There is evidence of review from a couple of experts, though there could be more detail in their response - some of the notes are confusing as written, and could have more depth. 
+E4: The review was from 2 experts with credentials. 
+E5: There is a brief mention of a corrective responses. This could have more detail, and be linked to the feedback given by the experts (the corrective responses are not necessarily related to the information that was given in the expert feedback.",3.2
+Case032_02000.pdf,,Placeholder text for scoring.,0,2,0,0,0,4,4,1,1,1,,,,,,,,,,,"E1: There is no mention of the design requirements. 
+E2: There are some STEM connections to the design solutions. However, the STEM connections are connected more to what students are doing with the solution, and not to the solution itself. There could be more detail explaining the STEM involved in the solution as it relates to solving the problem (again, tricky, because this doesn't seem like an engineering problem). 
+E3 - E5: There is no evidence of expert reviewers or their feedback.",1.6
+Case033_00000.pdf,,Placeholder text for scoring.,0,0,0,0,0,1,1,1,1,1,,,,,,,,,,,blank template,0
+Case034_11244.docx,,Placeholder text for scoring.,1,1,2,4,4,4,4,3,3,2,,,,,,,,,,,"Missing document for E, so tried to give credit for E based on what is linked here (F). Research on friction is related to initial design. Not clear what materials were used for final design, nor how STEM principles apply to it (""interfering with inertia?"") No evidence of calculations. Listed experts are stakeholders (classroom teahers where the desks are used) and feedback is not about STEM principles but rather the design only.",3
+Case035_23403.docx,,Placeholder text for scoring.,2,3,4,0,3,4,4,3,3,2,,,,,,,,,,,The STEM connection is only relevant to an initial design; there are no STEM principles related to the final design solution and the teacher-experts did not review the application of STEM design/principles.,3
+Case036_23100.pdf,,Placeholder text for scoring.,2,3,1,0,0,4,4,1,1,1,,,,,,,,,,,"E1. STEM principles are only applicable to one of the three design requirements from element C: functionality.
+E2. Students generally describe some ways the STEM principles informed their design.
+E3-5. Students state that one expert reviewed their design but do not provide any evidence of this review. Additionally, the expert is double counted as a stakeholder.",1.6
+Case037_23222.pdf,,Placeholder text for scoring.,2,3,2,2,2,4,4,1,1,1,,,,,,,,,,,It is unclear whether the expert provided feedback or the content of the STEM principles.,1.6
+Case038_22000.pdf,,Placeholder text for scoring.,2,2,0,0,0,3,3,1,1,1,,,,,,,,,,,"E1: The design requirements numbers don't seem to line up with the STEM connections, so it is difficult to know what requirement the connections are applying to. It is clear that friction is aligned with one of the STEM requirements. This connection could be given more depth of explanation. 
+E2: The STEM connections for the solution seem to be the same as the previous sub-element. These could be more expanded upon. This might be difficult, because it isn't clear which solution was chosen. There is an image with some equations, but this isn't tied to any explanation. 
+E3-E5: There is no evidence that this was reviewed by field experts.",1
+Case039_23000.pdf,,Placeholder text for scoring.,2,3,0,0,0,2,2,1,1,1,,,,,,,,,,,Good information about the wedge shape related to engineering concepts.,0.6
+Case040_22342.pdf,,Placeholder text for scoring.,2,2,3,4,2,4,4,3,2,2,,,,,,,,,,,"E2 Cannot be determined from info given- need more data
+E4 2 or more experts consuldted, but only descsirptions of qualificiations (eg, engineering major)
+More iteration is shown here- would have been helpful wehn scoring D",2.6
+Case041_31322.pdf,,Placeholder text for scoring.,3,1,3,2,2,3,3,2,3,2,,,,,,,,,,,"E1. Students articulate STEM principles that relate to three of their five high priority requirements: 1) holding the weight of the gong (calculating force it can withstand), 2) balancing a suspended gong (sturdiness), and 3) affordability (budgeting). However, it should be noted that these principles are only described in a superficial way.
+E2. Students do not clearly describe any STEM principles/concepts, though they do attempt to. For instance, students could have better substantiated their budgetary decisions by listing the costs of alternative materials and/or addressing the long-term costs that could be associated with maintaining their design (if any). Additionally, students could have better substantiated their environmental decisions by selecting specifically mold-resistant materials and/or describing ways in which their selected materials could be disposed of safely.
+E3. Students don't document what exactly they asked of their expert. The expert reviewed only the crafting aspects of their design, including structural integrity.
+E4. Students documented their one expert's credentials.
+E5. Students did not go beyond stating the expert's advice; we don't see how the advice has impacted their process.",2.2
+Case042_33335.pdf,,Placeholder text for scoring.,3,3,3,3,5,3,3,2,3,2,,,,,,,,,,,STEM principles are weakly substantiated.,2.2
+Case043_01012.docx,,Placeholder text for scoring.,0,1,0,1,2,0,0,0,0,0,,,,,,,,,,,"E1: In this section, relate STEM principles to the design requirements. It might be helpful to go back to the design requirements (Element C) and clearly outlined what the design needs to be able to do to adequately solve the problem, not what attributes the design solution should have. 
+E2: For this, consider the solution and how the STEM principles support the solution. There is a start in thinking about vacuum sealing, but this isn't yet linked to a STEM principle. 
+E3: There is no evidence that the STEM principles are review, but evidence in feedback on the process  - getting real materials. 
+E4: There is one field expert mentioned, but no information about what makes them an expert. 
+E5: There is a small amount of feedback that the team should use real materials. There isn't evidence that it provided a corrective response.",0
+Case044_00212.docx,,Placeholder text for scoring.,0,0,2,1,2,2,2,2,1,1,,,,,,,,,,,Vert limited attention to STEM principles. Expert feedback is vague.,0.8
+Case045_33221.pdf,,Placeholder text for scoring.,3,3,2,2,1,4,4,1,1,0,,,,,,,,,,,"Since the design requirements are not typical it is tricky to score this - but the repeat of the concept without depth is what earned the scores.
+Expert is teacher and only for a limited number of requirements.",1.4
+Case046_20000.docx,,Placeholder text for scoring.,2,0,0,0,0,3,3,1,1,1,,,,,,,,,,,"E1: STEM principles/practices are connected to two of the design requirements. 
+E2: STEM principles/practices are not linked to the design solution
+E3 - E5: There is no evidence of expert review.",1
+Case047_35344.pdf,,Placeholder text for scoring.,3,5,3,4,4,4,3,3,4,3,,,,,,,,,,,"E1: there are some STEM connections made to the design requirements, though sometimes indirectly through the lens of the design solution. 
+E2: The STEM connections to the design solution are clearly outlined and detailed. 
+E3: The experts reviewed the STEM connections, but to the design, not to the design requirements.
+E4: There are two experts, one with a clear connection to expertise. The second could loosely be considered an expert, but their expertise could be made more clear (just because you're a science teacher, doesn't mean that you know about insects). 
+E5: Clear summary from the design review. Add details around what would attract the insects.",3.2
+Case048_22344.pdf,,Placeholder text for scoring.,2,2,3,4,4,4,3,3,3,2,,,,,,,,,,,Good feedback from experts - should cause a change in the product,2.6
+Case049_21203.docx,,Placeholder text for scoring.,2,1,2,0,3,1,1,1,1,1,,,,,,,,,,,"E1: There are some connections between STEM principles and the design requirements. Some are lacking detail, and some connections seem like a stretch. 
+E2: There are some connections between STEM principles and the design solution. Some are lacking detail (more than E1 above), and some connections seem like a stretch. 
+E3: There is a summary of what a field expert said, but not direct evidence of a review. It isn't clear what questions the field expert was asked. 
+E4: The ""field expert"" listed, seems like he is actually a stakeholder. Field experts can't double as stakeholders. 
+E5: There is a summary of the field expert input about accessibility being important, but the STEM connection being as stretch. This could have informed a corrective responses of that STEM connections.",0
+Case050_22213.docx,,Placeholder text for scoring.,2,2,2,1,3,1,1,1,1,1,,,,,,,,,,,Connections to STEM principles are sparse.,0
+Case051_00232.pdf,,Placeholder text for scoring.,0,0,2,3,2,3,3,3,3,2,,,,,,,,,,,"no refernce to stem principles in a meaningful way (beyond measuring)
+feedback from experts is about design- not stem principles",2.4
+Case052_02000.docx,,Placeholder text for scoring.,0,2,0,0,0,4,4,1,0,0,,,,,,,,,,,"E1: There are no connections between STEM principles and the design requirements. The focus is on the design.
+E2: There is some explanation of how the design solution connects to STEM principles. Though the STEM principles/practice aren't clearly identified, and there could be some deeper connections. 
+E3 - E5: There is no evidence of an expert review.",1
+Case053_02000.pdf,,Placeholder text for scoring.,0,2,0,0,0,4,3,1,0,0,,,,,,,,,,,"E1. There were no high priority requirements in element C.
+E2. Students mention what STEM concepts they utilized in their design, but there is little specific detail related to their application of these in their actual design.
+E3-5. There is no evidence of expert review.",0.8
+Case054_21000.pdf,,Placeholder text for scoring.,2,1,0,0,0,4,3,1,0,0,,,,,,,,,,,"Says they calculated optimal plant size and space- need calculations- but related to criteria in C about being compact but maximizing size
+said researched and collected data about plans- need data
+etc
+says they refined and tested different configurations before finalizing prototype?",0.8
+Case055_33444.pdf,,Placeholder text for scoring.,3,3,4,4,4,4,3,2,2,2,,,,,,,,,,,Credentials were unclear and only alluded to.,2.2
+Case056_32313.pdf,,Placeholder text for scoring.,3,2,3,1,3,4,3,2,2,2,,,,,,,,,,,"STEM principles are identified but not explained and only vaguely used to support the solution.
+It is unclear how many experts reviewed and what their credentials actually are. The feedback documented was minimal.",2.2
+Case057_33352.pdf,,Placeholder text for scoring.,3,3,3,5,2,3,2,2,2,2,,,,,,,,,,,"STEM principles are very general.
+Expert reviews are extremely brief.",1.6
+Case058_21000.docx,,Placeholder text for scoring.,2,1,0,0,0,1,1,1,1,1,,,,,,,,,,,"Supplies for prototype under $60? Unclear if this is a design requirement or just for prototype.  math connections are elementary- adding up costs and tax, dividing measurements. Could have discussed scale models. E2 unclear if drawing is to scale. unclear what supression system is used or what stem principles are at play.",0
+Case059_01010.docx,,Placeholder text for scoring.,0,1,0,1,0,1,1,1,1,1,,,,,,,,,,,"E1: To boost the score of this sub-element, clearly outlined design requirements in Element C. 
+E2: There are some elements of STEM principles that are connected to some elements of the design. To improve this sub-element, give more concrete connections to STEM principles, more detail, and to clearer design elements. 
+E3: There is evidence of reviewers, but no evidence that they are experts (being a teacher doesn't make you an expert on fire prevention design). 
+E4 & E5: There is some evidence of the reviews by the people identified as experts. The reviews are a short summary, and some parts are confusing.",0
+Case060_21000.pdf,,Placeholder text for scoring.,2,1,0,0,0,4,4,1,0,0,,,,,,,,,,,"Stakeholder feedback was incorporated, but does not seem that there was an expert review completed. STEM principles very generally attended to.",1
+Case061_41454.docx,,Placeholder text for scoring.,4,1,4,5,4,4,3,3,3,2,,,,,,,,,,,"E2 Many formulas are listed and variables are explained, but not how they relate to this project or what s's will do with them, or which they'll prioritize.",2.6
+Case062_42555.docx,,Placeholder text for scoring.,4,2,5,5,5,4,3,3,2,2,,,,,,,,,,,"This team received extensive feedback from experts in the field, but does not seem to have modified the element to incorporate this feedback. For example, one reviewer indicated that they have correctly (with the exception of need to add rotational dynamics) named the principles that apply to their design, but have not used the principles to support to explain their design.  Listing the equations is not helpful without doing the math to actually apply them.
+In addition the formatting suggestion seemed to be ignored and blamed on the software instead of fixing the problem (e.g. the lowercase k seems like and easy edit).",2.4
+Case063_55353.pdf,,Placeholder text for scoring.,5,5,3,5,3,4,4,4,4,3,,,,,,,,,,,"E1. Students describe the STEM principles/concepts that are relevant to each of their five high-priority design requirements.
+E2. Students go into great depth as to air pressure, chemical properties, and mathematical equations that are relevant to the functioning of their device.
+E3. Students did not include what they asked of the experts nor their direct responses. However, their summary of the responses reveals that they did indeed review the students' application of STEM principles.
+E4. Dr. Joseph Sarver and Dr. Jaimie Dougherty, two people with relevant expertise, reviewed the design.
+E5. It appears that students are taking the experts up on one piece of advice by decreasing the number of components in their design to improve durability.",3.8
+Case064_55555.pdf,,Placeholder text for scoring.,5,5,5,5,5,4,4,4,4,3,,,,,,,,,,,Nice work documenting credentials and feedback,3.8
+Case065_43343.pdf,,Placeholder text for scoring.,4,3,3,4,3,4,4,3,4,3,,,,,,,,,,,"E5 summarizes what experts said, not how they will inform iterations or what was taken away from the feedback",3.6
+Case066_51453.pdf,,Placeholder text for scoring.,5,1,4,5,3,4,4,3,4,3,,,,,,,,,,,"The engineers do a nice job identifying all of the STEM principles that they could apply to their design (E1), but  but they do not use the principles to support their design (E2).  For example, they mention learning about finite element analysis but do not show evidence that they used the analysis to test the materials they used. Similarly they mention a beam deflection formula but do not show us that they used it.  
+There is evidence that the design was reviewed by two experts and that corrective responses were noted. 
+
+Sidenote: Using ""Olivia's father's"" name would be more professional",3.6
+Case067_34000.pdf,,Placeholder text for scoring.,3,4,0,0,0,4,4,1,1,1,,,,,,,,,,,"E1 & E2: There were thorough links between the requirements/solution and STEM principles. E1 was scored lower than a 5, because the design requirements weren't clear in Element C, but the functional claims were supported. Some of the E2 responses were actually found in the ""design requirements"" section. 
+E3-E5: There was no evidence or mention of field expert review.",1.6
+Case068_32000.pdf,,Placeholder text for scoring.,3,2,0,0,0,4,4,1,1,1,,,,,,,,,,,"STEm principles attempted, but not in depth and not directly related to the requirements/solution in an appropriate depth",1.6
+Case069_42354.pdf,,Placeholder text for scoring.,4,2,3,5,4,4,4,4,4,4,,,,,,,,,,,"E1. None of the STEM practices/concepts apply to the comfortable and inviting to guests requirement.
+E2. Students superficially mention relevant STEM practices/concepts. This element would benefit from including specific calculations and other means to apply these more specifically to their design. For instance, students could include the actual measurements of outlets and heights of the shelves.
+E3. Students state that three experts reviewed their design, but we do not see evidence that these experts reviewed the listed STEM principles.
+E4. Three experts reviewed the STEM principles, all of whom have relevant credentials.
+E5. Students share three ways that they will leverage their experts' feedback to improve their design. However, each way is only briefly described and the underlying STEM principle is not stated nor elaborated.",4
+Case070_21343.pdf,,Placeholder text for scoring.,2,1,3,4,3,4,4,4,4,4,,,,,,,,,,,"E1, 2 need more detail about shear and load distribution aligned witn design and calculations. No attention to other design critera besides structural stability",4
+Case071_30122.pdf,,Placeholder text for scoring.,3,0,1,2,2,4,4,3,2,2,,,,,,,,,,,"E1. Students' brief description of buoyancy and thrust concepts relate to two of their three high-priority requirements.
+E2. It is unclear how the STEM principles present are being applied in their actual design.
+E3. It appears that feedback was acquired from one expert, but this feedback is not documented.
+E4. The competition judge appears to have reviewed the STEM principles.
+E5. The judge confirmed their buoyancy plans. Students state the judge's feedback was incorporated, but we don't know what that feedback was or how it was incorporated.",2.6
+Case072_42232.pdf,,Placeholder text for scoring.,4,2,2,3,2,4,4,3,2,3,,,,,,,,,,,"The team alludes to high-level STEM principles, but without a description or explanation, they are unable to earn full points.",3
+Case073_11333.pdf,,Placeholder text for scoring.,1,1,3,3,3,3,3,2,2,2,,,,,,,,,,,"E1 unclear what the calculations represent for safety and precision, but good effort. No STEM principles correctly applied. Couidl do more with vacuums, water flow, volume, lung capacity and volume, cleaning germs, etc.
+E5 need more speficity, calculations, relation to volume/cutting shape, why it works,e tc.",1.8
+Case074_52030.pdf,,Placeholder text for scoring.,5,2,0,3,0,4,3,2,1,2,,,,,,,,,,,"E1. STEM concepts/practices for all five high-priority design requirements are addressed.
+Note: The shift in writing structure for STEM concepts for design requirements #4 and #5 make me wonder if AI was used.
+E2. Students name five STEM concepts related to their selected design, but justify/explain the application of these STEM concepts with very little detail.
+E3. There is no evidence of this.
+E4. The teacher reviewed the design.
+E5. Not included.",1.8
+Case075_03255.pdf,,Placeholder text for scoring.,0,3,2,5,5,3,4,3,4,4,,,,,,,,,,,"E1. The STEM principles (measuring, testing, and research) do not go beyond the general engineering design process. None of these are specific to the high-priority requirements in element C.
+E2. The STEM principles in this section are more relevant to the high-priority design requirements that they applied to their prototype. More detail could be provided for a higher score.
+E3. Students state the format by which they received feedback from each of the three experts and a summary of the feedback received. However, we don't see the actual feedback documents nor the feedback itself.
+E4. Four experts with relevant credentials have reviewed the design for application of STEM principles and practices.
+E5. Students made corrective responses based on the experts' feedback related to several STEM concepts: fluid dynamics, agricultural engineering, and materials science.",3.6
+Case076_22343.pdf,,Placeholder text for scoring.,2,2,3,4,3,3,4,3,4,4,,,,,,,,,,,"E3 woudl improve with better documentation such as video recording or transcripts of calls or video calls, actual notes from conversations",3.6
+Case077_23000.pdf,,Placeholder text for scoring.,2,3,0,0,0,3,3,1,1,1,,,,,,,,,,,"E1: There is a connection made between the Arduino and the requirement about alerting to 95% max humidity. 
+E2: Some of the design solution is supported by STEM principles, but really just focused on the Arduino. This is difficult to score without a design solution (Element D) included. 
+E3 - E5: There is no evidence of expert review.",1
+Case078_33000.pdf,,Placeholder text for scoring.,3,3,0,0,0,3,3,1,1,1,,,,,,,,,,,"A few STEM principle connections, but none in depth. 
+Missing expert review.",1
+Case079_23253.pdf,,Placeholder text for scoring.,2,3,2,5,3,4,4,3,2,2,,,,,,,,,,,"E1. The STEM practices listed here are applicable only to the functional claims of the design; no design requirements were listed as high priority in element C.
+E2. Students refer to ""using engineering and math"" at the end of this element, but only engineering practices/concepts are included. Further, these practices/concepts could be made much more explicit. For instance, in the description of the leveler, the students describe that their leveler's function (""lift to adjust the angle of the animal as it goes up, making sure it stays level and safe""). Here, they could have used math concepts to define a safe range for the animal and the operator that balances the weight evenly.
+E3. Students refer to having two experts look at their final design and/or observe their building process. However, there is no documentation regarding what these experts were asked nor their verbatim feedback.
+E4. At least one relevant, credentialed expert reviewed their design for application of STEM principles: an engineer. Other experts appear to have reviewed the application (""teachers and mentors from school who know about engineering""), but their credentials were not clearly documented.
+E5. Students included feedback from the experts that would improve their design's strength (""making sure our welds were solid and adding braces in a few areas"") and safety (""adding safety stops or stronger hooks""). However, they did not link this feedback to the STEM principles.
+E5.",2.6
+Case080_21223.pdf,,Placeholder text for scoring.,2,1,2,2,3,4,4,3,2,2,,,,,,,,,,,"STEM principles were not discussed in detail.
+Lots of interesting information shared, but not related to the rubric for this element.",2.6
+Case081_01000.pdf,,Placeholder text for scoring.,0,1,0,0,0,2,2,1,1,1,,,,,,,,,,,,0.6
+Case082_44331.pdf,,Placeholder text for scoring.,4,4,3,3,1,4,4,2,1,1,,,,,,,,,,,"Your E1 and E2 could be improved with calculations and more specifics about math connections in particular- include discussion of volume and how to find center of gravity so it doesn't fall over, or what you'll look for when you keep track of soil pH levels for example.  
+
+It is unclear what you learned from your conversation with the expert and how that impacted your design or thinking. We see a recommendation from him, but not what you did with that.",1.8
+Case083_53222.pdf,,Placeholder text for scoring.,5,3,2,2,2,4,4,2,1,1,,,,,,,,,,,"The design requirements and solution are partially substantiated with STEM principles.  For example, each design requirements lists the math and/or science principles, but does not give specific details (e.g. measurements, equations/formulas, etc.)  
+There is feedback from one expert but it is minimal (provides one suggestion).",1.8
+Case084_55553.pdf,,Placeholder text for scoring.,5,5,5,5,3,4,4,2,2,2,,,,,,,,,,,"Expert and stakeholder feedback were gathered and used, but not necessarily documented in detail.",2.4
+Case085_32010.pdf,,Placeholder text for scoring.,3,2,0,1,0,5,5,1,0,0,,,,,,,,,,,"Author says they chose lattice, but no calculations or sources. Says there were tests in TinkerCad but need evidence and specifics of calculations. Need more evidence of physics load testing. No evidence of expert review- only ""field testing.""",1.6
+Case086_04000.pdf,,Placeholder text for scoring.,0,4,0,0,0,5,5,1,1,1,,,,,,,,,,,"E1: There are no articulated links between the STEM principles and the design requirements. 
+E2: The STEM principles are clearly described in relation to the chosen solution. It seems like there could also be math concepts that are related to the prototype design. 
+E3 - E5: There is no evidence that it has been reviewed by an expert.",2.2
+Case087_20000.pdf,,Placeholder text for scoring.,2,0,0,0,0,2,2,1,0,0,,,,,,,,,,,"E1: There are STEM principles mentioned, but they could be expanded upon, and more closely linked to the design requirements (some are, some aren't). 
+E2-E5: There is no evidence of these sub-elements.",0
+Case088_20000.pdf,,Placeholder text for scoring.,2,0,0,0,0,2,2,1,1,1,,,,,,,,,,,"Very specific STEM terms; Area, Volume, Pythagorean theorem - but not thorough applications. 
+No expert.",0.6
+Case089_10011.pdf,,Placeholder text for scoring.,1,0,0,1,1,2,2,1,1,1,,,,,,,,,,,,0.6
+Case090_00211.pdf,,Placeholder text for scoring.,0,0,2,1,1,2,2,1,1,1,,,,,,,,,,,I am unsure what the proposed design includes.,0.6
+Case091_21000.pdf,,Placeholder text for scoring.,2,1,0,0,0,2,2,1,1,1,,,,,,,,,,,"An attempt was made, but the connection to STEM principles is weak. No reviews.",0.6

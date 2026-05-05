@@ -49,9 +49,20 @@ def get_blended_model(element, mode):
         "B": ("v1.2", "v1.4b"),
         "C": ("v1.13", "v1.15"),
         "D": ("v1.8d", "v2.0"),
+        "E": ("v1.2", "v1.7r"),
+        "F": ("v1.4", "v1.6"),
+        "G": ("v1.3", "v1.4"),
+        "H": ("v2.0a", "v2.0"),
+        "I": ("v1.1a", "v1.1"),
+        "J": ("v1.0", "v1.5"),
+        "K": ("v1.2a", "v1.2"),
+        "L": ("v1.5a", "v1.5")
     }
 
-    legacy, current = mapping.get(element, ("v1.0", "v1.0"))
+    if element not in mapping:
+        raise ValueError(f"Unknown element '{element}' in get_blended_model")
+
+    legacy, current = mapping[element]
     return legacy if mode == "legacy" else current
 
 def normalize_columns(df, element):
@@ -66,7 +77,7 @@ def normalize_columns(df, element):
             df[target] = df[f"_{k}_final"]
 
         # cross-element fallback
-        for other in ["A", "B", "C", "D"]:
+        for other in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]:
             if target not in df.columns and f"{other}{k}" in df.columns:
                 df[target] = df[f"{other}{k}"]
 
@@ -329,6 +340,9 @@ def call_gpt_with_backoff(prompt, system="You are a helpful assistant.",
             )
 
             content = response['choices'][0]['message']['content']
+            
+            print("RAW GPT RESPONSE:", response)
+
             return content
 
         except Exception as e:

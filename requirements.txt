@@ -3,8 +3,14 @@ uvicorn
 python-multipart
 pydantic
 openai
+backoff
+pandas
+numpy
 joblib
 scikit-learn
 python-docx
 PyMuPDF
 pdfminer.six
+tqdm
+openai==0.28.1
+json5

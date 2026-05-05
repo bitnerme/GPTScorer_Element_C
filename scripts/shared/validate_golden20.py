@@ -40,6 +40,8 @@ def get_blended_model(element, mode):
         return "v1.13" if mode == "legacy" else "v1.15"
     if element == "D":
         return "v1.8d" if mode == "legacy" else "v2.0"
+    if element == "E":
+        return "v1.7r" if mode == "legacy" else "v1.2"
     return "v1.0"
 
 
@@ -114,7 +116,7 @@ def run_validation(element, json_path, doc_dir, mode, recompute=False, rebuild_b
             result = score_document(
                 filename,
                 content,
-                blended_model=blended
+                blended
             )
 
             cache[filename] = result
