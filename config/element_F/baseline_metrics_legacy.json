@@ -1,0 +1,9 @@
+{
+    "sample_size": 88,
+    "n_valid_api": 88,
+    "n_valid_final": 88,
+    "api_mean": 2.897727272727273,
+    "api_std": 1.1969637034755969,
+    "final_mean": 2.897727272727273,
+    "final_std": 1.1969637034755969
+}

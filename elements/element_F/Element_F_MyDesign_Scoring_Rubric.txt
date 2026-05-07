@@ -1,0 +1,22 @@
+Element F: Consideration of Design Viability
+
+F1. Design viability judgment.
+A judgment about whether the proposed design is realistic and viable.
+
+Score 5:
+The design is clearly realistic and well supported with credible evidence.
+
+Score 4:
+The design is generally realistic and adequately supported with credible evidence.
+
+Score 3:
+The design is only somewhat or sometimes realistic and is only partially supported with credible evidence.
+
+Score 2:
+The design may be somewhat unrealistic and/or is inadequately supported with credible evidence.
+
+Score 1:
+The design is unrealistic or not supported with credible evidence.
+
+Score 0:
+The design is unrealistic and is not supported with credible evidence.

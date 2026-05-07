@@ -1,4 +1,4 @@
-console.log("SCRIPT VERSION FINAL 999");
+console.log("SCRIPT VERSION FINAL through Element F");
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -227,7 +227,21 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
         const data = await response.json();
         const jobId = data.job_id;
 
-        window.subelementCount = data.subelement_count || window.subelementCount || 6;
+        window.subelementCount = data.subelement_count || window.subelementCount || 1;
+        const subelementDefaults = {
+            A: 6,
+            B: 4,
+            C: 4,
+            D: 4,
+            E: 4,
+            F: 1
+            };
+
+        window.subelementCount =
+        data.subelement_count ||
+        window.subelementCount ||
+        subelementDefaults[element] ||
+        1;
 
         window.currentView = "scoring";  
         window.pollingActive = true;      
@@ -644,7 +658,16 @@ function downloadCSV() {
 
     const element = (payload.element || "A").toUpperCase();
 
-    const count = window.subelementCount || 6;
+    const subelementDefaults = {
+        A: 6,
+        B: 4,
+        C: 4,
+        D: 4,
+        E: 4,
+        F: 1
+        };
+
+    const count = window.subelementCount || subelementDefaults[element] || 1;
 
     const rawKeys = Array.from({ length: count }, (_, i) => `${element}${i+1}`);
     const finalKeys = rawKeys.map(k => `${k}_final`);

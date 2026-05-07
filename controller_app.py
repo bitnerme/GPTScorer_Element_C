@@ -57,17 +57,18 @@ def save_drift_baseline_to_file(current_metrics, baseline_file):
 
 def get_golden_paths(element, mode):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    label = element.lower()
+    folder_label = element.upper()
+    file_label = element.upper()
 
     if mode == "current":
         return (
-            os.path.join(BASE_DIR, "config", f"element_{label}", f"golden_{label}_current.json"),
-            os.path.join(BASE_DIR, "elements", f"element_{label}", "golden_current_documents"),
+            os.path.join(BASE_DIR, "config", f"element_{folder_label}", f"golden_{file_label}_current.json"),
+            os.path.join(BASE_DIR, "elements", f"element_{folder_label}", "golden_current_documents"),
         )
     else:
         return (
-            os.path.join(BASE_DIR, "config", f"element_{label}", f"golden_{label}_legacy.json"),
-            os.path.join(BASE_DIR, "elements", f"element_{label}", "golden_legacy_documents"),
+            os.path.join(BASE_DIR, "config", f"element_{folder_label}", f"golden_{file_label}_legacy.json"),
+            os.path.join(BASE_DIR, "elements", f"element_{folder_label}", "golden_legacy_documents"),
         )
 
 # Mount UI
@@ -169,7 +170,7 @@ async def score(
 
     score_mod, app_mod = load_element_modules(element)
 
-    score_documents_with_api = score_mod.score_documents_with_api
+    score_documents_ = score_mod.score_documents_with_api
     # C{i} = post-rule scores (input to calibration)
     # C{i}_api = raw GPT output (used for drift detection)
     apply_calibration_pipeline = app_mod.apply_calibration_pipeline
@@ -191,7 +192,7 @@ async def score(
         file_payloads,
         element,
         mode,
-        score_documents_with_api,
+        score_documents_,
         apply_calibration_pipeline,
     )
 
@@ -414,6 +415,8 @@ async def check_saved_results(
 ):
 
     golden_validation = None
+
+    print("USING CONTROLLER CHECK_SAVED_RESULTS")
 
     # ✅ normalize here
     rebuild_drift_baseline = rebuild_drift_baseline == "true"
