@@ -1,0 +1,50 @@
+MyDesign Element G: Construction of a Testable Prototype
+
+Overview:
+Element G evaluates how well the student explains their prototype iteration, constructs a prototype capable of testing design requirements, enables testing or modeling of attributes, and justifies attributes that cannot be tested.
+
+All subelements (G1–G4) are scored independently on a 0–5 scale.
+
+
+G1. Final Prototype Iteration Explanation
+The final prototype iteration is:
+
+5 – Clearly and fully explained
+4 – Clearly and adequately explained
+3 – Adequately explained
+2 – Somewhat explained but with gaps
+1 – Only minimally explained
+0 – Unclear or missing
+
+
+G2. Construction of the Final Prototype
+The final prototype iteration is constructed such that objective data on design requirements can be determined:
+
+5 – For all or nearly all design requirements
+4 – For many or nearly all design requirements
+3 – For some design requirements
+2 – For at least a few design requirements
+1 – For at least one design requirement
+0 – Not applicable to any design requirements and/or functional claims
+
+
+G3. Testing or Modeling of Attributes
+Attributes of the unique solution that can be tested or modeled are addressed:
+
+5 – All attributes
+4 – Most attributes
+3 – Some attributes
+2 – A few attributes
+1 – No more than one attribute
+0 – None
+
+
+G4. Addressing Non-Testable Attributes
+Justification is provided for attributes that cannot be tested or modeled and require expert review:
+
+5 – Well-supported justification
+4 – Generally supported justification
+3 – Adequately supported justification
+2 – Developing justification
+1 – Insufficient justification
+0 – No justification
