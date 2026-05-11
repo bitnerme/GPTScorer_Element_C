@@ -1,0 +1,109 @@
+Element H: Prototype Testing and Data Collection Plan
+
+H1 – Addressing Requirements
+Evaluate how completely the testing plan addresses the project’s high-priority design requirements.
+
+5 = Nearly all or all major requirements are clearly tested
+4 = Many major requirements are tested
+3 = Some requirements are tested
+2 = Only a few requirements are tested
+1 = One requirement is minimally tested
+0 = No meaningful testing evidence
+
+Guidance:
+- Requirements may be explicitly stated or inferred from testing content
+- Requirements must connect to actual test methods
+- Mentioning a requirement without testing it lowers the score
+- Distinct tests for distinct requirements support higher scores
+
+
+H2 – Conduct of Tests
+Evaluate the effectiveness and clarity of the testing procedures.
+
+5 = Procedures are highly detailed, logical, controlled, and replicable
+4 = Procedures are generally detailed and effective
+3 = Procedures are adequate but partially unclear or incomplete
+2 = Procedures are vague or only partially effective
+1 = Minimal procedure information
+0 = No meaningful procedure description
+
+Guidance:
+- Strong procedures include setup, tools, measurements, variables, and sequence of actions
+- Another person should be able to replicate the tests
+- Vague phrases like “we will test it” lower scores
+
+
+H3 – Quantity of Tests Planned
+Evaluate whether enough testing is planned to evaluate the design requirements.
+
+5 = Testing quantity could feasibly evaluate nearly all requirements
+4 = Testing quantity could feasibly evaluate most requirements
+3 = Testing quantity could feasibly evaluate some requirements
+2 = Limited quantity of tests
+1 = Minimal testing quantity
+0 = No feasible testing plan
+
+Guidance:
+- Multiple trials are expected
+- Seven or more trials per major test is preferred
+- Missing trial counts or weak coverage caps the score at 2
+- Testing should collectively address most important requirements
+
+
+H4 – Logic of the Plan
+Evaluate the logic and evaluation framework behind the testing plan.
+
+5 = Thorough, logical, and well-developed explanation
+4 = Logical and generally developed explanation
+3 = Adequate explanation with partial logic
+2 = Weak or partially logical explanation
+1 = Minimal logic or explanation
+0 = No explanation
+
+Guidance:
+- Strong responses include:
+  - expected results or ranges
+  - measurable outcomes
+  - pass/fail criteria
+  - thresholds or tolerances
+  - goals beyond minimum passing
+- Tests should clearly connect outcomes back to requirements
+- Missing thresholds or success criteria caps the score at 2
+
+
+H5 – Use of Field Experts
+Evaluate whether field experts reviewed and influenced the testing plan.
+
+5 = More than two experts gave feedback that was incorporated
+4 = Two experts gave feedback that was incorporated
+3 = One expert gave feedback that was incorporated
+2 = One expert gave feedback only
+1 = Expert mentioned but no documented response
+0 = No expert involvement
+
+Guidance:
+- Feedback may be paraphrased
+- Revisions based on expert feedback must be evident for scores above 2
+- Named experts without meaningful interaction score low
+
+
+Global Evaluation Philosophy
+
+Score based on explicit, testable evidence rather than formatting quality.
+
+Do:
+- Infer likely requirements when clearly implied by testing content
+- Accept functionally equivalent wording
+- Reward coherent and replicable test logic
+
+Do not:
+- Award points for headings without substance
+- Assume missing logic
+- Credit vague mentions or unsupported claims
+
+High scores require:
+- clear requirement alignment
+- replicable procedures
+- sufficient trials
+- measurable evaluation criteria
+- evidence of expert-informed revision
