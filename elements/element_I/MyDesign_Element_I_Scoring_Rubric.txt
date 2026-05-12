@@ -1,0 +1,84 @@
+Element I: Testing, Data Collection, and Analysis
+
+I1 – Importance of Tests
+Evaluate whether the student conducted tests for important design requirements.
+
+5 = Tests all high-priority requirements
+4 = Tests most high-priority requirements
+3 = Tests about half of the high-priority requirements
+2 = Tests some low- and high-priority requirements
+1 = Tests only low-priority requirements
+0 = No meaningful testing of requirements
+
+Guidance:
+- Testing may be physical or mathematical modeling.
+- Requirements may be explicitly stated or inferred from the testing discussion.
+- Strong scores require evidence that important requirements were actually tested, not merely mentioned.
+
+
+I2 – Comprehension of Testing Procedure
+Evaluate the student’s understanding of testing procedure, including data gathering and analysis.
+
+5 = Considerable understanding of testing procedure
+4 = Ample understanding of testing procedure
+3 = Adequate understanding of testing procedure
+2 = Partial or overly general understanding
+1 = Minimal understanding
+0 = No meaningful understanding of testing procedure
+
+Guidance:
+- Strong responses explain how tests were conducted and how data was gathered.
+- Evidence may include variables, controls, repeated trials, measurement methods, raw data, and analysis methods.
+- If procedures are unclear but outcomes show intentional testing logic, partial credit may be appropriate.
+
+
+I3 – Detail of Design Analysis
+Evaluate the detail of the analysis explaining how effectively the design met stated goals.
+
+5 = Consistently detailed analysis, generously supported by pictures, graphs, charts, or other visuals
+4 = Generally detailed analysis, generally supported by visuals
+3 = Somewhat detailed analysis, at least somewhat supported by visuals
+2 = Partial analysis, partially complete or partially correct, minimally supported by visuals
+1 = Attempted analysis with little or no visual/data support
+0 = No analysis
+
+Guidance:
+- Strong responses summarize data, interpret results, and connect findings to design goals.
+- Visuals may include graphs, charts, photos, tables, spreadsheets, or other displays of data.
+- Strong narrative analysis may partially compensate for limited visuals if the design logic and trends are clear.
+
+
+I4 – Summary of Data Implications
+Evaluate whether the analysis summarizes what the data means for improving the design and solving the problem.
+
+5 = Robust summary; implications address all major results and next steps
+4 = Overall summary; implications address most or nearly all major results
+3 = Overall summary; implications address at least some results
+2 = Developing summary; implications address at least some results
+1 = Partial and overly general summary; weak implications
+0 = No meaningful summary or implications
+
+Guidance:
+- Strong responses explain what the data means for the design’s success or failure.
+- Strong responses identify implications, design changes, or next steps based on evidence.
+- Reflection and interpretation may raise the score when connected clearly to test results.
+
+
+Global Scoring Guidance
+
+Score based on evidence in the Element I document.
+
+Do:
+- Infer requirements when clearly implied by testing and analysis.
+- Accept physical testing or mathematical modeling.
+- Reward meaningful analysis, reflection, and interpretation.
+- Give credit for logical testing outcomes even if formatting is imperfect.
+- Consider raw data, charts, photos, tables, graphs, and written explanation.
+
+Do not:
+- Award high scores for headings or template structure alone.
+- Assume testing occurred if only goals or plans are described.
+- Credit vague claims without data, results, or analysis.
+- Require perfect formatting if the testing logic and data interpretation are clear.
+
+Element I is about completed testing, collected data, analysis of results, and implications for the design.

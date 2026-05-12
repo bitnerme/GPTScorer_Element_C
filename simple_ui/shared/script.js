@@ -236,7 +236,8 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
             E: 4,
             F: 1,
             G: 4,
-            H: 5
+            H: 5,
+            i: 4
             };
 
         window.subelementCount =
