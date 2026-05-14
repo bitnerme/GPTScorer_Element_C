@@ -1,0 +1,31 @@
+ELEMENT J — DOCUMENTATION OF EVALUATION
+
+J1 — Involvement of Stakeholders and Field Experts
+Documentation of project evaluation is by:
+
+5 = multiple stakeholders and multiple demonstrably-qualified field experts
+4 = two stakeholders and two demonstrably-qualified field experts
+3 = multiple stakeholders or demonstrably-qualified field experts
+2 = two stakeholders or demonstrably-qualified field experts
+1 = one stakeholder or field expert (who may or may not be demonstrably qualified)
+0 = no stakeholder or field expert
+
+J2 — Comprehensive Evaluation
+Documentation of project evaluation __________ aspects of your design or engineering design process.
+
+5 = addresses two or more aspects
+4 = addresses at least one aspect
+3 = may not be complete in any aspect
+2 = is incomplete or overly general in all aspects
+1 = is insufficient in all aspects
+0 = is nonexistent or minimal in all aspects
+
+J3 — Synthesizing the Project External Evaluation
+Documentation of project external evaluation is summarized __________.
+
+5 = in a consistently-specific, detailed, and thorough way
+4 = in a generally-specific, detailed, and thorough way
+3 = in a somewhat-specific and detailed way, but may not be thorough
+2 = in a somewhat-specific and/or detailed, but incomplete or overly general way
+1 = in a sparse manner, with few specifics/details
+0 = minimally or is missing

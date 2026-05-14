@@ -55,8 +55,8 @@ def get_blended_model(element, mode):
         "H": ("v1.0", "v2.0"),
         "I": ("v1.1", "v1.2"),
         "J": ("v1.0", "v1.5"),
-        "K": ("v1.2a", "v1.2"),
-        "L": ("v1.5a", "v1.5")
+        "K": ("v1.2", "v1.3"),
+        "L": ("v1.5", "v1.6")
     }
 
     if element not in mapping:
@@ -291,11 +291,47 @@ def extract_text_with_fallback(filepath, min_length=50):
 
     print(f"OCR CHECK: {filepath}")
     print(f"Original Extracted text length: {len(text)}")
+
     # Trigger OCR if empty or suspiciously short
     if len(text) < min_length:
-        print(f"OCR triggered for {filepath}")
-        text = run_ocr(filepath).strip()
-        print(f"📄 FINAL TEXT LENGTH (post-OCR): {len(text)} for {filepath}")
+
+        try:
+            print(f"OCR triggered for {filepath}")
+
+            # ===== PRINT 1 =====
+            print("OCR: starting PDF render")
+
+            images = convert_from_path(filepath)
+
+            # ===== PRINT 2 =====
+            print(f"OCR: completed PDF render, pages={len(images)}")
+
+            ocr_pages = []
+
+            for idx, image in enumerate(images, start=1):
+
+                # ===== PRINT 3 =====
+                print(f"OCR: starting page {idx}")
+
+                page_text = pytesseract.image_to_string(image)
+
+                # ===== PRINT 4 =====
+                print(
+                    f"OCR: completed page {idx}, chars={len(page_text)}"
+                )
+
+                ocr_pages.append(page_text)
+
+            ocr_text = "\n".join(ocr_pages)
+
+            print(f"OCR returned length: {len(ocr_text)}")
+
+            return ocr_text
+
+        except Exception as e:
+            print(f"❌ OCR FAILED for {filepath}: {e}")
+            traceback.print_exc()
+            return ""
 
     return text
 

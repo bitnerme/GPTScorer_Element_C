@@ -1,0 +1,372 @@
+{
+  "Case016_000.pdf": {
+    "evaluation_sources": [
+      "Lowes",
+      "Home Depot",
+      "Hotel chains",
+      "Home owners"
+    ],
+    "J1": 2,
+    "J1_rationale": "The document lists four potential stakeholders but does not provide evidence of actual involvement or feedback. No field experts are mentioned or demonstrated as qualified.",
+    "J2": 0,
+    "J2_rationale": "There is no documented evaluation feedback addressing any aspect of the design or engineering design process.",
+    "J3": 0,
+    "J3_rationale": "No summary or synthesis of external evaluation is provided.",
+    "narrative_feedback": "The project identifies several potential stakeholders, including Lowes, Home Depot, hotel chains, and homeowners, which shows some awareness of who might be interested in the product. However, the document does not demonstrate actual involvement or feedback from these stakeholders, nor does it include any field experts or their qualifications. This limits the credibility and depth of the external evaluation.\n\nFurthermore, the document lacks any evaluation feedback related to the design or engineering process. There is no discussion of prototype performance, testing, usability, or areas for improvement. Without such feedback, the project misses an opportunity to critically analyze and refine the design based on real-world input.\n\nAdditionally, there is no synthesis or summary of evaluation findings. The absence of detailed, specific reflections or conclusions means the project does not benefit from integrating multiple perspectives or identifying meaningful trends. To improve, the student should seek direct feedback from identified stakeholders or qualified experts, document specific evaluation results tied to design aspects, and provide a thorough synthesis that highlights key takeaways and actionable improvements.",
+    "truncation_detected": 0,
+    "J1_api": 2,
+    "J2_api": 0,
+    "J3_api": 0,
+    "element_score_api": 0.6666666666666666
+  },
+  "Case015_000.pdf": {
+    "evaluation_sources": [
+      "Lowes",
+      "Home Depot",
+      "Hotel chains",
+      "Home owners"
+    ],
+    "J1": 2,
+    "J1_rationale": "The document lists four potential stakeholders but does not provide evidence of actual involvement or feedback. No field experts are mentioned or demonstrated as qualified.",
+    "J2": 0,
+    "J2_rationale": "There is no documented evaluation feedback addressing any aspect of the design or engineering design process. The statements only identify possible stakeholders without evaluation content.",
+    "J3": 0,
+    "J3_rationale": "No summary or synthesis of external evaluation is provided. The document lacks any detailed or specific analysis of feedback.",
+    "narrative_feedback": "The project identifies several potential stakeholders, including Lowes, Home Depot, hotel chains, and homeowners, which shows some awareness of who might be interested in the product. However, the document does not demonstrate actual involvement or feedback from these stakeholders, nor does it include any field experts. This limits the credibility and depth of the external evaluation.\n\nFurthermore, the document lacks any evaluation feedback related to the design or engineering process. There is no discussion of prototype performance, testing, usability, or improvement needs. Without such feedback, the student misses an opportunity to analyze and interpret valuable insights that could guide design iteration and refinement.\n\nAdditionally, the absence of a summary or synthesis means there is no integration of evaluator comments or identification of trends and takeaways. To improve, the student should actively engage with stakeholders and qualified experts to gather specific feedback. They should document this feedback clearly, linking it to design aspects, and then synthesize the information to draw meaningful conclusions. Including detailed reflections and actionable recommendations will strengthen the evaluation and support future project development.",
+    "truncation_detected": 0,
+    "J1_api": 2,
+    "J2_api": 0,
+    "J3_api": 0,
+    "element_score_api": 0.6666666666666666
+  },
+  "Case010_000.docx": {
+    "evaluation_sources": [
+      "Ms Hopkins (stakeholder)",
+      "Mr Taylor (stakeholder)",
+      "Ms Rudnik (stakeholder)",
+      "Dr. Cadou (field expert)",
+      "Mr. Steinhorn (field expert)"
+    ],
+    "J1": 4,
+    "J1_rationale": "The document lists three stakeholders with clear roles and two demonstrably qualified field experts. One field expert slot is blank, so only two field experts are documented.",
+    "J2": 0,
+    "J2_rationale": "No actual evaluation feedback or documentation is provided for any evaluator. The sections for project evaluation are empty or contain only template instructions without any content addressing design or engineering aspects.",
+    "J3": 0,
+    "J3_rationale": "The synthesis section is empty and contains only a prompt to summarize evaluators' comments. No summary, analysis, or synthesis of evaluation feedback is present.",
+    "narrative_feedback": "The project documentation identifies multiple stakeholders and field experts, demonstrating an understanding of the importance of diverse external evaluation sources. The roles of the stakeholders are clearly stated, and the field experts are noted as demonstrably qualified, which is a strong foundation for comprehensive evaluation. However, the absence of any actual evaluation feedback from these individuals significantly weakens the value of this element. Without documented comments, critiques, or recommendations, the evaluation lacks substance and cannot inform design improvements.\n\nFurthermore, the student has not analyzed or interpreted any evaluation feedback, as none is provided. This results in no evidence of reflection on design aspects or engineering processes, which is critical for iterative development. The synthesis section is also missing, leaving the project without a cohesive summary or meaningful conclusions drawn from external input. This limits the ability to identify trends, strengths, or areas for improvement.\n\nTo enhance this element, the student should actively collect and document detailed feedback from all evaluators, ensuring it addresses specific design or process aspects. They should then analyze this feedback to identify patterns and actionable insights. Finally, a thorough synthesis summarizing key takeaways and planned improvements would demonstrate thoughtful reflection and strengthen the project\u2019s evaluation quality.",
+    "truncation_detected": 0,
+    "J1_api": 4,
+    "J2_api": 0,
+    "J3_api": 0,
+    "element_score_api": 1.3333333333333333
+  },
+  "Case017_000.pdf": {
+    "evaluation_sources": [
+      "Lowes",
+      "Home Depot",
+      "Hotel chains",
+      "Home owners"
+    ],
+    "J1": 2,
+    "J1_rationale": "The document lists four potential stakeholders but does not provide evidence of actual involvement or feedback. No field experts are mentioned or demonstrated as qualified.",
+    "J2": 0,
+    "J2_rationale": "No evaluation feedback is documented that addresses any aspect of the design or engineering design process. The text only identifies possible stakeholders without any evaluation content.",
+    "J3": 0,
+    "J3_rationale": "There is no summary or synthesis of external evaluation feedback. The document lacks any detailed or specific analysis.",
+    "narrative_feedback": "The project\u2019s external evaluation documentation is limited to listing potential stakeholders such as Lowes, Home Depot, hotel chains, and homeowners. However, there is no evidence that these stakeholders were actually involved in providing feedback or evaluation, nor are any field experts identified or demonstrated as qualified. This limits the relevance and credibility of the evaluation sources.\n\nFurthermore, the document does not include any analysis or interpretation of evaluation feedback. There is no discussion of how the design or engineering process was assessed, nor are any specific aspects such as prototype performance, usability, or constraints addressed. Without documented feedback, the evaluation lacks depth and meaningful insight.\n\nFinally, the document does not provide any synthesis or summary of evaluation results. There are no conclusions, trends, or actionable recommendations drawn from external input. To improve, the student should seek actual feedback from identified stakeholders or qualified experts, document specific evaluation comments tied to design aspects, and synthesize these insights into clear, detailed reflections. Including concrete examples and integrating multiple perspectives will strengthen the evaluation and support future design improvements.",
+    "truncation_detected": 0,
+    "J1_api": 2,
+    "J2_api": 0,
+    "J3_api": 0,
+    "element_score_api": 0.6666666666666666
+  },
+  "Case066_111.pdf": {
+    "evaluation_sources": [
+      "teacher"
+    ],
+    "J1": 1,
+    "J1_rationale": "Only one stakeholder, the teacher, is documented as providing evaluation feedback. The teacher's role is somewhat clear as a stakeholder but there is no evidence of multiple stakeholders or any demonstrably qualified field experts.",
+    "J2": 3,
+    "J2_rationale": "The evaluation feedback addresses some aspects of the design process, such as prototype performance (filter did not work), possible improvements (materials, design changes), and reflection on testing results. However, the evaluation is somewhat incomplete and general rather than comprehensive.",
+    "J3": 2,
+    "J3_rationale": "The summary of the external evaluation is somewhat specific and includes some details about the teacher's feedback and the student's reflections. However, it lacks thoroughness, synthesis, and integration of multiple evaluator comments, resulting in an incomplete and somewhat general summary.",
+    "narrative_feedback": "The project\u2019s external evaluation is limited to feedback from a single stakeholder, the teacher, who provided some guidance and materials. While the teacher\u2019s involvement is relevant, the evaluation would benefit from including multiple stakeholders or field experts to provide a broader and more qualified perspective.\n\nThe student demonstrates an understanding of the evaluation feedback by identifying that the water filter did not work and considering possible improvements such as changing materials and design. However, the analysis remains somewhat general and lacks depth in exploring specific aspects of the design or engineering process. The reflection on potential improvements shows some critical thinking but could be expanded with more detailed examination of test results or constraints.\n\nThe synthesis of the evaluation is basic and does not fully integrate or summarize multiple perspectives, limiting its usefulness. To improve, the student should seek feedback from additional stakeholders or experts, document specific testing outcomes, and provide a more detailed and thorough synthesis of evaluation findings. Additionally, proposing concrete, feasible next steps based on evaluation insights would strengthen future project iterations and demonstrate deeper engagement with the design process.",
+    "truncation_detected": 0,
+    "J1_api": 1,
+    "J2_api": 3,
+    "J3_api": 2,
+    "element_score_api": 2.0
+  },
+  "Case069_120.docx": {
+    "evaluation_sources": [],
+    "J1": 0,
+    "J1_rationale": "No evaluators, stakeholders, or field experts are documented in the submission.",
+    "J2": 0,
+    "J2_rationale": "No evaluation feedback or discussion of design or engineering process aspects is present.",
+    "J3": 0,
+    "J3_rationale": "No summary or synthesis of external evaluation is provided.",
+    "narrative_feedback": "The project documentation lacks any evidence of external evaluation, including involvement of stakeholders or field experts. Without documented evaluators, it is impossible to assess the relevance or quality of any feedback that might have been received. This absence significantly limits the ability to understand how the design was reviewed or validated by knowledgeable parties.\n\nFurthermore, there is no analysis or interpretation of evaluation feedback related to the design or engineering process. The document does not address any specific aspects such as prototype performance, testing, iteration, or usability, which are critical for comprehensive evaluation. Without this, the project misses an opportunity to demonstrate reflective thinking and responsiveness to critique.\n\nFinally, the document does not provide any synthesis or summary of external evaluation. Effective synthesis would integrate multiple perspectives into clear conclusions or actionable insights, but this is entirely missing. To improve, the student should actively seek and document feedback from multiple qualified stakeholders or experts, clearly link feedback to specific design aspects, and provide a detailed, thoughtful synthesis that highlights key trends and informs future improvements. Including these elements will strengthen the evaluation process and enhance the overall quality of the project.",
+    "truncation_detected": 0,
+    "J1_api": 0,
+    "J2_api": 0,
+    "J3_api": 0,
+    "element_score_api": 0.0
+  },
+  "Case063_021.pdf": {
+    "evaluation_sources": [],
+    "J1": 0,
+    "J1_rationale": "No stakeholders or field experts are mentioned or documented in the evaluation.",
+    "J2": 2,
+    "J2_rationale": "The evaluation briefly mentions possible improvements related to design aspects (size, sturdiness, materials, tools, and build time), but the feedback is overly general and incomplete.",
+    "J3": 1,
+    "J3_rationale": "The summary is sparse, with few specifics or details, and lacks synthesis or integration of multiple evaluator comments.",
+    "narrative_feedback": "The project\u2019s external evaluation lacks documented involvement of any stakeholders or field experts, which limits the credibility and depth of the feedback provided. Without clear identification of evaluators, it is difficult to assess the relevance or authority of the evaluation comments. This absence represents a significant weakness in the evaluation process.\n\nThe student\u2019s analysis of the evaluation feedback touches on some design considerations such as making the structure smaller, sturdier, and using different materials. However, these points are presented in a very general manner without detailed explanation or connection to specific design challenges or testing results. The feedback does not comprehensively address multiple aspects of the design or engineering process, and the reflection remains superficial.\n\nThe synthesis of the evaluation is minimal and lacks specificity or thoroughness. The student does not integrate or summarize multiple perspectives, nor do they provide detailed conclusions or actionable insights. To improve, the student should seek feedback from clearly identified stakeholders or qualified experts, document their roles, and incorporate detailed, specific evaluation comments. Additionally, deeper analysis and synthesis of feedback would strengthen reflection and guide more feasible, targeted improvements. Including concrete examples and linking feedback to design decisions will enhance the usefulness of future evaluations.",
+    "truncation_detected": 0,
+    "J1_api": 0,
+    "J2_api": 2,
+    "J3_api": 1,
+    "element_score_api": 1.0
+  },
+  "Case067_111.pdf": {
+    "evaluation_sources": [
+      "teacher"
+    ],
+    "J1": 1,
+    "J1_rationale": "Only one evaluator, the teacher, is documented as providing feedback. The teacher is a stakeholder but there is no evidence of demonstrable field expertise.",
+    "J2": 3,
+    "J2_rationale": "The evaluation addresses some aspects of the design process, such as prototype performance and potential improvements, but the feedback is somewhat general and lacks depth.",
+    "J3": 2,
+    "J3_rationale": "The summary is somewhat specific and includes some details about the filter's failure and possible improvements, but it is incomplete and overly general without thorough synthesis or integration of feedback.",
+    "narrative_feedback": "The project\u2019s external evaluation is limited to feedback from a single stakeholder, the teacher, who provided some guidance and suggestions. While the teacher\u2019s involvement is valuable, the evaluation would benefit from input by additional stakeholders or field experts to broaden perspectives and enhance credibility.\n\nThe student demonstrates an awareness of the design\u2019s shortcomings and reflects on possible improvements, such as changing materials and design layout. However, the analysis remains general and lacks detailed examination of specific design aspects or testing results. The reflection does not deeply interpret the feedback or connect it to concrete engineering principles or iterative design steps.\n\nThe synthesis of evaluation feedback is basic and does not fully integrate or prioritize the insights gained. The proposed improvements are somewhat vague and lack specificity or feasibility considerations. To strengthen future evaluations, the student should seek multiple evaluators, document their roles clearly, and focus on detailed, aspect-specific feedback. Additionally, deeper analysis and synthesis of evaluation comments would improve understanding and guide more targeted design iterations.",
+    "truncation_detected": 0,
+    "J1_api": 1,
+    "J2_api": 3,
+    "J3_api": 2,
+    "element_score_api": 2.0
+  },
+  "Case005_150.pdf": {
+    "evaluation_sources": [
+      "Coach Holmes (stakeholder)"
+    ],
+    "J1": 1,
+    "J1_rationale": "Only one stakeholder, Coach Holmes, is documented as providing feedback. No other stakeholders or demonstrably qualified field experts are mentioned.",
+    "J2": 4,
+    "J2_rationale": "The feedback addresses specific aspects of the design, including the dispenser lever placement, safety concerns, and the stability of the wooden flap, indicating evaluation of prototype performance and usability.",
+    "J3": 2,
+    "J3_rationale": "The summary provides some specific details from the stakeholder's feedback but lacks synthesis across multiple evaluators and does not integrate comments into broader conclusions or trends.",
+    "narrative_feedback": "The project\u2019s external evaluation is limited to feedback from a single stakeholder, Coach Holmes, who is clearly identified and whose role is relevant to the project. While this provides some valuable perspective, the evaluation would benefit from including multiple stakeholders or field experts to broaden the feedback scope and enhance credibility.\n\nThe student effectively documents specific feedback related to the design\u2019s functionality, such as the lever placement, safety concerns, and stability issues with the wooden flap. This shows a good understanding of the design aspects being evaluated and highlights areas for improvement. However, the analysis remains largely descriptive and does not explore deeper implications or connect feedback to design decisions or iteration strategies.\n\nThe synthesis of the evaluation is minimal, primarily restating the stakeholder\u2019s comments without integrating them into a comprehensive summary or identifying overarching trends. To improve, the student should seek additional evaluators, explicitly connect feedback to design process elements, and provide a more thorough synthesis that draws clear conclusions and actionable insights. Including multiple perspectives and reflecting on how feedback informs future design iterations would strengthen the evaluation and support more effective project development.",
+    "truncation_detected": 0,
+    "J1_api": 1,
+    "J2_api": 4,
+    "J3_api": 2,
+    "element_score_api": 2.3333333333333335
+  },
+  "Case076_421.pdf": {
+    "evaluation_sources": [
+      "Mr. Roberson (stakeholder and field expert)",
+      "Joel Simmons (stakeholder)",
+      "Meredith Huffaker (stakeholder)",
+      "Officer O\u2019Bryant (field expert)"
+    ],
+    "J1": 5,
+    "J1_rationale": "The document identifies five evaluators, including three stakeholders and two demonstrably-qualified field experts. Each evaluator's role is clearly justified, with Officer O\u2019Bryant and Mr. Roberson described as field experts with relevant expertise.",
+    "J2": 4,
+    "J2_rationale": "The evaluation feedback addresses specific aspects of the design process, such as prototype focus, design improvements, and usability considerations. However, the feedback is somewhat general and lacks detailed analysis of testing results or iteration.",
+    "J3": 3,
+    "J3_rationale": "The summary synthesizes evaluator comments by noting that suggestions were helpful and incorporated, but it lacks detailed integration of specific feedback or identification of clear trends and takeaways. The synthesis is somewhat general and not thoroughly detailed.",
+    "narrative_feedback": "The project demonstrates strong engagement with multiple evaluators, including three stakeholders and two field experts, each with clearly stated roles and relevant expertise. This breadth of input provides a solid foundation for external evaluation and reflects well on the team\u2019s efforts to gather diverse perspectives. The inclusion of a police officer and a technical expert adds credibility and relevance to the feedback.\n\nThe evaluation feedback addresses important aspects of the design process, such as refining the prototype\u2019s scope and improving usability based on stakeholder needs. However, the analysis remains somewhat general, lacking detailed discussion of testing outcomes, iteration, or specific design decisions. The team could deepen their reflection by explicitly linking feedback to concrete design changes or challenges encountered.\n\nThe summary of the evaluation is clear but somewhat superficial. While it acknowledges that suggestions were helpful and incorporated, it does not synthesize the feedback into meaningful trends or actionable insights. To improve, the team should aim to integrate evaluator comments more thoroughly, highlighting key takeaways and how these influenced design decisions. Future evaluations would benefit from more detailed analysis, explicit reflection on feedback impact, and clearer articulation of next steps to enhance the project\u2019s development.",
+    "truncation_detected": 0,
+    "J1_api": 5,
+    "J2_api": 4,
+    "J3_api": 3,
+    "element_score_api": 4.0
+  },
+  "Case037_322.pdf": {
+    "evaluation_sources": [
+      "Ms. Shao, biology teacher and chicken club leader",
+      "Ms. Harrison, chicken caretaker and knowledgeable chicken owner",
+      "Mr. Beam, engineering teacher and construction expert"
+    ],
+    "J1": 4,
+    "J1_rationale": "The document identifies three evaluators: two stakeholders (Ms. Shao and Ms. Harrison) with clear roles related to chicken care, and one field expert (Mr. Beam) with demonstrated engineering expertise. The qualifications of the field expert are clearly stated, and the stakeholders\u2019 roles are well documented.",
+    "J2": 3,
+    "J2_rationale": "The feedback addresses some aspects of the design and engineering process, such as improving the design to be more useful and compact, material selection, and safety considerations for the chickens. However, the evaluation lacks depth and completeness across multiple design aspects, and some feedback is general rather than detailed.",
+    "J3": 2,
+    "J3_rationale": "The summary provides some specific details about each evaluator\u2019s contributions but mainly lists their feedback without thorough synthesis or integration. The evaluation is somewhat detailed but incomplete and overly general in parts, lacking a clear, cohesive summary of trends or conclusions.",
+    "narrative_feedback": "The project\u2019s external evaluation includes input from multiple relevant stakeholders and a qualified field expert, which strengthens the credibility of the feedback. The roles of the biology teacher and chicken caretaker are clearly described, and the engineering teacher\u2019s expertise is well established, providing a solid foundation for diverse perspectives on the project.\n\nWhile the evaluation touches on important aspects such as design improvement, material selection, and safety, the analysis remains somewhat superficial. The feedback is often descriptive rather than analytical, limiting insight into how the evaluation influenced design decisions or iterations. The summary tends to list individual comments without synthesizing them into broader conclusions or identifying patterns.\n\nTo enhance the evaluation process, future documentation should aim to deepen the analysis by explicitly connecting feedback to specific design challenges and decisions. Synthesizing evaluator input into clear trends or actionable takeaways would improve the usefulness of the reflection. Additionally, including more detailed evidence of testing results or iterative changes based on feedback would strengthen the comprehensiveness and impact of the evaluation.",
+    "truncation_detected": 0,
+    "J1_api": 4,
+    "J2_api": 3,
+    "J3_api": 2,
+    "element_score_api": 3.0
+  },
+  "Case027_151.docx": {
+    "evaluation_sources": [
+      "Mr. Carey"
+    ],
+    "J1": 1,
+    "J1_rationale": "Only one evaluator, Mr. Carey, is documented with no clear stakeholder or demonstrably qualified field expert role.",
+    "J2": 2,
+    "J2_rationale": "Feedback is generally positive but vague, mentioning plant health and ecosystem without addressing specific design or engineering aspects.",
+    "J3": 1,
+    "J3_rationale": "Summary is sparse and lacks synthesis; it mostly repeats evaluator comments without detailed analysis or integration.",
+    "narrative_feedback": "The project\u2019s external evaluation is limited to a single source, Mr. Carey, whose role as a stakeholder or field expert is not clearly defined. This restricts the breadth and credibility of the evaluation feedback. Including multiple evaluators with clearly identified roles would strengthen the evaluation process and provide diverse perspectives.\n\nThe feedback provided focuses on general observations such as plant health and ecosystem vitality but lacks connection to specific design or engineering aspects like prototype performance, testing, or iteration. This limits the usefulness of the evaluation for guiding improvements. The student\u2019s analysis does not delve into interpreting or expanding on the feedback, resulting in a superficial understanding of the project\u2019s strengths and weaknesses.\n\nThe synthesis of the evaluation is minimal, primarily listing comments without drawing meaningful conclusions or identifying trends. To improve, the student should seek more detailed and varied feedback, explicitly link comments to design elements, and provide a thorough synthesis that highlights actionable insights. Future evaluations would benefit from clearer documentation of evaluator roles, more comprehensive feedback addressing technical aspects, and a reflective summary that integrates multiple viewpoints to guide project refinement.",
+    "truncation_detected": 0,
+    "J1_api": 1,
+    "J2_api": 2,
+    "J3_api": 1,
+    "element_score_api": 1.3333333333333333
+  },
+  "Case044_432.pdf": {
+    "evaluation_sources": [
+      "Mr. C, land management teacher",
+      "Mr. F, maintenance manager",
+      "Student G's mother, gate owner"
+    ],
+    "J1": 4,
+    "J1_rationale": "The document identifies three evaluators: two demonstrably qualified field experts (Mr. C, a land management teacher experienced with gates, and Mr. F, a maintenance manager familiar with fence repairs) and one stakeholder (Student G's mother, the gate owner). Their roles and qualifications are clearly stated.",
+    "J2": 3,
+    "J2_rationale": "The evaluation feedback addresses a specific design aspect: preventing paint scratching by adding protective material around the gate prototype. However, the feedback is limited to this single aspect and lacks discussion of other design or engineering process elements such as prototype performance, testing, or iteration.",
+    "J3": 2,
+    "J3_rationale": "The summary of external evaluation feedback is somewhat specific and includes details about the protective material recommendation. However, it is incomplete and overly general, lacking synthesis or integration of multiple evaluator comments into clear conclusions or trends.",
+    "narrative_feedback": "The project benefits from external evaluation by multiple qualified individuals, including two field experts and a key stakeholder, which strengthens the credibility of the feedback. The evaluators\u2019 roles are clearly defined, and their input is relevant to the project\u2019s goal of creating a self-closing gate mechanism. This involvement demonstrates a solid foundation for meaningful evaluation.\n\nHowever, the analysis of the feedback is limited in scope, focusing primarily on the recommendation to protect the gate\u2019s paint. While this is a practical concern, the evaluation does not explore other important design or engineering aspects such as prototype functionality, usability, or iterative improvements. The synthesis of feedback is minimal, with the summary largely restating comments without drawing broader conclusions or identifying patterns.\n\nTo improve, the student should seek more comprehensive feedback covering multiple design facets and document how this input informs design decisions. Additionally, integrating and comparing evaluator perspectives would enhance the synthesis and provide clearer takeaways. Finally, expanding the reflection to include how feedback influenced prototype changes or future plans would deepen the evaluation\u2019s impact and usefulness.",
+    "truncation_detected": 0,
+    "J1_api": 4,
+    "J2_api": 3,
+    "J3_api": 2,
+    "element_score_api": 3.0
+  },
+  "Case006_153.pdf": {
+    "evaluation_sources": [
+      "Coach Holmes"
+    ],
+    "J1": 1,
+    "J1_rationale": "Only one evaluator, Coach Holmes, is documented as a stakeholder. His role as a coach is stated, but no demonstrably qualified field experts are mentioned.",
+    "J2": 4,
+    "J2_rationale": "The feedback addresses specific aspects of the design, including prototype performance (lever dispensing location), safety concerns, and mechanical stability (wooden flap strength). This shows evaluation of design and usability aspects.",
+    "J3": 2,
+    "J3_rationale": "The summary provides some specific details from Coach Holmes' feedback but lacks synthesis across multiple evaluators or a thorough integration of feedback. It mainly restates comments without deeper analysis or broader conclusions.",
+    "narrative_feedback": "The project\u2019s external evaluation is based solely on feedback from one stakeholder, Coach Holmes, whose role is clearly identified as a coach and user of the lacrosse ball dispenser. While this provides a relevant perspective, the evaluation would be strengthened by including multiple stakeholders or demonstrably qualified field experts to broaden the feedback scope and depth.\n\nThe student effectively documents specific feedback related to the design\u2019s functionality and safety, such as the dispensing lever\u2019s position and the stability of the wooden flap. This shows a good understanding of key design aspects and user concerns. However, the analysis remains largely descriptive, lacking deeper interpretation or reflection on how these issues might be addressed or prioritized.\n\nThe synthesis of the evaluation is limited, as it mainly repeats the stakeholder\u2019s comments without integrating them into broader conclusions or identifying trends. To improve, the student should seek additional evaluators, provide more detailed analysis of feedback implications, and develop a clearer plan for addressing identified issues. Including multiple perspectives and synthesizing feedback would enhance the project\u2019s evaluation quality and support more informed design iterations.",
+    "truncation_detected": 0,
+    "J1_api": 1,
+    "J2_api": 4,
+    "J3_api": 2,
+    "element_score_api": 2.3333333333333335
+  },
+  "Case065_540.docx": {
+    "evaluation_sources": [
+      "Dr. L (stakeholder)",
+      "Ms. Ruiz (stakeholder)",
+      "Ms. Velo (stakeholder)",
+      "Jim Greiner (field expert)"
+    ],
+    "J1": 3,
+    "J1_rationale": "The document lists three stakeholders with clear roles and one field expert with demonstrated qualifications. However, only one field expert is documented, not multiple, so the score reflects multiple stakeholders but only one demonstrably-qualified field expert.",
+    "J2": 4,
+    "J2_rationale": "The evaluators provide feedback addressing specific aspects of the design such as cost, material impact, sound effect, weight, and space considerations. These relate to design constraints and usability, indicating at least one clear aspect of the design process is addressed.",
+    "J3": 1,
+    "J3_rationale": "The synthesis section is present but contains only a prompt without any actual summary or integration of evaluator comments. There is no detailed or specific synthesis of the external evaluation.",
+    "narrative_feedback": "The project includes evaluation from multiple stakeholders and one clearly qualified field expert, which provides a solid foundation for external feedback. The stakeholders\u2019 concerns about cost, material impact, and sound effects, along with the expert\u2019s focus on weight and space, are relevant and demonstrate engagement with important design considerations. However, the absence of multiple field experts limits the breadth of professional insight.\n\nWhile the feedback touches on several design aspects, the analysis remains at a basic level. The student documents specific concerns but does not elaborate on how these evaluations influence design decisions or improvements. This limits the depth of reflection and the ability to fully leverage the feedback for iterative design enhancement.\n\nThe synthesis of the external evaluation is notably lacking. The document includes only a placeholder prompt without any actual summary or integration of the evaluators\u2019 comments. To improve, the student should provide a detailed synthesis that identifies common themes, contrasts perspectives, and outlines actionable takeaways. Additionally, expanding the number of field experts and explicitly connecting feedback to design iterations would strengthen the evaluation process and project development.",
+    "truncation_detected": 0,
+    "J1_api": 3,
+    "J2_api": 4,
+    "J3_api": 1,
+    "element_score_api": 2.6666666666666665
+  },
+  "Case054_144.pdf": {
+    "evaluation_sources": [
+      "Mr. L, stakeholder"
+    ],
+    "J1": 1,
+    "J1_rationale": "Only one evaluator is documented, Mr. L, who is identified as a stakeholder but no field experts are documented.",
+    "J2": 3,
+    "J2_rationale": "The evaluation feedback addresses specific aspects of the design, such as prototype functionality and craftsmanship, but only from one stakeholder and is somewhat limited in scope.",
+    "J3": 2,
+    "J3_rationale": "The summary of the evaluation feedback is somewhat specific and detailed but lacks thoroughness and synthesis across multiple evaluators.",
+    "narrative_feedback": "The project\u2019s external evaluation is limited to a single stakeholder, Mr. L, who is clearly identified and provides relevant feedback as the project assigner and end user. This feedback is valuable as it directly relates to the prototype\u2019s practical application and potential for implementation. However, the absence of multiple stakeholders or demonstrably qualified field experts restricts the breadth and depth of the evaluation.\n\nThe student documents specific feedback regarding the prototype\u2019s lever mechanism and overall solution viability, which shows some engagement with the design\u2019s functional aspects. Yet, the analysis remains narrow, focusing mainly on craftsmanship and minor functional issues without exploring other design or engineering process aspects such as testing, iteration, or usability in detail.\n\nThe synthesis of the evaluation is basic, summarizing the stakeholder\u2019s comments without integrating multiple perspectives or drawing broader conclusions. To improve, the student should seek additional evaluators, including qualified field experts, to provide diverse insights. Expanding the evaluation to cover multiple design aspects and providing a more thorough synthesis of feedback would strengthen the reflection. Additionally, proposing specific, actionable improvements based on the feedback would enhance the usefulness of the evaluation.",
+    "truncation_detected": 0,
+    "J1_api": 1,
+    "J2_api": 3,
+    "J3_api": 2,
+    "element_score_api": 2.0
+  },
+  "Case084_354.pdf": {
+    "evaluation_sources": [
+      "Ms. Seltzer (3-D art teacher)",
+      "Mr. Vogel (maker space technician)",
+      "Ms. Bussey (stakeholder who requested design)",
+      "Mr. Beam (engineering and design teacher)"
+    ],
+    "J1": 3,
+    "J1_rationale": "Four stakeholders are named with clear roles, but only two (Ms. Seltzer and Mr. Vogel) provided feedback. No demonstrably qualified field experts are identified beyond the teacher roles, and qualifications are not explicitly demonstrated.",
+    "J2": 4,
+    "J2_rationale": "Feedback addresses specific aspects of the design process such as material handling (cutting acrylic), aesthetics (string length and paint removal), and waste reduction. However, the evaluation is limited to a few practical details and does not cover multiple broad aspects of the design or engineering process.",
+    "J3": 2,
+    "J3_rationale": "The summary provides some specific details about feedback and its impact on neatness and material savings but lacks thorough synthesis or integration of multiple evaluator comments into broader conclusions or trends.",
+    "narrative_feedback": "The project\u2019s external evaluation includes multiple stakeholders with clearly defined roles, such as a 3-D art teacher, maker space technician, and engineering teacher, which strengthens the relevance of the feedback. However, only two individuals provided substantive feedback, and the qualifications of field experts are not explicitly demonstrated, limiting the depth of evaluation. The inclusion of a stakeholder who requested the design and a teacher who set the criteria adds context but does not contribute evaluative feedback.\n\nThe student effectively documents specific feedback related to practical aspects of the design, such as improving the neatness of the installation and reducing material waste. This shows an understanding of how external input can influence design decisions. However, the evaluation focuses narrowly on a few details and does not explore broader design or engineering process aspects like testing, iteration, or usability.\n\nThe synthesis of evaluation feedback is somewhat limited, primarily listing comments without integrating them into a comprehensive analysis or identifying overarching trends. To improve, the student should seek more diverse and demonstrably qualified evaluators, explicitly connect feedback to multiple design aspects, and provide a more thorough synthesis that draws clear conclusions and actionable insights. Additionally, reflecting on how feedback influenced design iterations or future improvements would deepen the evaluation.",
+    "truncation_detected": 0,
+    "J1_api": 3,
+    "J2_api": 4,
+    "J3_api": 2,
+    "element_score_api": 3.0
+  },
+  "Case024_453.pdf": {
+    "evaluation_sources": [
+      "T. J. - former PE student stakeholder",
+      "W. E. - past engineering student stakeholder",
+      "Ms. Hopkins - PE class lead stakeholder",
+      "Dr. Cadou - mechanical and aerospace engineer field expert"
+    ],
+    "J1": 5,
+    "J1_rationale": "The document includes multiple stakeholders with clearly stated roles relevant to the project and one demonstrably qualified field expert with a related professional background.",
+    "J2": 4,
+    "J2_rationale": "The evaluation feedback addresses specific aspects of the design such as efficiency, stability, construction methods, and mobility. However, some feedback is general praise and lacks detailed analysis of multiple design or process aspects.",
+    "J3": 3,
+    "J3_rationale": "The synthesis summarizes overall positive feedback and identifies stability as an area for improvement, but it lacks integration of multiple evaluator comments into a thorough, detailed, and specific analysis.",
+    "narrative_feedback": "The project\u2019s external evaluation is well-supported by multiple stakeholders and a qualified field expert, each providing relevant perspectives tied to their roles. This diversity strengthens the credibility and relevance of the feedback, particularly with the inclusion of a mechanical and aerospace engineer who offers professional insight. The stakeholders\u2019 feedback touches on usability, efficiency, and stability, which are important design considerations.\n\nThe student effectively documents and reflects on the evaluation feedback, identifying key strengths such as stability and mobility, and acknowledging areas for improvement. However, the analysis could be deepened by elaborating on how specific feedback influenced design decisions or iteration plans. The synthesis provides a general summary and highlights stability as a focus for future work, but it stops short of thoroughly integrating multiple evaluators\u2019 detailed comments into a cohesive, insightful conclusion.\n\nTo improve, the student should aim to provide more detailed, specific examples from each evaluator\u2019s feedback and explicitly connect these to design changes or engineering process steps. Additionally, expanding the synthesis to identify patterns or contrasting viewpoints would enhance reflection quality. Including documented evidence such as excerpts or quotes would also strengthen the evaluation\u2019s credibility and depth.",
+    "truncation_detected": 0,
+    "J1_api": 5,
+    "J2_api": 4,
+    "J3_api": 3,
+    "element_score_api": 4.0
+  },
+  "Case073_345.pdf": {
+    "evaluation_sources": [
+      "Dr. Cadou (Engineer, Combustion Engine Researcher and Professor)",
+      "Mr. Steinhorn (Electrical Engineer Practicing in the Field)",
+      "Serena Rudnick-Cohen (BFA Industrial Designer)"
+    ],
+    "J1": 5,
+    "J1_rationale": "The document includes three evaluators who are clearly identified as field experts with demonstrable qualifications: a university professor and researcher, a practicing electrical engineer, and a professional industrial designer.",
+    "J2": 4,
+    "J2_rationale": "The evaluation feedback addresses multiple aspects of the design, including material choice, noise concerns, practicality, detachability, and usability. However, the feedback is somewhat brief and lacks detailed analysis or testing results.",
+    "J3": 3,
+    "J3_rationale": "The synthesis summarizes evaluator concerns and identifies a common theme about material softness, linking it to noise reduction, usability, and safety. While it integrates multiple comments, the summary is somewhat general and could be more detailed and thorough.",
+    "narrative_feedback": "The project\u2019s external evaluation is strong in terms of involving multiple qualified field experts from diverse disciplines, including engineering and industrial design. This breadth of expertise provides valuable perspectives on the design\u2019s practicality, usability, and material concerns. The evaluators\u2019 roles are clearly stated, enhancing the credibility of the feedback.\n\nThe student effectively captures key concerns from each evaluator, such as noise, detachability, and material hardness, demonstrating an understanding of different design aspects. However, the analysis remains somewhat surface-level, lacking deeper exploration of how these concerns impact design decisions or potential trade-offs. The feedback could be strengthened by including more specific examples or testing data.\n\nThe synthesis identifies a meaningful trend regarding material softness as a solution, linking it to multiple evaluator concerns. While this shows thoughtful reflection, the summary would benefit from more detailed discussion of how the team plans to implement changes or evaluate their effectiveness. To improve, the student should aim to provide more detailed evaluation feedback, connect comments explicitly to design iterations, and expand the synthesis to include actionable next steps. Including stakeholder feedback beyond field experts could also enrich the evaluation.",
+    "truncation_detected": 0,
+    "J1_api": 5,
+    "J2_api": 4,
+    "J3_api": 3,
+    "element_score_api": 4.0
+  },
+  "Case023_553.pdf": {
+    "evaluation_sources": [
+      "T. J., former PE student stakeholder",
+      "W. E., past engineering student stakeholder",
+      "Ms. Hopkins, PE class instructor stakeholder",
+      "Dr. Cadou, mechanical and aerospace engineer field expert"
+    ],
+    "J1": 5,
+    "J1_rationale": "The document includes multiple stakeholders with clearly stated roles relevant to the project and one demonstrably qualified field expert with a relevant engineering background.",
+    "J2": 4,
+    "J2_rationale": "The evaluation feedback addresses identifiable aspects of the design such as stability, efficiency, mobility, and construction methods. However, some feedback is general praise and lacks detailed technical analysis, so it does not fully meet the highest standard.",
+    "J3": 3,
+    "J3_rationale": "The synthesis summarizes evaluator feedback and identifies a key improvement area (stability), but it is somewhat general and lacks thorough integration of multiple specific comments or detailed conclusions.",
+    "narrative_feedback": "The project\u2019s external evaluation is well-supported by multiple stakeholders and a qualified field expert, each providing relevant perspectives tied to their roles. This diversity strengthens the credibility and relevance of the feedback, particularly with the inclusion of a mechanical and aerospace engineer who offers professional insight. The stakeholders\u2019 involvement reflects a good understanding of the project context and user needs.\n\nThe student effectively documents feedback addressing important design aspects such as stability, efficiency, and mobility. However, some comments remain broad or general, limiting the depth of technical evaluation. The analysis could be enhanced by more explicitly connecting feedback to specific design decisions or testing outcomes. The synthesis identifies a meaningful improvement focus on stability but does so in a somewhat general manner without fully integrating the range of evaluator insights.\n\nTo improve, the student should seek more detailed, technical feedback and explicitly link it to design iterations. Future reflections would benefit from deeper analysis of feedback patterns and clearer articulation of how critiques inform design changes. Including more specific examples and quantifiable observations would also strengthen the evaluation. Overall, the documentation shows solid engagement with evaluators but could be more thorough and analytical in synthesizing and applying their feedback.",
+    "truncation_detected": 0,
+    "J1_api": 5,
+    "J2_api": 4,
+    "J3_api": 3,
+    "element_score_api": 4.0
+  }
+}
