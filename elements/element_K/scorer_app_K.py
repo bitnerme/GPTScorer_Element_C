@@ -39,7 +39,7 @@ SUBELEMENT_COUNT = 3
 # Linear Calibration
 # =========================
 LEGACY_A = 1.0
-LEGACY_B = -0.4  
+LEGACY_B = 0.0  
 
 CURRENT_A = 1.0
 CURRENT_B = -0.4
