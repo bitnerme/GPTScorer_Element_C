@@ -1,0 +1,419 @@
+{
+  "Case007_000.pdf": {
+    "reflected_steps": [
+      "problem definition",
+      "research and analysis",
+      "design requirements and ideation",
+      "prototype development and testing"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps in the project, including problem definition, research, design requirements, ideation, prototype development, and testing. Each phase is described with sufficient detail to understand the process, though some steps could be more deeply developed.",
+    "K2": 3,
+    "K2_rationale": "The student consistently provides value judgments for major steps, noting successes and challenges such as the usefulness of research, limitations of design requirements, and time constraints affecting prototype quality. However, some evaluations are cursory or lack depth, and certain judgments are overly general without detailed analysis.",
+    "K3": 2,
+    "K3_rationale": "Lessons learned are partially included and some are useful, such as recognizing the impact of time constraints and the need for multiple expert reviews. However, reflections are mostly project-specific and lack broader generalization or clear guidance for future engineering design efforts.",
+    "narrative_feedback": "The student provides a generally clear and comprehensive summary of the engineering design process, covering multiple distinct phases such as problem definition, research, design requirements, ideation, and prototype development. This structured overview helps the reader understand the project flow, though some steps could benefit from deeper elaboration to enhance clarity and completeness.\n\nValue judgments are present throughout the reflection, with the student acknowledging both strengths and weaknesses in the project, including the usefulness of prior research and the impact of time constraints on the prototype. However, some evaluations are somewhat superficial or lack detailed reasoning, limiting the depth of insight into why certain outcomes occurred or how decisions affected the project.\n\nLessons learned are included but tend to be specific to this project rather than broadly applicable to future engineering design efforts. To improve, the student should focus on generalizing lessons to make them useful for other projects, deepen evaluative commentary to explain the causes and effects of decisions, and expand summaries to include more nuanced reflections on each phase. Additionally, incorporating multiple expert perspectives and addressing overlooked testing areas could strengthen future reflections.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 3,
+    "K3_api": 2,
+    "element_score_api": 3.0
+  },
+  "Case006_000.pdf": {
+    "reflected_steps": [
+      "problem definition",
+      "research on prior attempts",
+      "design requirements",
+      "concept generation and selection",
+      "expert review",
+      "final design and construction",
+      "testing plans"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps in the project, including problem definition, research, design requirements, concept generation, expert review, final design, and testing plans. While the summaries are generally clear and cover multiple distinct phases, some details are sparse or lack depth, preventing a full robust and comprehensive summary.",
+    "K2": 3,
+    "K2_rationale": "The student consistently provides value judgments for major steps, noting successes (e.g., usefulness of research and requirements), challenges (e.g., time constraints, single expert review), and shortcomings (e.g., lack of fine tuning, messy final product). However, some evaluations are cursory or overly general, and the reasoning behind some outcomes is not deeply explored.",
+    "K3": 2,
+    "K3_rationale": "Lessons learned are included in part and some are useful, such as recognizing the impact of time constraints and the need for multiple expert opinions. However, reflections are mostly project-specific and lack generalization or clear guidance for future engineering design efforts.",
+    "narrative_feedback": "The student provides a generally clear and comprehensive summary of the engineering design process, covering multiple distinct phases such as problem definition, research, design requirements, concept generation, expert review, final design, and testing plans. This demonstrates a solid understanding of the project workflow, though some summaries could be more detailed to achieve a fully robust reflection.\n\nValue judgments are consistently present throughout the reflection, with the student acknowledging both successes and challenges, such as the usefulness of prior research and the limitations caused by time constraints. However, some evaluations are somewhat superficial or lack in-depth analysis of why certain outcomes occurred, which limits the depth of insight.\n\nLessons learned are partially included and offer some useful points, like the importance of multiple expert reviews and the impact of time management. Yet, these reflections remain largely specific to this project and do not fully generalize to broader engineering design contexts. To improve, the student should aim to provide more detailed summaries of each phase, deepen evaluative commentary by explaining reasons behind successes and failures, and articulate lessons learned that are transferable to future projects. Additionally, expanding reflections on testing and iteration could enhance the overall insightfulness of the reflection.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 3,
+    "K3_api": 2,
+    "element_score_api": 3.0
+  },
+  "Case088_000.pdf": {
+    "reflected_steps": [
+      "bracing design and testing",
+      "motor selection and integration",
+      "engine leveler implementation"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of major steps including the evolution of bracing techniques, the rationale for the electric motor, and the addition of engine levelers. Multiple distinct phases of the design process are described with sufficient detail.",
+    "K2": 4,
+    "K2_rationale": "The reflection consistently evaluates the effectiveness of design decisions, such as the failure of previous bracing methods, the improvement with coffin-style bracing, and the benefits of adding a second engine leveler. Some judgments are robust, though a few are more descriptive than deeply evaluative.",
+    "K3": 3,
+    "K3_rationale": "Lessons learned are summarized and mostly useful to others, such as the importance of secure joints (welding vs bolts) and real-time adjustability for stability. However, some insights remain project-specific and could be generalized further for broader engineering application.",
+    "narrative_feedback": "This reflection provides a clear and comprehensive summary of several major phases of the engineering design process, including the iterative development of bracing, motor integration, and engine leveler improvements. The student effectively describes how prior attempts informed their design choices and how prototype testing influenced the final decisions. This demonstrates a solid understanding of the design evolution.\n\nThe value judgments are generally well articulated, with thoughtful evaluations of what worked and what did not, such as the inadequacy of bolts compared to welding and the benefits of real-time motor adjustments. However, some evaluations could be deepened by more explicitly discussing the impact of these decisions on overall project success or failure.\n\nLessons learned are presented and include useful insights about structural integrity and adjustability, which can benefit future engineers. Still, the reflection would be stronger if these lessons were more explicitly generalized beyond the specific project context. To improve, the student should aim to clearly delineate distinct design phases, deepen evaluative commentary on decisions, and explicitly connect lessons learned to broader engineering principles. Including more critical analysis of challenges and failures would also enhance the reflection\u2019s value.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 4,
+    "K3_api": 3,
+    "element_score_api": 3.6666666666666665
+  },
+  "Case081_001.pdf": {
+    "reflected_steps": [
+      "surface testing",
+      "tether design",
+      "testing duration",
+      "design finalization",
+      "engineering simplicity"
+    ],
+    "K1": 2,
+    "K1_rationale": "The student provides a sparse summary mentioning some project aspects such as testing, tether weight, design finalization, and simplicity, but does not clearly identify distinct engineering design phases or provide a comprehensive overview of the process.",
+    "K2": 1,
+    "K2_rationale": "Value judgments are minimal and overly general. The reflections note some challenges and lessons but lack explicit evaluation of successes or failures, or detailed reasoning about why outcomes occurred.",
+    "K3": 4,
+    "K3_rationale": "Lessons learned are summarized and clearly useful to others attempting engineering design, emphasizing testing, weight considerations, design finalization timing, and simplicity, which are broadly applicable insights.",
+    "narrative_feedback": "The reflection provides a limited summary of the engineering design process, touching on several project components such as surface testing, tether weight, and design finalization. However, it lacks a clear and comprehensive overview of distinct phases like problem definition, ideation, prototyping, and testing. This results in a sparse summary that does not fully convey the progression or depth of the design process.\n\nValue judgments are present but are generally superficial and overly general. The student notes some challenges and lessons but does not explicitly evaluate the effectiveness of decisions or analyze successes and failures in detail. This limits the insight into what worked well or poorly and why, reducing the reflection\u2019s evaluative strength.\n\nThe lessons learned are a strong aspect of the reflection, offering transferable and practical advice for future engineering projects. They emphasize important considerations such as the importance of thorough testing, managing weight, finalizing designs early, and favoring simplicity. To improve, the student should provide a clearer, more structured summary of multiple design phases, deepen evaluative commentary on project decisions and outcomes, and expand reflections to include more explicit reasoning about successes and failures.",
+    "truncation_detected": 0,
+    "K1_api": 2,
+    "K2_api": 1,
+    "K3_api": 4,
+    "element_score_api": 2.3333333333333335
+  },
+  "Case027_111.docx": {
+    "reflected_steps": [
+      "problem identification",
+      "concept generation and selection",
+      "prototype construction",
+      "testing and evaluation"
+    ],
+    "K1": 3,
+    "K1_rationale": "The student provides a generally clear and adequately developed summary of multiple distinct phases of the design process, including problem identification, concept generation and selection, prototype building, and testing. However, the summaries are somewhat sparse and lack depth in describing each step.",
+    "K2": 2,
+    "K2_rationale": "The student partially provides value judgments by noting successes (working prototype), challenges (material issues, multiple design changes), and some evaluation of testing outcomes. However, these judgments are often cursory and lack detailed explanation or robust evaluation of why outcomes occurred or how decisions impacted results.",
+    "K3": 2,
+    "K3_rationale": "Lessons learned are included but are minimal and somewhat general. The student mentions the importance of considering users and environment and the value of following the design process step-by-step, but these reflections are only partly useful and lack depth or clear transferability to future engineering projects.",
+    "narrative_feedback": "The student provides a generally clear summary of several key phases of the engineering design process, including problem identification, concept generation and selection, prototype construction, and testing. While these steps are identifiable, the descriptions are somewhat brief and lack comprehensive detail that would demonstrate a robust understanding of each phase. Expanding on the rationale and activities within each step would strengthen the summary.\n\nValue judgments are present but limited in depth. The student acknowledges successes such as completing a working prototype and challenges like material limitations and multiple redesigns. However, the reflection often remains superficial, lacking detailed analysis of why certain decisions succeeded or failed and how these influenced the project outcome. More explicit evaluation of the effectiveness of design choices and testing results would improve this aspect.\n\nLessons learned are included but are minimal and somewhat generic, focusing on the importance of considering users and following the design process. These insights have some transferability but would benefit from more substantive, specific reflections that future engineers could apply broadly. To improve, the student should provide more detailed summaries of each design phase, deepen evaluative commentary on project decisions and outcomes, and develop lessons learned that clearly extend beyond this project to inform future engineering work.",
+    "truncation_detected": 0,
+    "K1_api": 3,
+    "K2_api": 2,
+    "K3_api": 2,
+    "element_score_api": 2.3333333333333335
+  },
+  "Case068_111.pdf": {
+    "reflected_steps": [
+      "design complexity",
+      "resource limitations",
+      "feature innovation"
+    ],
+    "K1": 2,
+    "K1_rationale": "The reflection mentions some aspects of the design process such as complexity, resource constraints, and unique features, but does not clearly summarize multiple distinct engineering design phases or steps. The summary is sparse and lacks comprehensive coverage of the project phases.",
+    "K2": 2,
+    "K2_rationale": "The student partially provides value judgments by noting that their design was more complex and heavier than others and that their solution was more adaptable. However, these evaluations are somewhat superficial and lack detailed analysis of successes, failures, or reasons for outcomes.",
+    "K3": 1,
+    "K3_rationale": "Lessons learned are minimally included and mostly project-specific, such as noting the use of locking hinges and adaptability. There is little evidence that these reflections are generalized or clearly useful to future engineering design efforts.",
+    "narrative_feedback": "The reflection provides a limited summary of the design process, touching on complexity, resource limitations, and unique features. However, it lacks a clear and comprehensive overview of multiple distinct engineering phases, resulting in a sparse and somewhat general summary. Expanding the reflection to explicitly address key stages such as problem definition, prototyping, testing, and iteration would strengthen the process summary.\n\nValue judgments are present but are only partially developed. The student notes that their design was more complex and heavier than others and highlights adaptability as a positive feature. Yet, these evaluations are brief and lack depth, such as detailed discussion of what worked well, what challenges were faced, and why certain decisions succeeded or failed. More thorough analysis of project outcomes would improve the evaluative quality.\n\nLessons learned are minimally articulated and largely specific to this project, such as the use of locking hinges. To enhance usefulness for future engineers, reflections should focus on transferable insights and generalizable lessons about design trade-offs, resource management, or innovation strategies. Recommendations include elaborating on distinct design phases, providing deeper evaluative commentary on project decisions, and framing lessons learned in a broader engineering context.",
+    "truncation_detected": 0,
+    "K1_api": 2,
+    "K2_api": 2,
+    "K3_api": 1,
+    "element_score_api": 1.6666666666666667
+  },
+  "Case013_030.docx": {
+    "reflected_steps": [
+      "Defining the problem",
+      "Brainstorming",
+      "Idea Selection",
+      "Prototype design",
+      "Prototype Building",
+      "Testing",
+      "Evaluation"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps of the project, including problem definition, brainstorming, idea selection, prototype design and building, testing, and evaluation. Each step is described with some detail, showing progression through the engineering design process. However, the summaries are not fully robust or deeply detailed for every step, so the summary is comprehensive but not exhaustive.",
+    "K2": 3,
+    "K2_rationale": "The student consistently provides value judgments for major steps, noting challenges (e.g., wiring concerns, organization of panels and wires), successes (testing worked on first try), and suggestions for improvement (e.g., more confidence, better organization, recording specific data). However, some evaluations are cursory or general (e.g., 'we were a little worried', 'we struggled a bit'), and the reasoning behind outcomes is not deeply analyzed.",
+    "K3": 3,
+    "K3_rationale": "Lessons learned are summarized and mostly useful to others attempting engineering design, such as the importance of confidence, early organization, accurate measurements, and real-time data recording. However, reflections are somewhat project-specific and occasionally vague, limiting their transferability to broader engineering contexts.",
+    "narrative_feedback": "The student provides a clear and generally comprehensive summary of the engineering design process, covering multiple distinct phases such as problem definition, brainstorming, idea selection, prototype design and building, testing, and evaluation. This demonstrates a solid understanding of the project\u2019s progression, though some steps could benefit from deeper elaboration to enhance completeness and clarity.\n\nValue judgments are consistently present throughout the reflection, with the student acknowledging both successes and challenges. They identify areas for improvement, such as gaining confidence, better organization, and more precise data recording. However, some evaluations remain somewhat superficial or general, lacking detailed analysis of why certain outcomes occurred or how decisions impacted the project\u2019s success.\n\nThe lessons learned are relevant and offer useful insights for future engineering design efforts, particularly regarding preparation, organization, and documentation. Yet, these reflections tend to be somewhat specific to this project and could be expanded to emphasize broader applicability. To improve, the student should aim to provide more detailed and analytical evaluations of project decisions, deepen the summaries of each design phase, and articulate lessons learned with greater emphasis on their transferability to other engineering challenges.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 3,
+    "K3_api": 3,
+    "element_score_api": 3.3333333333333335
+  },
+  "Case024_111.pdf": {
+    "reflected_steps": [
+      "brainstorming",
+      "planning",
+      "prototyping",
+      "testing"
+    ],
+    "K1": 3,
+    "K1_rationale": "The student provides a generally clear and adequately developed summary of multiple steps including brainstorming, planning, prototyping, and testing. However, the summaries are somewhat sparse and lack depth in describing each phase comprehensively.",
+    "K2": 2,
+    "K2_rationale": "The student partially provides value judgments by noting that the code worked well with the hinge sensor but the prototype was too large and the project was incomplete. However, these reflections are brief and lack detailed evaluation of why these outcomes occurred or how decisions impacted the project.",
+    "K3": 2,
+    "K3_rationale": "Lessons learned are included in part, such as the need to plan accordingly, test code, and document changes. Some of these are useful to others, but the reflections are mostly project-specific and lack broader generalization to future engineering design efforts.",
+    "narrative_feedback": "The student provides a generally clear summary of several engineering design phases including brainstorming, planning, prototyping, and testing. While multiple steps are mentioned, the descriptions are somewhat sparse and lack comprehensive detail about each phase\u2019s activities and outcomes. This limits the overall clarity and depth of the process summary.\n\nValue judgments are partially present, with acknowledgment of a working code and prototype size issues. However, the evaluation is brief and lacks insight into why certain decisions succeeded or failed, or how challenges were addressed. This reduces the reflection\u2019s effectiveness in critically analyzing the project\u2019s performance.\n\nLessons learned include practical advice on planning, testing, and documentation, which are somewhat useful to future engineers. Yet, these reflections remain largely tied to this specific project and do not fully generalize to broader engineering design contexts. To improve, the student should provide more detailed summaries of distinct design phases, deepen evaluative commentary on successes and failures, and articulate lessons that are transferable beyond this project. Including specific reasons for outcomes and more thoughtful reflection will strengthen the overall quality of the design reflection.",
+    "truncation_detected": 0,
+    "K1_api": 3,
+    "K2_api": 2,
+    "K3_api": 2,
+    "element_score_api": 2.3333333333333335
+  },
+  "Case085_204.docx": {
+    "reflected_steps": [
+      "defining the problem",
+      "ideation",
+      "selection & prototype design",
+      "testing"
+    ],
+    "K1": 3,
+    "K1_rationale": "The student provides a generally clear and adequately-developed summary of most steps, including defining the problem, ideation, selection & prototype design, and testing. However, some steps like prototype building and evaluation are missing or incomplete, and the summaries vary in detail.",
+    "K2": 2,
+    "K2_rationale": "Value judgments are partially provided. The student notes the inability to test the prototype and outlines how testing would have been conducted, but there is little explicit evaluation of successes, failures, or effectiveness of decisions. The reflection lacks robust critical analysis of project outcomes.",
+    "K3": 3,
+    "K3_rationale": "Lessons learned are summarized and mostly useful to others attempting engineering design, emphasizing the importance of goal setting, planning, and testing. However, the reflections are somewhat general and lack deeper, specific insights that would strongly benefit future engineers.",
+    "narrative_feedback": "The student provides a generally clear summary of multiple phases of the engineering design process, including problem definition, ideation, design selection, and testing. While these summaries cover key steps, some phases such as prototype building and evaluation are missing or underdeveloped, limiting the comprehensiveness of the reflection. The descriptions are adequate but could be expanded with more detail to strengthen understanding.\n\nRegarding value judgments, the reflection is limited. The student acknowledges the inability to test the prototype and outlines a hypothetical testing procedure but does not critically evaluate the effectiveness of design decisions or discuss challenges and successes in depth. This results in a somewhat superficial analysis that misses opportunities for deeper insight.\n\nThe lessons learned section offers useful general advice about the importance of goal setting, planning, and testing in engineering design. However, these lessons are somewhat broad and could be made more specific and actionable to better support future engineers. To improve, the student should provide more detailed summaries of all design phases, include explicit evaluations of what worked and what did not, and develop lessons learned that are more specific and transferable across engineering projects.",
+    "truncation_detected": 0,
+    "K1_api": 3,
+    "K2_api": 2,
+    "K3_api": 3,
+    "element_score_api": 2.6666666666666665
+  },
+  "Case076_303.pdf": {
+    "reflected_steps": [
+      "problem identification",
+      "design consideration",
+      "prototype construction",
+      "testing and evaluation",
+      "material sourcing"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps including problem identification, design options considered, prototype construction, testing, and material sourcing. While the summary covers multiple distinct phases, some steps are described more briefly, and the reflection lacks a fully robust, detailed account of each step.",
+    "K2": 3,
+    "K2_rationale": "The student consistently provides value judgments for major steps, noting successes such as meeting durability and sustainability goals, and challenges like the bulkiness of the wooden structure affecting shelving space. However, some evaluations are cursory and lack depth, such as the brief mention of compromises without detailed analysis of causes or alternative solutions.",
+    "K3": 2,
+    "K3_rationale": "Lessons learned are partially included, with some useful advice about material selection and tool quality that could benefit future projects. However, reflections are somewhat limited and project-specific, lacking broader, substantive insights clearly transferable to other engineering design contexts.",
+    "narrative_feedback": "The student provides a generally clear and comprehensive summary of the engineering design process, covering key phases such as problem identification, design considerations, prototype construction, testing, and material sourcing. This demonstrates a solid understanding of the project workflow, though some steps could be elaborated further to enhance clarity and depth.\n\nValue judgments are present throughout the reflection, highlighting both successes\u2014like meeting durability and sustainability goals\u2014and challenges, such as the bulkiness of the prototype. However, some evaluations are brief and lack detailed analysis, limiting insight into why certain outcomes occurred or how decisions impacted the project\u2019s success.\n\nLessons learned include practical advice on material selection and tool use, which are somewhat useful for future projects. Yet, these reflections remain largely project-specific and could be expanded to offer more generalized, transferable engineering insights. To improve, the student should provide more detailed evaluations of decisions and outcomes, deepen the summary of each design phase, and develop lessons learned that clearly apply beyond this project. Including more explicit reasoning about successes and failures and broadening reflections to general engineering principles would strengthen the overall reflection.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 3,
+    "K3_api": 2,
+    "element_score_api": 3.0
+  },
+  "Case055_231.docx": {
+    "reflected_steps": [
+      "Defining the problem",
+      "Ideation",
+      "STEM and Justification of design",
+      "Prototype building",
+      "Testing",
+      "Evaluation"
+    ],
+    "K1": 0,
+    "K1_rationale": "The document is a template with prompts but contains no actual student summary of any design process steps.",
+    "K2": 0,
+    "K2_rationale": "No value judgments or evaluations of project steps are provided; only questions and prompts are present.",
+    "K3": 0,
+    "K3_rationale": "No lessons learned reflections are included; the section only contains instructions for what to write.",
+    "narrative_feedback": "The submitted document is a template containing instructions and prompts for reflection rather than an actual student reflection on the engineering design process. As such, it lacks any clear or comprehensive summaries of the project steps, which are essential for demonstrating understanding of the design process. Without identifiable summaries of distinct phases such as problem definition, ideation, prototyping, testing, or evaluation, it is not possible to assess the student's grasp of the process.\n\nSimilarly, the document does not provide any value judgments regarding what went well or poorly during the project, nor does it explain reasons for successes or challenges. This absence of evaluative reflection limits insight into the student's critical thinking about their design decisions. Furthermore, there are no lessons learned included that could be useful to future engineers; the section only contains guidance on what should be addressed.\n\nTo improve, the student should provide detailed summaries of multiple distinct design phases, explicitly evaluate the effectiveness of their decisions and outcomes, and reflect on lessons learned that are broadly applicable to engineering design. Including specific examples, honest assessments, and transferable insights will strengthen the reflection and demonstrate deeper engagement with the engineering design process.",
+    "truncation_detected": 0,
+    "K1_api": 0,
+    "K2_api": 0,
+    "K3_api": 0,
+    "element_score_api": 0.0
+  },
+  "Case039_321.pdf": {
+    "reflected_steps": [
+      "defining the problem",
+      "ideation",
+      "selection and prototype design",
+      "prototype building",
+      "testing",
+      "evaluation"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps of the engineering design process, including defining the problem, ideation, selection and prototype design, prototype building, testing, and evaluation. Each step is described with some detail, highlighting challenges and successes. However, the summaries are not fully robust or comprehensive for every step, and some descriptions are somewhat sparse or general.",
+    "K2": 3,
+    "K2_rationale": "The student consistently provides value judgments for most major steps, discussing what went well and what did not, as well as some reasons why. However, some evaluations are cursory or lack depth, such as vague statements about 'running out of ideas' or 'smooth sailing' without deeper analysis. The reflection includes some evaluation of challenges and successes but could be more robust and explicit in assessing the effectiveness of decisions.",
+    "K3": 3,
+    "K3_rationale": "Lessons learned are summarized and include a useful, transferable insight about measuring pegboards carefully and considering commercial variations, which is relevant to future engineering design. However, the lessons are limited in scope and mostly project-specific, lacking broader generalization or multiple substantive lessons that would benefit a wider audience of future engineers.",
+    "narrative_feedback": "The student provides a generally clear and adequately developed summary of the engineering design process, covering multiple distinct phases such as defining the problem, ideation, prototype design, building, testing, and evaluation. The summaries include descriptions of challenges and successes, which help convey the flow of the project. However, some steps are described in a somewhat sparse or general manner, and the reflection could benefit from more detailed and robust coverage of each phase.\n\nValue judgments are present throughout the reflection, with the student noting what went well and what did not, as well as some reasons for outcomes. While this evaluative reflection is consistent, it occasionally lacks depth and specificity, with some statements being cursory or overly general. More explicit analysis of the effectiveness of decisions and their impact on the project would strengthen this aspect.\n\nThe lessons learned section offers a useful and transferable insight about the importance of precise measurements and accounting for commercial product variations, which future engineers can apply. However, the lessons are limited in number and scope, focusing mainly on this project\u2019s specifics rather than broader engineering design principles. To improve, the student should aim to provide more comprehensive summaries of each design phase, deepen evaluative reflections with explicit reasoning about successes and failures, and expand lessons learned to include multiple, generalized insights that benefit future engineering efforts.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 3,
+    "K3_api": 3,
+    "element_score_api": 3.3333333333333335
+  },
+  "Case045_333.pdf": {
+    "reflected_steps": [
+      "learning from project experience",
+      "assessing problem-solving process",
+      "evaluating expert feedback and surprises"
+    ],
+    "K1": 3,
+    "K1_rationale": "The student provides a generally clear and adequately developed summary of multiple distinct phases of the project, including learning from the project, assessing the problem-solving process, and evaluating expert feedback and surprises. However, the summaries are somewhat uneven in depth and lack robust detail on each step.",
+    "K2": 3,
+    "K2_rationale": "The student consistently provides value judgments for major steps, discussing successes (teamwork, cost management), challenges (material imperfections, staining difficulties), and some reasons for outcomes (quick solutions vs. thorough evaluation). Some evaluations are cursory or lack depth, such as limited expert feedback and minimal critical analysis of failures.",
+    "K3": 3,
+    "K3_rationale": "Lessons learned are summarized and mostly useful to others, such as budgeting, adapting to material constraints, teamwork, and process improvements like spending more time evaluating designs and improving staining technique. However, some lessons are project-specific and lack broader generalization.",
+    "narrative_feedback": "The student provides a generally clear and adequately developed summary of the engineering design process, touching on learning from the project, assessing problem-solving approaches, and reflecting on expert feedback and unexpected challenges. While multiple phases are addressed, the summaries vary in depth and could benefit from more detailed explanation of specific design steps and decision points.\n\nValue judgments are present throughout the reflection, with the student honestly discussing successes such as teamwork and cost management, as well as challenges like material imperfections and staining difficulties. However, some evaluations are superficial or lack detailed reasoning, particularly regarding expert feedback and the effectiveness of certain design decisions.\n\nThe lessons learned include useful insights on budgeting, adapting to constraints, and process improvements that future engineers can apply. Yet, some reflections remain project-specific and could be better generalized to broader engineering contexts. To improve, the student should provide more detailed summaries of distinct design phases, deepen evaluative analysis of decisions and outcomes, and focus on articulating transferable lessons that extend beyond this project. Additionally, incorporating more explicit expert feedback and critical reflection on failures would strengthen the overall reflection.",
+    "truncation_detected": 0,
+    "K1_api": 3,
+    "K2_api": 3,
+    "K3_api": 3,
+    "element_score_api": 3.0
+  },
+  "Case041_054.pdf": {
+    "reflected_steps": [
+      "Defining the Problem",
+      "Ideation",
+      "Selection & Prototype Design",
+      "Prototype Building",
+      "Testing",
+      "Evaluation"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps of the engineering design process, including defining the problem, ideation, selection and prototype design, prototype building, testing, and evaluation. Each phase is addressed with successes and challenges, showing a structured reflection on the process. However, some summaries are more detailed than others, and the depth varies across steps, preventing a full robust and comprehensive summary.",
+    "K2": 4,
+    "K2_rationale": "The reflection consistently provides value judgments for major project steps, discussing successes and challenges with explanations of why certain outcomes occurred (e.g., challenges with tool availability, design changes due to safety). While most steps are evaluated thoughtfully, a few are addressed in a somewhat cursory manner, such as the evaluation phase where iteration opportunities were limited but not deeply analyzed.",
+    "K3": 4,
+    "K3_rationale": "Lessons learned are summarized clearly and are generally useful to others attempting engineering design, emphasizing clear problem definition, balancing creativity with feasibility, realistic testing, stakeholder feedback, and the importance of documentation and research. These insights are transferable beyond this project, though some points could be expanded for greater depth.",
+    "narrative_feedback": "The student provides a well-organized and mostly comprehensive summary of the engineering design process, covering multiple distinct phases such as problem definition, ideation, prototype design, building, testing, and evaluation. The inclusion of successes and challenges for each phase demonstrates a structured approach to reflection, though some sections could benefit from deeper elaboration to achieve a more robust summary.\n\nValue judgments are consistently present throughout the reflection, with thoughtful discussion of what worked well and what challenges arose, including reasons behind outcomes like tool limitations and design adjustments. This evaluative approach strengthens the reflection, though a few areas, particularly the evaluation phase, could be explored with more critical depth to enhance understanding.\n\nThe lessons learned are clearly articulated and offer useful guidance for future engineering projects, focusing on clear problem definition, balancing creativity with feasibility, realistic testing, stakeholder engagement, and the importance of research. These transferable insights are a strong aspect of the reflection. To improve, the student could deepen the analysis of certain phases, provide more critical evaluation of decisions, and expand lessons learned with more specific examples of how these insights apply broadly. Additionally, integrating more explicit connections between challenges faced and lessons learned would enhance the overall coherence and usefulness of the reflection.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 4,
+    "K3_api": 4,
+    "element_score_api": 4.0
+  },
+  "Case012_333.pdf": {
+    "reflected_steps": [
+      "Defining the problem",
+      "Ideation",
+      "STEM and Justification of design",
+      "Prototype building",
+      "Testing",
+      "Evaluation"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps of the engineering design process, including problem definition, ideation, STEM justification, prototype building, testing, and evaluation. Each step is described with what went well, what didn\u2019t go well, and reasons why, showing a structured reflection. However, some steps are less detailed than others, and the summary is not fully robust for every step.",
+    "K2": 4,
+    "K2_rationale": "The student consistently provides value judgments for major project steps, discussing successes, failures, and reasons for outcomes. The reflections include what went well, what didn\u2019t, and why, showing evaluative thinking. Some steps are addressed more cursorily than others, but overall the evaluation is consistent and meaningful.",
+    "K3": 4,
+    "K3_rationale": "The lessons learned are summarized clearly and emphasize transferable insights such as the importance of iteration, early testing, expert feedback, and considering system interactions. These lessons are useful to future engineers beyond this project. However, the reflections could be more detailed and less general to reach the highest level.",
+    "narrative_feedback": "This reflection provides a clear and comprehensive summary of the major phases of the engineering design process, including problem definition, ideation, STEM justification, prototype building, testing, and evaluation. The student thoughtfully describes what went well and what challenges were encountered at each stage, demonstrating a solid understanding of the process. While the summaries are generally well-developed, some steps could benefit from deeper detail to strengthen the overall narrative.\n\nThe value judgments are consistently presented, with explicit discussion of successes, failures, and reasons behind outcomes. This evaluative approach shows critical thinking about the design decisions and their effectiveness. However, a few reflections are somewhat cursory, and expanding on these would enhance the depth of analysis.\n\nThe lessons learned are well articulated and emphasize important transferable insights such as the value of iteration, early expert feedback, and considering multiple system factors. These reflections are useful for future engineering projects, though they could be more specific and detailed to maximize their impact.\n\nTo improve, the student should aim to provide more detailed summaries for all phases, deepen evaluative reflections especially where they are brief, and elaborate lessons learned with concrete examples or strategies. Including more explicit connections between challenges and solutions would also strengthen the reflection.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 4,
+    "K3_api": 4,
+    "element_score_api": 4.0
+  },
+  "Case031_324.pdf": {
+    "reflected_steps": [
+      "Defining the problem",
+      "Ideation, Selection, & Prototype design",
+      "Prototype building"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps of the design process, including problem definition, ideation and selection, and prototype building. Each phase is described with sufficient detail to understand the activities and decisions made. However, the summary is not fully robust or comprehensive for every step, lacking some depth in later phases.",
+    "K2": 3,
+    "K2_rationale": "The student consistently provides value judgments for major steps, discussing what went well and what did not, such as the success in measuring and building and the challenges with hole alignment and clipboard attachment. However, some evaluations are cursory or lack depth in explaining why certain outcomes occurred or how decisions impacted the project.",
+    "K3": 4,
+    "K3_rationale": "Lessons learned are summarized and clearly useful to future engineers, emphasizing the importance of interest in the project, communication, asking for help, and persistence through unexpected challenges. These reflections are generalized beyond the specific project and provide practical advice for future design work.",
+    "narrative_feedback": "The student provides a clear and well-organized summary of the engineering design process, covering key phases such as problem definition, ideation and selection, and prototype building. The descriptions are detailed enough to convey the group\u2019s approach and challenges, though some phases could benefit from deeper elaboration to achieve a more robust summary.\n\nValue judgments are present throughout the reflection, with thoughtful discussion of successes like effective improvisation and challenges such as misaligned holes. However, some evaluations are somewhat superficial, lacking detailed analysis of why certain decisions succeeded or failed, which would strengthen the reflection.\n\nThe lessons learned section is a strong aspect of the reflection, offering generalized and transferable insights valuable to future engineers. The emphasis on communication, persistence, and seeking help demonstrates thoughtful reflection beyond this project. To improve, the student could provide more detailed evaluations of project decisions, deepen the summary of later design phases, and avoid overly descriptive or project-specific statements in lessons learned. Including more explicit reasoning about outcomes and linking lessons directly to engineering principles would enhance the overall reflection.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 3,
+    "K3_api": 4,
+    "element_score_api": 3.6666666666666665
+  },
+  "Case021_525.pdf": {
+    "reflected_steps": [
+      "Ask",
+      "Research/Brainstorm",
+      "Select",
+      "Prototype",
+      "Test",
+      "Improve"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps of the engineering design process, including Ask, Research/Brainstorm, Select, multiple Prototype iterations, Test, and Improve. Each step is described with sufficient detail to understand the activities and outcomes, though some steps are more elaborated than others.",
+    "K2": 3,
+    "K2_rationale": "The reflection includes consistent value judgments for major steps, such as recognizing the bias toward the electric pulling pod, the success of prototype testing, and the importance of expert feedback. However, some evaluations are cursory or implicit rather than deeply analytical, and a few steps lack explicit discussion of challenges or failures.",
+    "K3": 4,
+    "K3_rationale": "Lessons learned are summarized and clearly useful to future engineering design efforts, especially regarding budgeting and understanding physics early. The reflections are generalized beyond this project and provide practical advice for future teams, though they could be expanded with more diverse lessons.",
+    "narrative_feedback": "The student provides a well-structured and comprehensive summary of the engineering design process, covering multiple distinct phases such as Ask, Research/Brainstorm, Select, Prototype iterations, Test, and Improve. This clarity helps readers understand the progression and key activities of the project. However, some steps receive more detailed attention than others, and a few descriptions could be more explicitly connected to engineering process goals.\n\nValue judgments are present throughout the reflection, with the student acknowledging successes like effective expert feedback and challenges such as bias in concept selection. While these evaluations demonstrate thoughtful consideration, some are somewhat superficial or implied rather than explicitly analyzed, limiting deeper insight into why certain decisions succeeded or failed.\n\nThe lessons learned section is a strong aspect of the reflection, offering practical and transferable advice about budgeting and the importance of physics understanding early in the design process. These insights are clearly useful to future engineering teams. To improve, the student could provide more balanced evaluative commentary across all steps, deepen analysis of challenges and failures, and expand lessons learned to include a broader range of design considerations. Additionally, explicitly linking reflections to engineering principles would enhance the overall rigor and usefulness of the document.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 3,
+    "K3_api": 4,
+    "element_score_api": 3.6666666666666665
+  },
+  "Case072_525.pdf": {
+    "reflected_steps": [
+      "Defining the Problem",
+      "Ideation and Prototype Design",
+      "Prototype Building",
+      "Testing and Evaluation"
+    ],
+    "K1": 5,
+    "K1_rationale": "The student provides a robust and comprehensive summary covering multiple distinct phases of the engineering design process: problem definition, ideation and design selection, prototype building, and testing and evaluation. Each phase is described with clear details about goals, challenges, decisions, and outcomes.",
+    "K2": 4,
+    "K2_rationale": "The student consistently provides value judgments on major project steps, discussing what went well (portability, affordability), what did not go well (time management, mouthpiece design), and reasons for these outcomes. While mostly evaluative, some reflections (e.g., on time management) are somewhat general and could be more deeply analyzed.",
+    "K3": 4,
+    "K3_rationale": "Lessons learned are clearly summarized and generally useful to future engineering design efforts, such as prioritizing essential features early, importance of repeated testing with diverse users, and engaging expert feedback. Some lessons are somewhat project-specific but overall transferable.",
+    "narrative_feedback": "This reflection provides a clear and comprehensive summary of the engineering design process, effectively covering multiple distinct phases including problem definition, ideation and design selection, prototype building, and testing and evaluation. The student articulates key design requirements, challenges faced, and decisions made, demonstrating a strong understanding of the process steps.\n\nThe value judgments are thoughtfully presented, with explicit discussion of successes such as affordability and portability, as well as challenges like time management and mouthpiece design. The student explains reasons behind these outcomes, though some reflections could benefit from deeper analysis to enhance insight. The lessons learned are well articulated and generally applicable to future engineering projects, emphasizing structured design processes, effective testing, and stakeholder engagement.\n\nTo improve, the student could deepen evaluative reflections by exploring the impact of decisions more critically, avoid somewhat general statements about challenges, and ensure lessons learned focus more on broadly transferable engineering principles rather than project-specific details. Additionally, integrating more explicit connections between lessons learned and earlier project phases would strengthen the reflection\u2019s coherence and usefulness.",
+    "truncation_detected": 0,
+    "K1_api": 5,
+    "K2_api": 4,
+    "K3_api": 4,
+    "element_score_api": 4.333333333333333
+  },
+  "Case035_444.docx": {
+    "reflected_steps": [
+      "problem definition",
+      "solution ideation",
+      "building",
+      "testing",
+      "troubleshooting"
+    ],
+    "K1": 4,
+    "K1_rationale": "The student provides a clear and comprehensive summary of the major steps in the design process, including problem definition, ideation, building, testing, and troubleshooting. The summary covers these phases with sufficient detail to understand the flow and challenges encountered, though some steps could be more robustly developed.",
+    "K2": 3,
+    "K2_rationale": "The student consistently provides value judgments for major steps, discussing challenges (e.g., difficulty finding a solution, drilling mistakes), successes (locking mechanism working), and effectiveness of decisions (adding tape, attaching string). However, some evaluations are cursory or lack depth, such as the brief mention of hindsight or the last-minute idea without thorough analysis.",
+    "K3": 4,
+    "K3_rationale": "Lessons learned are summarized and clearly useful to others, including the importance of not rushing with tools, understanding internal mechanisms before modification, and the value of research to save time. These insights are transferable beyond this project, though some reflections remain somewhat tied to the specific context.",
+    "narrative_feedback": "The student provides a clear and comprehensive summary of the engineering design process, effectively covering multiple distinct phases such as problem definition, ideation, building, testing, and troubleshooting. This allows the reader to follow the project\u2019s progression and understand key challenges and decisions. While the summary is generally well-developed, some phases could benefit from deeper elaboration to achieve a more robust overview.\n\nValue judgments are present throughout the reflection, with the student honestly discussing both successes and difficulties encountered. They evaluate the effectiveness of certain decisions, such as adding tape to align holes and attaching a string to prevent losing the pin. However, some evaluations are somewhat superficial or brief, lacking detailed analysis of why certain outcomes occurred or how decisions impacted the project\u2019s success.\n\nThe lessons learned section offers thoughtful and transferable insights, emphasizing the importance of careful tool use, understanding internal mechanisms, and conducting research to save time. These reflections are useful for future engineering projects beyond this specific context. To improve, the student could provide more detailed evaluations of project decisions, expand on the summary of each design phase for greater depth, and further generalize lessons learned to enhance their applicability.",
+    "truncation_detected": 0,
+    "K1_api": 4,
+    "K2_api": 3,
+    "K3_api": 4,
+    "element_score_api": 3.6666666666666665
+  },
+  "Case049_525.pdf": {
+    "reflected_steps": [
+      "Defining the Problem",
+      "Ideation",
+      "Selection & Prototype Design",
+      "Prototype Building",
+      "Testing",
+      "Evaluation"
+    ],
+    "K1": 5,
+    "K1_rationale": "The student provides a robust and comprehensive summary of each major step of the engineering design process, clearly identifying and describing multiple distinct phases from problem definition through evaluation.",
+    "K2": 4,
+    "K2_rationale": "The student consistently provides value judgments for major steps, discussing successes, challenges, and reasons for outcomes. Some steps are addressed more robustly than others, but overall the evaluation is clear and thoughtful.",
+    "K3": 5,
+    "K3_rationale": "Lessons learned are substantive, clearly articulated, and generalized to be useful for future engineers beyond this project. The reflections emphasize transferable insights about understanding problems, brainstorming, decision-making, prototyping, testing, and reflection.",
+    "narrative_feedback": "This reflection offers a clear and comprehensive summary of the engineering design process, covering all major phases from problem definition through evaluation. The student effectively breaks down each step with specific details, demonstrating a strong understanding of the process structure. This thoroughness helps readers follow the project\u2019s progression and appreciate the complexity of the design work.\n\nThe value judgments provided are thoughtful and consistent, highlighting both successes and challenges encountered during the project. The student evaluates decisions and outcomes, explaining why certain approaches worked or failed, which adds depth to the reflection. However, a few steps could benefit from more detailed evaluation to strengthen the overall analysis.\n\nThe lessons learned section is a particular strength, offering substantive and transferable insights that future engineers can apply. The reflections go beyond project-specific issues to address broader engineering principles such as the importance of problem understanding, creative brainstorming, objective decision-making, rapid prototyping, rigorous testing, and iterative improvement.\n\nTo improve, the student could deepen evaluative commentary on all steps, avoid occasional generalities, and ensure all lessons explicitly connect to engineering practice. Including more examples of how feedback influenced redesigns would also enhance reflection. Overall, this is a strong, insightful reflection that demonstrates meaningful learning and process awareness.",
+    "truncation_detected": 0,
+    "K1_api": 5,
+    "K2_api": 4,
+    "K3_api": 5,
+    "element_score_api": 4.666666666666667
+  }
+}

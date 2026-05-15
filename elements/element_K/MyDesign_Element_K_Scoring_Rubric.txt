@@ -1,0 +1,31 @@
+ELEMENT K — REFLECTION ON THE DESIGN PROJECT
+
+K1 — Clear and Comprehensive Summary
+The project designer provides __________ of the project.
+
+5 = a robust and comprehensive summary of each step
+4 = a clear and comprehensive summary of the major steps
+3 = a generally clear and adequately-developed summary of most steps
+2 = a sparse summary of some steps
+1 = an overly-general summary
+0 = no summary
+
+K2 — Value Judgment
+A value judgment is __________ provided for project steps.
+
+5 = consistently and robustly
+4 = consistently (for major steps)
+3 = consistently (for major steps, with one or two addressed in only a cursory manner)
+2 = partially (one or two addressed in only a cursory manner)
+1 = partially and overly general or superficial
+0 = not attempted
+
+K3 — Inclusion of Lessons Learned
+Lessons learned reflections are __________.
+
+5 = substantive and are clearly useful to others attempting engineering design in the future
+4 = summarized and are clearly useful to others attempting engineering design in the future
+3 = summarized and at least most are useful to others attempting engineering design in the future
+2 = included in part and some are useful to others attempting engineering design in the future
+1 = minimally included and at least one is useful to others attempting engineering design in the future
+0 = not attempted, unclear, and/or unlikely to be useful to others attempting engineering design in the future
