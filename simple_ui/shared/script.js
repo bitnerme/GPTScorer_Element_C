@@ -688,21 +688,57 @@ function downloadCSV() {
     }
 
     // Build CSV
-    const headers = [
-        "filename",
-        ...rawKeys.map(k => `${k}_raw`),
-        ...finalKeys,
-        "element_score_raw",
-        "element_score_final",
-        "element_score_delta",
-        "narrative_feedback"
-    ];
+    const isElementL =
+        results.length > 0 &&
+        ("L1_api" in results[0] || "L1_rule" in results[0]);
+
+    let headers;
+
+    if (isElementL) {
+        headers = [
+            "filename",
+
+            "L1_raw", "L2_raw", "L1_api", "L2_api", "L1_rule", "L2_rule", "L1_final", "L2_final",
+
+            "element_score_raw",
+            "element_score_api",
+            "element_score_rule",
+            "element_score_final",
+            "element_score_delta",
+            "identified_recommendations",
+            "valid_project_recommendations",
+            "valid_project_recommendations_count",
+            "non_counting_recommendations",
+
+            "narrative_feedback"
+        ];
+    } else {
+        headers = [
+            "filename",
+            ...rawKeys.map(k => `${k}_raw`),
+            ...finalKeys,
+            "element_score_raw",
+            "element_score_final",
+            "element_score_delta",
+            "narrative_feedback"
+        ];
+    }
+
     const rows = results.map(r => {
 
         const delta = (
             (Number(r.element_score_final) || 0) -
             (Number(r.element_score_raw) || 0)
         ).toFixed(2);
+
+        if (isElementL) {
+            return headers.map(h => {
+                if (h === "element_score_delta") {
+                    return escapeCSV(delta);
+                }
+                return escapeCSV(r[h]);
+            });
+        }
 
         return [
             escapeCSV(r.filename),

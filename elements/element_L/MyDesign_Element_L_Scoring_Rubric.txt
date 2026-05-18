@@ -1,0 +1,21 @@
+ELEMENT L — PRESENTATION OF DESIGNER'S RECOMMENDATIONS
+
+L1 — Content of Recommendations
+Recommendations include __________.
+
+5 = specific and detailed ways the project can be improved and a rationale for why they are needed
+4 = specific and detailed ways the project can be improved
+3 = some specific ways the project can be improved
+2 = one way the project can be improved
+1 = vague recommendation(s) for improvement of the project
+0 = no recommendations for improvement of the project
+
+L2 — Detailed Plans for Implementation of Improvements
+Plans for implementation of improvements are __________.
+
+5 = consistently detailed
+4 = generally detailed
+3 = minimally detailed and may include one or more caveats
+2 = partially detailed and/or overly general
+1 = vague/unclear or minimally related to the recommendations provided
+0 = not offered

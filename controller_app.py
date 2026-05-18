@@ -186,6 +186,8 @@ async def score(
 
     job_id = create_job(len(file_payloads), element, 4)
 
+    apply_rules = getattr(score_mod, "apply_element_l_rules", None)
+
     background_tasks.add_task(
         process_files_background,
         job_id,
@@ -194,6 +196,7 @@ async def score(
         mode,
         score_documents_,
         apply_calibration_pipeline,
+        apply_rules,
     )
 
     return {
@@ -212,6 +215,7 @@ def process_files_background(
     mode,
     score_documents_with_api,
     apply_calibration_pipeline,
+    apply_rules,
 ):
 
     global last_results, last_metrics, last_mode, LAST_RUN_WAS_SCORING
@@ -236,6 +240,13 @@ def process_files_background(
 
             df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
 
+            if apply_rules is not None:
+                blended = get_blended_model(element, mode)
+                df_one = pd.DataFrame([
+                    apply_rules(row.to_dict(), blended)
+                    for _, row in df_one.iterrows()
+                ])
+
         else:
             print("Processing document:", filename)
 
@@ -258,36 +269,9 @@ def process_files_background(
 
     df = pd.concat(dfs, ignore_index=True)
 
-    # Map GPT scores to base scores (critical step)
-    # Legacy support: map *_gpt columns to base score columns if present
-    for col in df.columns:
-        if col.endswith("_gpt"):
-            base_col = col.replace("_gpt", "")
-            df[base_col] = df[col]
-
-    gpt_cols = [c for c in df.columns if c.endswith("_gpt")]
-    base_cols = [c.replace("_gpt", "") for c in gpt_cols if c.replace("_gpt", "") in df.columns]
-
-    subelement_count = detect_subelement_count(None, element)
-
-    base_cols = [f"{element}{i}" for i in range(1, subelement_count+1)]
-    api_cols = [f"{element}{i}_api" for i in range(1, subelement_count+1)]
-
-    base_cols = [c for c in base_cols if c in df.columns]
-    api_cols = [c for c in api_cols if c in df.columns]
-
-    print("=== CALIBRATION INPUT CHECK ===")
-    if api_cols:
-        print(df[api_cols].head(1))
-    else:
-        print("No API columns found (likely CSV input)")
-
-    if base_cols:
-        print(df[base_cols].head(1))
-    else:
-        print("No base score columns found")
-
     df = apply_calibration_pipeline(df, mode.lower())  
+
+    subelement_count = detect_subelement_count(df, element)
     
     print(df[[f"{element}{i}_final" for i in range(1,subelement_count+1)]].head(1))
 
@@ -305,23 +289,31 @@ def process_files_background(
 
     # add known fields
     valid_cols += [
+        "L1_api",
+        "L2_api",
+        "L1_rule",
+        "L2_rule",
+        "L1_final",
+        "L2_final",
+
         "element_score_raw",
+        "element_score_rule",
         "element_score_final",
         "element_score_calibrated",
+
         "calibration_delta",
+
+        "identified_recommendations",
+        "valid_project_recommendations",
+        "valid_project_recommendations_count",
+        "non_counting_recommendations",
+
         "flags",
         "rationales",
         "narrative_feedback"
     ]
 
-    # keep only existing ones
-    valid_cols = [c for c in valid_cols if c in df.columns]
-
-    df = df[valid_cols]
-
-    df = df.where(pd.notnull(df), None)
-
-    print("🚨 FINAL PAYLOAD KEYS:")
+    print("DF COLUMNS BEFORE FILTER:")
     print(df.columns.tolist())
 
     last_metrics = compute_gpt_metrics(df.copy(), element)
@@ -368,6 +360,61 @@ def process_files_background(
         )
     else:
         df["rationales"] = ""
+
+    # Rebuild export columns after all derived fields are created
+    valid_cols = ["filename"]
+
+    if element == "L":
+        valid_cols += [
+            "L1_api", "L1_rule", "L1_raw", "L1_final",
+            "L2_api", "L2_rule", "L2_raw", "L2_final",
+            "element_score_raw",
+            "element_score_rule",
+            "element_score_final",
+            "element_score_delta",
+            "element_score_calibrated",
+            "calibration_delta",
+            "identified_recommendations",
+            "valid_project_recommendations",
+            "valid_project_recommendations_count",
+            "non_counting_recommendations",
+            "flags",
+            "rationales",
+            "narrative_feedback",
+        ]
+    else:
+        for i in range(1, 10):
+            col = f"{element}{i}"
+            final_col = f"{element}{i}_final"
+            if col in df.columns:
+                valid_cols.append(col)
+            if final_col in df.columns:
+                valid_cols.append(final_col)
+
+        valid_cols += [
+            "element_score_raw",
+            "element_score_final",
+            "element_score_calibrated",
+            "calibration_delta",
+            "flags",
+            "rationales",
+            "narrative_feedback",
+        ]
+
+    valid_cols = [c for c in valid_cols if c in df.columns]
+    valid_cols = list(dict.fromkeys(valid_cols))
+
+    df = df[valid_cols]
+    df = df.where(pd.notnull(df), None)
+
+    print("🚨 FINAL PAYLOAD KEYS:")
+    print(df.columns.tolist())
+
+    dupes = df.columns[df.columns.duplicated()].tolist()
+    print("DUPLICATE COLUMNS:", dupes)
+
+    df = df.loc[:, ~df.columns.duplicated()]
+    print("COLUMNS AFTER DEDUPE:", df.columns.tolist())
 
     results = df.to_dict(orient="records")
 

@@ -1,0 +1,1 @@
+Case 6 is not being used to tune prompts and calibration for element L Current because the expert did not properly follow instructions for how to score documents that were incorrectly uploaded.
