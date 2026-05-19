@@ -9,7 +9,7 @@ import pandas as pd
 # =========================
 # Legacy linear calibration (variance + bias alignment)
 LEGACY_A = 1.15
-LEGACY_B = -0.55
+LEGACY_B = -0.80
 
 # Current linear calibration (variance + bias alignment)
 CURRENT_A = 1.30
