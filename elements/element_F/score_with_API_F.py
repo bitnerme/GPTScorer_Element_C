@@ -17,6 +17,137 @@ import traceback
 import shutil
 
 # =========================
+# ELEMENT F RULE ENGINE
+# =========================
+
+def apply_element_f_rules(response_dict, blended_model):
+    """
+    Element F rule engine.
+
+    Preserves pure API score as F1_api.
+    Creates F1_rule as the post-rule score.
+    Current first-pass rules are conservative caps only.
+    """
+
+    # Normalize API score into temporary F1
+    response_dict["F1"] = int(
+        response_dict.get("F1", response_dict.get("F1_api", 0))
+    )
+
+    # Always preserve API score
+    response_dict["F1_api"] = int(
+        response_dict.get("F1_api", response_dict["F1"])
+    )
+
+    response_dict["F1_flag"] = ""
+
+    BYPASS_RULES = True
+
+# Legacy v1.2: apply conservative false-positive caps
+    if blended_model == "v1.2":
+
+        if BYPASS_RULES:
+            response_dict["F1_rule"] = int(response_dict["F1_api"])
+            response_dict["F1_flag"] = "rules bypassed"
+
+        else:
+            api_score = response_dict["F1_api"]
+
+            text = str(
+                response_dict.get("_source_text", response_dict.get("text", ""))
+            ).lower()
+            rationale = str(response_dict.get("F1_rationale", "")).lower()
+            combined = f"{text} {rationale}"
+
+            false_positive_markers = [
+                "decision matrix",
+                "design matrix",
+                "criteria matrix",
+                "pugh matrix",
+                "brainstorm",
+                "brainstorming",
+                "we chose",
+                "we selected",
+                "we decided",
+                "selected design",
+                "final design",
+                "design idea",
+                "design ideas",
+                "design option",
+                "design options",
+                "design alternatives",
+                "multiple ideas",
+                "concept selection",
+                "pros and cons",
+                "advantages and disadvantages",
+            ]
+
+            strong_viability_markers = [
+                "test results",
+                "measured data",
+                "experimental data",
+                "prototype testing",
+                "user testing",
+                "stakeholder feedback",
+                "expert feedback",
+                "evidence shows",
+                "quantitative evidence",
+                "successful test",
+                "risk mitigation",
+                "failure mode",
+            ]
+
+            future_testing_markers = [
+                "will test",
+                "would test",
+                "plan to test",
+                "planning to test",
+                "future testing",
+                "test later",
+                "after testing",
+                "once we test",
+            ]
+
+            false_hits = sum(1 for m in false_positive_markers if m in combined)
+            strong_hits = sum(1 for m in strong_viability_markers if m in combined)
+            future_hits = sum(1 for m in future_testing_markers if m in combined)
+
+            if api_score >= 3 and false_hits >= 1 and strong_hits <= 1:
+                response_dict["F1"] = max(response_dict["F1"] - 1, 1)
+                response_dict["F1_flag"] = "soften rule: design selection or description without viability evidence"
+
+            elif api_score >= 3 and future_hits >= 1 and strong_hits == 0:
+                response_dict["F1"] = max(response_dict["F1"] - 1, 1)
+                response_dict["F1_flag"] = "soften rule: future testing without current viability evidence"
+
+            response_dict["F1_rule"] = int(response_dict["F1"])
+
+            if api_score >= 3:
+                print("RULE DEBUG:", {
+                    "api": api_score,
+                    "false_hits": false_hits,
+                    "strong_hits": strong_hits,
+                    "future_hits": future_hits,
+                    "flag": response_dict.get("F1_flag", "")
+                })
+
+       # Current v1.62: for now, no rule engine unless you later want one
+    elif blended_model == "v1.62":
+        response_dict["F1_rule"] = int(response_dict["F1_api"])
+
+    else:
+        raise ValueError(f"Unsupported blended_model version: {blended_model}")
+
+    response_dict["element_score_api"] = response_dict["F1_api"]
+    response_dict["element_score_raw"] = response_dict["element_score_api"]
+    response_dict["element_score_rule"] = response_dict["F1_rule"]
+
+    # Remove ambiguous bare score
+    response_dict.pop("F1", None)
+
+    return response_dict
+
+# =========================
 # GPT MODEL CONFIGURATION
 # =========================
 
@@ -125,57 +256,98 @@ def score_document(filename, content, blended_model):
 
     # Choose prompt based on model
     if blended_model == "v1.62":
-        print("USING CURRENT PROMPT2 RECOVERED PLUS GUARDRAIL")
         prompt = f"""
         Rubric:
         {RUBRIC_TEXT}
 
+        ```
         Student Document:
         \"\"\"{content}\"\"\"
 
         You are scoring MyDesign Element F, sub-element F1 only.
 
-        Element F asks: What could possibly go wrong with the proposed design, and is the design realistically viable?
+        Element F asks:
+        What could possibly go wrong with the proposed design, and is the design realistically viable?
 
         Evaluate only F1: Design viability judgment.
 
+        F1 focuses on whether the student thoughtfully evaluates the realism and viability of the proposed solution.
+
         A strong F1 response should:
-        - Make an explicit judgment about whether the proposed design is viable/realistic.
+        - Make an explicit judgment about whether the proposed design is viable and realistic.
         - Connect that judgment to one or more design requirements.
-        - Support the judgment with credible evidence present in this document.
-        - Consider constraints, risks, tradeoffs, or failure modes.
-        - Explain why the evidence shows the design can realistically solve the problem.
+        - Support the judgment using evidence or engineering justification found in the document.
+        - Consider constraints, risks, tradeoffs, obstacles, failure modes, or implementation challenges.
+        - Explain why the design can realistically solve the problem despite identified challenges.
 
-        Credible evidence may include:
-        - Test results or proof-of-concept results
-        - Cost tables or material constraints
-        - Expert/stakeholder feedback
+        Credible support may include:
+        - Test results or prototype evidence
+        - Cost analysis or material constraints
+        - Expert or stakeholder feedback
         - Demonstrated subsystem performance
-        - Analogous examples or precedent
-        - Specific risk mitigation reasoning
-        - Specific design requirement analysis
+        - Analogous products, solutions, or precedent
+        - Risk identification and mitigation planning
+        - Engineering reasoning connected to design requirements
+        - Material selection rationale
+        - Manufacturing, schedule, performance, or supportability considerations
 
-        Do not give credit for evidence that is only planned, promised, or implied.
+        Important:
+        - Final testing is NOT required for high scores.
+        - Students may demonstrate viability through thoughtful engineering analysis, risk assessment, mitigation planning, stakeholder feedback, prototype experience, or other credible justification.
+        - Do not require completed validation testing if the viability judgment is otherwise well supported.
+        - Do not infer evidence that is not present.
+
+        Unsupported opinion:
+        - Unsupported assertions such as "the design will work" without justification are not strong evidence.
+        - Opinion alone should not receive scores above 2.
 
         Scoring rules:
-        - Score 0: No viability discussion, blank, or irrelevant.
-        - Score 1: Viability is asserted but unsupported or very vague.
-        - Score 2: Viability is discussed but mostly speculative, generic, or weakly supported.
-        - Score 3: Clear viability judgment with at least one specific supporting reason, but evidence may be limited or incomplete.
-        - Score 4: Realistic viability judgment with clear connection to one or more design requirements and supported by specific credible evidence.
-        - Score 5: Strong, realistic viability judgment with multiple pieces of credible evidence and clear consideration of constraints, tradeoffs, or risks.
+
+        Score 0:
+        - No viability discussion
+        - Blank, missing, or irrelevant content
+
+        Score 1:
+        - Viability is merely asserted
+        - Very vague discussion
+        - Minimal or no supporting justification
+
+        Score 2:
+        - Viability is discussed
+        - Some reasoning is present
+        - Support is weak, generic, speculative, or poorly connected to the design
+
+        Score 3:
+        - Clear viability judgment
+        - Connected to at least one design requirement
+        - Includes some specific supporting evidence or engineering reasoning
+        - Risks or constraints may be identified but only partially addressed
+
+        Score 4:
+        - Realistic viability judgment
+        - Clearly connected to design requirements
+        - Supported by specific evidence, engineering reasoning, stakeholder input, risk analysis, mitigation planning, or other credible justification
+        - Demonstrates thoughtful consideration of challenges and how they will be addressed
+
+        Score 5:
+        - Strong, realistic viability judgment
+        - Multiple pieces of credible support
+        - Clear consideration of risks, constraints, tradeoffs, or failure modes
+        - Persuasively explains why the design is likely to succeed
+        - Demonstrates mature engineering thinking about viability
 
         Guidance:
         - Give partial credit when reasoning is present but incomplete.
-        - Do not require formal testing for higher scores if reasoning and evidence are credible.
-        - Do not infer evidence that is not explicitly present.
-        - Do not assign scores above 3 if the evidence is generic, not specific to the design, or does not clearly demonstrate that the design will work in practice.
+        - Reward thoughtful identification of risks and realistic mitigation strategies.
+        - Consider evidence related to cost, schedule, performance, and supportability when relevant.
+        - A design may earn a high score without completed testing if the viability analysis is thorough and well justified.
 
         Caps and safeguards:
         - If the response only describes the design without evaluating viability, cap at 1.
-        - If the response focuses only on future testing or planned validation, cap at 2.
-        - If template placeholders are present but not filled in, cap at 1.
-        - If requirements are not referenced, do not assign scores above 3.
+        - If the response consists primarily of template instructions or placeholders, cap at 1.
+        - If no viability judgment is provided, do not score above 2.
+        - If support is entirely generic and not connected to the student's design, do not score above 2.
+        - If design requirements are never referenced or considered, do not score above 3.
 
         Return only valid JSON in exactly this format:
 
@@ -200,6 +372,13 @@ def score_document(filename, content, blended_model):
 
         Evaluate the student's judgment about whether the proposed design is viable and realistic.
 
+        Do NOT treat the following as evidence of viability by themselves:
+        - brainstorming multiple ideas
+        - decision matrices
+        - choosing between concepts
+        - describing design features
+        - explaining how the design works
+
         Consider:
         - Realism of the proposed design
         - Connection to design requirements
@@ -212,7 +391,6 @@ def score_document(filename, content, blended_model):
         - Do not require formal test data for higher scores if the viability reasoning is specific and credible.
         - Only credit evidence that appears in the current student document.
         - Do not invent or assume evidence that is not explicitly present.
-        
 
         Scoring guide:
 
@@ -399,17 +577,20 @@ def score_document(filename, content, blended_model):
         # 🔎 Capture PURE API scores before rule engine logic
         # =====================================================
 
-        # --- Preserve pure API subscores BEFORE rule engine ---
-        for i in range(1,2):
-            response_dict[f"F{i}_api"] = int(response_dict[f"F{i}"])
+        response_dict["F1"] = int(response_dict.get("F1", 0))
+        response_dict["F1_api"] = int(response_dict["F1"])
 
-        scores = [response_dict[f"F{i}_api"] for i in range(1,2)]
-        response_dict["element_score_api"] = sum(scores) / len(scores)
+        # Provide source text to rule engine, then remove it before export
+        response_dict["_source_text"] = content
+
+        response_dict = apply_element_f_rules(response_dict, blended_model)
+
+        response_dict.pop("_source_text", None)
 
         # --- Validate expected fields (FAIL LOUDLY) ---
-        for i in range(1, 2):
-            assert f"F{i}" in response_dict, f"Missing F{i}"
-            assert f"F{i}_rationale" in response_dict, f"Missing F{i}_rationale"
+        assert "F1_api" in response_dict, "Missing F1_api"
+        assert "F1_rule" in response_dict, "Missing F1_rule"
+        assert "F1_rationale" in response_dict, "Missing F1_rationale"
 
         return response_dict
 
@@ -444,7 +625,7 @@ def main(folder_path, output_path, blended_version):
         try:
             text = extract_text_with_fallback(full_path)
             print("EXTRACTED LENGTH:", len(text))
-            print("EXTRACTED SAMPLE:", text[:300])
+            #print("EXTRACTED SAMPLE:", text[:300])
             response_dict = score_document(filename, text,blended_version)
 
             if response_dict is None:
@@ -466,8 +647,8 @@ def main(folder_path, output_path, blended_version):
             )
 
             # Ensure D scores are integers
-            for i in range(1, 2):
-                row[f"F{i}"] = int(row.get(f"F{i}", 0))
+            row["F1_api"] = int(row.get("F1_api", 0))
+            row["F1_rule"] = int(row.get("F1_rule", row["F1_api"]))
 
             print(
                 filename,
@@ -487,11 +668,11 @@ def main(folder_path, output_path, blended_version):
     # Reorder columns
     core = ["Case", "filename", "text", "incomplete_response"]
 
-    scores = [f"F{i}" for i in range(1, 2)]
-    api_scores = [f"F{i}_api" for i in range(1, 2)]  # 👈 NEW
-
-    flags = [f"F{i}_flag" for i in range(1, 2)]
-    rationales = [f"F{i}_rationale" for i in range(1, 2)]
+    scores = []
+    api_scores = ["F1_api"]
+    rule_scores = ["F1_rule"]
+    flags = ["F1_flag"]
+    rationales = ["F1_rationale"]
 
     extras = [
         "truncation_detected",
@@ -501,7 +682,7 @@ def main(folder_path, output_path, blended_version):
 
     print("COLUMNS BEFORE REORDER:", output_df.columns.tolist())
 
-    ordered_columns = core + scores + api_scores + flags + rationales + extras
+    ordered_columns = core + api_scores + rule_scores + flags + rationales + extras
 
     ordered_columns = [c for c in ordered_columns if c in output_df.columns]
     output_df = output_df[ordered_columns]
@@ -519,9 +700,7 @@ def score_documents_with_api(documents, blended_version):
         file_path = doc["path"]
 
         # --- Extraction ---
-        text = extract_text_with_fallback(file_path)     
-        print("EXTRACTED LENGTH:", len(text))
-        print("EXTRACTED SAMPLE:", text[:300])
+        text = extract_text_with_fallback(file_path) 
 
         response_dict = score_document(filename, text, blended_version)
         if response_dict is None:
@@ -534,12 +713,13 @@ def score_documents_with_api(documents, blended_version):
             "text": text,
         }
         
-        for i in range(1, 2):
-            if response_dict is None:
-                raise ValueError(f"response_dict is None for {filename}")
-            print("F key value:", i, type(response_dict.get(f"F{i}")), response_dict.get(f"F{i}"))
-            row[f"F{i}"] = int(response_dict.get(f"F{i}", 0))
-            row[f"F{i}_rationale"] = response_dict.get(f"F{i}_rationale", "")
+        if response_dict is None:
+            raise ValueError(f"response_dict is None for {filename}")
+
+        row["F1_api"] = int(response_dict.get("F1_api", 0))
+        row["F1_rule"] = int(response_dict.get("F1_rule", row["F1_api"]))
+        row["F1_flag"] = response_dict.get("F1_flag", "")
+        row["F1_rationale"] = response_dict.get("F1_rationale", "")
 
         row["narrative_feedback"] = response_dict.get("narrative_feedback", "")
 
@@ -549,10 +729,12 @@ def score_documents_with_api(documents, blended_version):
                 response_dict.get(f"F{i}_api", response_dict.get(f"F{i}", 0))
             )
 
-        # --- Attach element API score ---
+        # --- Attach element API and rule scores ---
         row["element_score_api"] = float(
             response_dict.get("element_score_api", 0)
         )
+        row["element_score_rule"] = float(response_dict.get("element_score_rule", row["element_score_api"]))
+        row["element_score_raw"] = row["element_score_api"]
 
         print("Narrative in row:", row.get("narrative_feedback"))
 
@@ -563,6 +745,9 @@ def score_documents_with_api(documents, blended_version):
             )
 
         results.append(row)
+
+    df_debug = pd.DataFrame(results)
+    return df_debug
 
     # ✅ return is OUTSIDE the loop, INSIDE the function
     return pd.DataFrame(results)

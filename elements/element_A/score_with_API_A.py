@@ -138,53 +138,61 @@ def score_document(filename, content, blended_model):
         Rubric:
         {RUBRIC_TEXT}
 
-        Scoring Guidance:
-
-        - Apply an expert-scorer interpretation of the rubric.
-        - Accept implicit evidence when the context clearly supports understanding.
-        - Allow narrative framing if it helps explain the design situation.
-        - Reward partial completion when the student's explanation suggests meaningful understanding.
-
-        Evidence Interpretation:
-
-        - Students may communicate ideas through narrative explanation rather than formal structure.
-        - When evidence is implied but reasonably supported by the document, award partial credit rather than assigning the lowest score.
-        - Minor gaps or missing details should not automatically reduce scores if the core idea is clear.
-
-        Specific Interpretation Guidance:
-
-        A4 (Concern of Primary Stakeholder Groups):
-
-        Stakeholder groups must represent clearly distinct populations affected
-        by the problem.
-
-        Closely related groups should not be counted as separate stakeholders.
-        For example:
-        - students, high school students, teenagers → count as one group
-        - teachers, instructors, educators → count as one group
-
-        Listing only one or two stakeholder groups should not receive a score
-        above level 2.
-
-        Scores of 4 or 5 require several clearly differentiated stakeholder
-        groups representing different roles or interests (e.g., students,
-        teachers, parents, administrators, community members).
-
-        Scoring Scale Anchors (Apply to All A1–A6 Dimensions):
-
-        Use the following general scale guidance when assigning 0–5 scores:
-
-        0 = No evidence of the criterion in the document.
-        1 = Minimal or very weak evidence; criterion is mentioned but not developed.
-        2 = Limited evidence; partially addressed but lacking clarity or detail.
-        3 = Moderate evidence; clearly present but incomplete or uneven.
-        4 = Strong evidence; clearly articulated and mostly complete.
-        5 = Exceptional evidence; explicit, detailed, comprehensive, and clearly distinguished from weaker performance levels.
-
-        When evidence falls between levels, select the score that best reflects overall strength rather than defaulting to the lowest possible score.
-
         Student Document:
         \"\"\"{content}\"\"\"
+
+        You are a rigorous engineering design evaluator applying this rubric consistently and conservatively.
+
+        GENERAL SCORING PRINCIPLES:
+
+        - Base scores strictly on explicit evidence in the student document.
+        - Do not assume missing elements are present.
+        - Do not infer research, analysis, or validation unless clearly demonstrated.
+        - When evidence is partial or underdeveloped, award partial credit rather than full credit.
+        - Scores of 4 or 5 require clear, explicit, and well-developed evidence aligned directly to rubric language.
+
+        CRITICAL DIFFERENTIATION REQUIREMENT:
+
+        - Distinguish clearly between weak, adequate, strong, and exceptional submissions.
+        - If a submission minimally satisfies the rubric, score at level 2.
+        - If it adequately meets the rubric but lacks depth or completeness, score at level 3.
+        - Reserve level 4 for clearly strong and well-developed work.
+        - Reserve level 5 only for comprehensive, explicit, and clearly superior work.
+        - Do not cluster most submissions at level 3. Use the full scale when justified by evidence.
+
+        RUBRIC ANCHOR ENFORCEMENT:
+
+        - For each category (A1–A6), match the document to the specific rubric descriptor provided in the rubric text.
+        - If the rubric specifies numeric or quantitative thresholds, apply those thresholds literally.
+        - If the document clearly meets a lower-level descriptor, assign that level.
+        - If the document clearly meets the highest-level descriptor, assign 5.
+        - Select the score whose rubric description most precisely matches the evidence.
+
+        SPECIFIC INTERPRETATION GUIDANCE:
+
+        A4 (Stakeholder Groups):
+        - Stakeholders must represent distinct groups affected by the problem.
+        - Listing only one or two groups (e.g., students, teachers) should not score above level 2.
+        - Higher scores require several clearly differentiated stakeholder groups.
+        - Avoid counting repeated variations of the same group as separate stakeholders.
+        A5 (Sources and Evidence):
+        - Credible sources should generally include research studies, government publications, academic articles, or reputable organizations.
+        - Personal opinions, blogs, or uncited statements should not be considered credible sources.
+        - A single credible source should not score above level 2.
+        - Higher scores require multiple credible and varied sources.
+
+        SCORING SCALE GUIDANCE:
+
+        0 → No meaningful evidence of the rubric requirement  
+        1 → Minimal or very weak evidence; mentioned but not developed  
+        2 → Limited or partial fulfillment; important gaps remain  
+        3 → Adequate fulfillment; clearly present but incomplete or uneven  
+        4 → Strong and well-developed; mostly complete and clearly articulated  
+        5 → Exceptional; explicit, comprehensive, and clearly distinguished from lower levels  
+
+        Use professional judgment, but prioritize rubric-aligned evidence over general impression.
+
+        For each category (A1–A6), explicitly determine which rubric descriptor the evidence most closely matches, then assign that score.
 
         Return only valid JSON in exactly this format:
 

@@ -41,7 +41,7 @@ def get_blended_model(element, mode):
     if element == "D":
         return "v1.8d" if mode == "legacy" else "v2.0"
     if element == "E":
-        return "v1.7r" if mode == "legacy" else "v1.2"
+        return "v1.2" if mode == "legacy" else "v1.7r"
     if element == "F":
         return "v1.2" if mode == "legacy" else "v1.62"
     if element == "G":

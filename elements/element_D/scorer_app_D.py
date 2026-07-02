@@ -38,11 +38,11 @@ SUBELEMENT_COUNT = 4
 # =========================
 # Linear Calibration
 # =========================
-LEGACY_A = 1.52
-LEGACY_B = -1.33
+LEGACY_A = 1.0
+LEGACY_B = -0.35
 
-CURRENT_A = 1.74
-CURRENT_B = -2.50
+CURRENT_A = 1.74 #1.74
+CURRENT_B = -2.5 #-2.50
 
 progress_tracker = {}
 
@@ -196,8 +196,22 @@ def reconcile_integer_subscores(
 def apply_calibration_pipeline(df, mode):
 
     for k in range(1, 5):
-        col = f"D{k}"
-        df[col] = pd.to_numeric(df.get(col, 0), errors="coerce").fillna(0)
+        base = f"D{k}"
+
+        if base in df.columns:
+            source_col = base
+        elif f"{base}_api" in df.columns:
+            source_col = f"{base}_api"
+        elif f"{base}_raw" in df.columns:
+            source_col = f"{base}_raw"
+        else:
+            print(f"Missing all source columns for {base}")
+            print("Available columns:")
+            print(sorted(df.columns.tolist()))
+            df[base] = 0
+            source_col = base
+
+        df[base] = pd.to_numeric(df[source_col], errors="coerce").fillna(0)
 
     df["element_score_raw"] = df[[f"D{k}" for k in range(1, 5)]].mean(axis=1)
 

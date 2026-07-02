@@ -181,16 +181,19 @@ def score_document(filename, content, blended_model):
         - Evaluate whether the prototype is constructed so objective data can be collected on design requirements.
         - Higher scores require clear evidence that the prototype can generate measurable results.
         - If testability is unclear or not supported, limit scores.
+        - Give partial credit when the prototype demonstrates enough functional detail to plausibly collect objective data, even if not all requirements are fully testable yet.
 
         G3 – Testing or Modeling of Attributes
         - Evaluate whether specific attributes of the design can be tested or modeled.
         - Higher scores require multiple clearly identifiable attributes with testable or measurable outcomes.
         - General statements without specific attributes should receive lower scores.
+        - Count attributes as testable when the prototype includes sufficient functionality to meaningfully evaluate or model them, even if testing is incomplete.
 
         G4 – Justification of Non-Testable Attributes
         - Evaluate whether the student justifies attributes that cannot be tested and explains why expert review is needed.
         - Strong responses provide clear reasoning tied to the design.
         - Missing or weak justification should receive low scores.
+        - Give credit for reasonable explanations of why certain attributes require expert review, even if the justification is not highly technical.
 
         SCORING SCALE GUIDANCE:
 
@@ -200,7 +203,23 @@ def score_document(filename, content, blended_model):
         3 → Adequate but incomplete  
         4 → Strong and well-developed  
         5 → Exceptional, explicit, and comprehensive
-      
+
+        Only award credit for evidence that is explicitly documented.
+
+        Evidence may include:
+        - photos of prototypes
+        - prototype diagrams
+        - construction records
+        - dimensions
+        - materials lists
+        - testing tables
+        - mathematical models
+        - expert review documentation
+
+        Do not assume evidence exists from narrative descriptions alone.
+
+        However, if evidence is explicitly documented anywhere in the portfolio, award credit even if it is not repeated in the Element G narrative section.
+            
         CRITICAL EVIDENCE RULES:
 
         - Do not give credit for vague statements such as “this can be tested” without explanation.
@@ -307,9 +326,35 @@ def score_document(filename, content, blended_model):
         - High G4 scores should only be assigned when the student explicitly identifies attributes that cannot be directly tested or modeled AND explains why expert review, judgment, or alternative evaluation is necessary.
         - General discussion of limitations, improvements, or future work does not alone justify high G4 scores.
         - Do not infer non-testable attribute justification unless it is clearly stated or directly explained in the document.
+        - G4 safeguard: If expert review (or another explicit external evaluation method) is not discussed, do not assign scores above 2 for G4.
+        
+        CRITICAL DISTINCTION:
 
+        Students often explain why they believe their design will work.
+
+        Do NOT treat:
+        - design descriptions,
+        - construction descriptions,
+        - statements that a requirement is met,
+        - explanations of why a feature was included,
+        - or claims that the design is effective
+
+        as evidence that a prototype can generate objective measurable data.
+
+        For G2 and G3, credit should only be awarded when the student explicitly explains:
+        - what attribute will be evaluated,
+        - how it will be measured, tested, or modeled,
+        - what prototype feature enables that evaluation,
+        - or what objective evidence will be collected.
+
+        Descriptions of prototype features alone are not sufficient evidence of testability.
+
+        Similarly, do not treat discussion of durability, aesthetics, safety, usability, or other attributes as G4 evidence unless the student explicitly explains:
+        - why the attribute cannot be adequately tested or modeled,
+        and
+        - how expert review, specialist evaluation, precedent, or another external source will be used to evaluate it.CRITICAL DISTINCTION:         
+        
         SCORING SCALE GUIDANCE:
-
         0 → No meaningful evidence  
         1 → Minimal or very weak evidence  
         2 → Limited evidence with major gaps  

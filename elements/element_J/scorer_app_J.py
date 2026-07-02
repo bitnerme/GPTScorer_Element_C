@@ -42,7 +42,7 @@ LEGACY_A = 1.0
 LEGACY_B = -0.2
 
 CURRENT_A = 1.0
-CURRENT_B = -0.5
+CURRENT_B = -0.7
 
 progress_tracker = {}
 
@@ -194,9 +194,14 @@ def reconcile_integer_subscores(
 # ============================================================
 def apply_calibration_pipeline(df, mode):
 
+    print("J calibration columns:")
+    print(df.columns.tolist())
+
     for k in range(1, 4):
         col = f"J{k}"
-        df[col] = pd.to_numeric(df.get(col, 0), errors="coerce").fillna(0)
+        if col not in df.columns:
+            df[col] = 0
+        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
 
     df["element_score_raw"] = df[[f"J{k}" for k in range(1, 4)]].mean(axis=1)
 

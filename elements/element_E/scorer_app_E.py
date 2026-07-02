@@ -26,8 +26,8 @@ app = FastAPI()
 
 ELEMENT_CALIBRATION = {
     "E": {
-        "current": {"a": 1.35, "b": -1.36},
-        "legacy": {"a": 1.18, "b": 0.20},  
+        "current": {"a": 1.0, "b": -0.39}, #{"a": 1.35, "b": -1.36},
+        "legacy": {"a": 1.0, "b": 0.23}, #{"a": 1.0, "b": 0.0},  
     }
 }
 

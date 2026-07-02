@@ -1,82 +1,82 @@
 [
   {
-    "filename": "Case001_00.docx",
+    "filename": "Case006_00.pdf",
     "expert_score": 0.0
   },
   {
-    "filename": "Case010_01.docx",
-    "expert_score": 0.5
+    "filename": "Case020_00.docx",
+    "expert_score": 0.0
   },
   {
-    "filename": "Case009_01.docx",
-    "expert_score": 0.5
+    "filename": "Case019_00.docx",
+    "expert_score": 0.0
   },
   {
-    "filename": "Case015_02.docx",
+    "filename": "Case103_00.docx",
+    "expert_score": 0.0
+  },
+  {
+    "filename": "Case024_11.pdf",
     "expert_score": 1.0
   },
   {
-    "filename": "Case016_02.docx",
+    "filename": "Case070_11.pdf",
     "expert_score": 1.0
   },
   {
-    "filename": "Case019_11.docx",
+    "filename": "Case071_11.pdf",
     "expert_score": 1.0
   },
   {
-    "filename": "Case020_11.docx",
+    "filename": "Case102_11.docx",
     "expert_score": 1.0
   },
   {
-    "filename": "Case035_13.docx",
+    "filename": "Case039_31.pdf",
     "expert_score": 2.0
   },
   {
-    "filename": "Case034_13.docx",
+    "filename": "Case034_22.pdf",
     "expert_score": 2.0
   },
   {
-    "filename": "Case017_04.docx",
+    "filename": "Case054_31.docx",
     "expert_score": 2.0
   },
   {
-    "filename": "Case045_23.docx",
-    "expert_score": 2.5
+    "filename": "Case009_04.pdf",
+    "expert_score": 2.0
   },
   {
-    "filename": "Case073_33.docx",
+    "filename": "Case085_33.pdf",
     "expert_score": 3.0
   },
   {
-    "filename": "Case049_24.docx",
+    "filename": "Case051_33.pdf",
     "expert_score": 3.0
   },
   {
-    "filename": "Case037_15.docx",
+    "filename": "Case041_33.pdf",
     "expert_score": 3.0
   },
   {
-    "filename": "Case048_24.docx",
+    "filename": "Case075_33.pdf",
     "expert_score": 3.0
   },
   {
-    "filename": "Case089_44.docx",
+    "filename": "Case007_44.pdf",
     "expert_score": 4.0
   },
   {
-    "filename": "Case088_44.docx",
+    "filename": "Case008_53.pdf",
     "expert_score": 4.0
   },
   {
-    "filename": "Case079_35.docx",
+    "filename": "Case025_53.pdf",
     "expert_score": 4.0
   },
   {
-    "filename": "Case080_35.docx",
+    "filename": "Case002_53.pdf",
     "expert_score": 4.0
-  },
-  {
-    "filename": "Case114_55.docx",
-    "expert_score": 5.0
   }
 ]

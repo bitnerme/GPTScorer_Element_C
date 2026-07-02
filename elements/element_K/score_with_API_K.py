@@ -259,6 +259,16 @@ def score_document(filename, content, blended_model):
         THIRD:
         Evaluate whether the lessons learned are generalized and useful to future engineers rather than limited only to this project.
 
+        IMPORTANT:
+
+        Many student reflections are written directly inside portfolio templates.
+
+        Do not assume a document is blank, incomplete, or only a template merely because template instructions, prompts, headings, or rubric text are present.
+
+        If substantive student reflection appears anywhere in the document, score that reflection using the rubric.
+
+        Only treat a document as blank when no meaningful student-generated reflection content is present.
+
         Apply the following guidance:
 
         K1:
@@ -278,6 +288,16 @@ def score_document(filename, content, blended_model):
 
         K3:
         High scores require lessons learned that are transferable to future engineering or design work. Project-specific recommendations or future feature ideas belong in Element L and should not strongly increase K3 scores.
+
+        CRITICAL DISTINCTION FOR ELEMENT K
+
+        Do not award K1 simply because the student discusses the project, design decisions, prototypes, testing, or project history.
+
+        K1 requires explicit summaries of major engineering design process phases and what the team actually did during those phases.
+
+        Do not award K2 simply because the student explains or justifies a decision. A value judgment requires evaluation of effectiveness, success, failure, importance, quality, usefulness, or impact. Explanations and justifications alone are not value judgments.
+
+        Do not award K3 simply because the student states what happened or what they learned during the project. Lessons learned must be generalized beyond the specific project and presented in a way that would be useful to future engineering design efforts. Project-specific observations alone do not qualify as lessons learned.
 
         Score conservatively when:
         - reflections are vague or repetitive
@@ -450,9 +470,11 @@ def score_document(filename, content, blended_model):
         # --- Preserve pure API subscores BEFORE rule engine ---
         for i in range(1,4):
             response_dict[f"K{i}_api"] = int(response_dict[f"K{i}"])
+            response_dict[f"K{i}_raw"] = int(response_dict[f"K{i}"])
 
         scores = [response_dict[f"K{i}_api"] for i in range(1,4)]
         response_dict["element_score_api"] = sum(scores) / len(scores)
+        response_dict["element_score_raw"] = response_dict["element_score_api"]
 
         # --- Validate expected fields (FAIL LOUDLY) ---
         for i in range(1, 4):
@@ -490,7 +512,7 @@ def main(folder_path, output_path, blended_version):
         full_path = os.path.join(folder_path, filename)
         print(f"Scoring {filename}...")
         try:
-            text = extract_text_with_fallback(full_path)
+            text = extract_text_with_fallback(file_path)
             print("EXTRACTED LENGTH:", len(text))
             print("EXTRACTED SAMPLE:", text[:300])
             response_dict = score_document(filename, text,blended_version)
@@ -568,7 +590,7 @@ def score_documents_with_api(documents, blended_version):
         file_path = doc["path"]
 
         # --- Extraction ---
-        text = extract_text_with_fallback(file_path)     
+        text = extract_text_with_fallback(file_path)   
         print("EXTRACTED LENGTH:", len(text))
         print("EXTRACTED SAMPLE:", text[:300])
 
@@ -592,15 +614,21 @@ def score_documents_with_api(documents, blended_version):
 
         row["narrative_feedback"] = response_dict.get("narrative_feedback", "")
 
-        # --- Attach API scores ---
+        # --- Attach API and Raw scores ---
         for i in range(1, 4):
             row[f"K{i}_api"] = int(
                 response_dict.get(f"K{i}_api", response_dict.get(f"K{i}", 0))
             )
+            row[f"K{i}_raw"] = int(
+                response_dict.get(f"K{i}_raw", response_dict.get(f"K{i}", 0))
+            )
 
-        # --- Attach element API score ---
+        # --- Attach element API and Raw score ---
         row["element_score_api"] = float(
             response_dict.get("element_score_api", 0)
+        )
+        row["element_score_raw"] = float(
+            response_dict.get("element_score_raw", 0)
         )
 
         print("Narrative in row:", row.get("narrative_feedback"))

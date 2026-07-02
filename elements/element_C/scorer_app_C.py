@@ -8,11 +8,23 @@ import math
 # =========================
 
 # Legacy is bias only
-LEGACY_BIAS_OFFSET = 0.72
+LEGACY_BIAS_OFFSET = 0.25
 
 # Current linear calibration (variance + bias alignment)
-CURRENT_A = 1.289
-CURRENT_B = -1.267
+CURRENT_A = 0.93    #1.289
+CURRENT_B = -0.04   #-1.267
+
+def _as_numeric_series(source, df):
+    """
+    Safely convert either a Series or scalar into
+    a numeric Series aligned to df.index.
+    """
+    if isinstance(source, pd.Series):
+        s = source
+    else:
+        s = pd.Series(source, index=df.index)
+
+    return pd.to_numeric(s, errors="coerce").fillna(0)
 
 
 # =========================
@@ -153,9 +165,24 @@ def apply_calibration_pipeline(df: pd.DataFrame, mode: str) -> pd.DataFrame:
 
     # Normalize subscores
     for k in range(1, 7):
-        df[f"C{k}"] = (
-            pd.to_numeric(df.get(f"C{k}"), errors="coerce")
-            .fillna(0)
+        col = f"C{k}"
+        api_col = f"C{k}_api"
+        raw_col = f"C{k}_raw"
+        gpt_col = f"C{k}_gpt"
+
+        if col in df.columns:
+            source = df[col]
+        elif api_col in df.columns:
+            source = df[api_col]
+        elif raw_col in df.columns:
+            source = df[raw_col]
+        elif gpt_col in df.columns:
+            source = df[gpt_col]
+        else:
+            source = 0
+
+        df[col] = (
+            _as_numeric_series(source, df)
             .round()
             .astype(int)
         )

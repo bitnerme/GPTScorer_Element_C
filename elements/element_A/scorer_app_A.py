@@ -8,8 +8,8 @@ import pandas as pd
 # Calibration Constants (FROZEN)
 # =========================
 # Legacy linear calibration (variance + bias alignment)
-LEGACY_A = 1.15
-LEGACY_B = -0.80
+LEGACY_A = 1.0
+LEGACY_B = -0.5
 
 # Current linear calibration (variance + bias alignment)
 CURRENT_A = 1.30

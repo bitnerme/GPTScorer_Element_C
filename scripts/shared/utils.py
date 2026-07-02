@@ -13,6 +13,58 @@ import traceback
 import json
 from pathlib import Path
 import shutil
+import subprocess
+import tempfile
+from pathlib import Path
+
+SOFFICE_PATH = r"C:\Program Files\LibreOffice\program\soffice.exe"
+
+# IMPORTANT:
+# Native DOCX extraction was found to contain an indentation defect that
+# caused zero-length extraction. The defect has been corrected, but the
+# v2.0 scorer intentionally bypasses native DOCX extraction because all
+# production baselines were established using the DOCX→PDF→OCR workflow.
+# Changing this flag requires full regression testing and baseline refresh.
+
+USE_NATIVE_DOCX_EXTRACTION = False  # v2.0 baseline lock.  
+
+def convert_docx_to_pdf(filepath):
+    filepath = Path(filepath)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmpdir = Path(tmpdir)
+
+        if not Path(SOFFICE_PATH).exists():
+            raise FileNotFoundError(f"LibreOffice not found: {SOFFICE_PATH}")
+
+        cmd = [
+            SOFFICE_PATH,
+            "--headless",
+            "--convert-to",
+            "pdf",
+            "--outdir",
+            str(tmpdir),
+            str(filepath),
+        ]
+
+        subprocess.run(
+            cmd,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+        pdf_path = tmpdir / f"{filepath.stem}.pdf"
+
+        if not pdf_path.exists():
+            raise FileNotFoundError(f"DOCX to PDF conversion failed: {pdf_path}")
+
+        final_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+        final_pdf.close()
+
+        shutil.copyfile(pdf_path, final_pdf.name)
+        return final_pdf.name
 
 def configure_tesseract():
     # 1. Env var override
@@ -50,7 +102,7 @@ def get_blended_model(element, mode):
         "C": ("v1.13", "v1.15"),
         "D": ("v1.8d", "v2.0"),
         "E": ("v1.2", "v1.7r"),
-        "F": ("v1.4", "v1.62"),
+        "F": ("v1.2", "v1.62"),
         "G": ("v1.41", "v1.42"),
         "H": ("v1.0", "v2.0"),
         "I": ("v1.1", "v1.2"),
@@ -285,63 +337,122 @@ def run_ocr(filepath):
     finally:
         pythoncom.CoUninitialize()
 
-def extract_text_with_fallback(filepath, min_length=50):
+def extract_text_with_fallback(filepath, min_length=50, return_metadata=False):
     text = extract_text_from_file(filepath)
-    text = text.strip()
+    text = (text or "").strip()
+    
+    text = extract_text_from_file(filepath)
+    text = (text or "").strip()
+
+    metadata = {
+        "ocr_used": False,
+        "initial_text_length": len(text),
+        "ocr_text_length": 0,
+        "final_text_length": len(text),
+        "extraction_method": "direct"
+    }
 
     print(f"OCR CHECK: {filepath}")
     print(f"Original Extracted text length: {len(text)}")
 
-    # Trigger OCR if empty or suspiciously short
     if len(text) < min_length:
-
         try:
             print(f"OCR triggered for {filepath}")
+            ext = os.path.splitext(filepath)[1].lower()
 
-            # ===== PRINT 1 =====
-            print("OCR: starting PDF render")
+            if ext == ".pdf":
+                print("OCR: starting PDF render")
+                images = convert_from_path(filepath)
 
-            images = convert_from_path(filepath)
+            elif ext == ".docx":
+                print("OCR: converting DOCX to PDF")
+                pdf_path = convert_docx_to_pdf(filepath)
+                try:
+                    print("OCR: starting converted PDF render")
+                    images = convert_from_path(pdf_path)
+                finally:
+                    if os.path.exists(pdf_path):
+                        os.remove(pdf_path)
+            else:
+                print(f"OCR skipped for unsupported file type: {ext}")
+                return (text, metadata) if return_metadata else text
 
-            # ===== PRINT 2 =====
             print(f"OCR: completed PDF render, pages={len(images)}")
 
             ocr_pages = []
-
             for idx, image in enumerate(images, start=1):
-
-                # ===== PRINT 3 =====
                 print(f"OCR: starting page {idx}")
-
                 page_text = pytesseract.image_to_string(image)
-
-                # ===== PRINT 4 =====
-                print(
-                    f"OCR: completed page {idx}, chars={len(page_text)}"
-                )
-
+                print(f"OCR: completed page {idx}, chars={len(page_text)}")
                 ocr_pages.append(page_text)
 
-            ocr_text = "\n".join(ocr_pages)
+            ocr_text = "\n".join(ocr_pages).strip()
+
+            metadata.update({
+                "ocr_used": True,
+                "ocr_text_length": len(ocr_text),
+                "final_text_length": len(ocr_text),
+                "extraction_method": "ocr_fallback"
+            })
 
             print(f"OCR returned length: {len(ocr_text)}")
 
-            return ocr_text
+            return (ocr_text, metadata) if return_metadata else ocr_text
+            
 
         except Exception as e:
             print(f"❌ OCR FAILED for {filepath}: {e}")
             traceback.print_exc()
-            return ""
+            metadata["extraction_method"] = "ocr_failed"
+            metadata["final_text_length"] = 0
+            return ("", metadata) if return_metadata else ""
 
-    return text
+    return (text, metadata) if return_metadata else text
 
 def extract_text_from_docx(filepath):
+
+    # v2.0 policy:
+    # Native DOCX extraction has been repaired but is intentionally bypassed.
+    # Regression testing showed v2.0 baselines were established using the
+    # DOCX → PDF render/OCR extraction path. Enabling native DOCX extraction
+    # would change the scored text representation and require new baselines.
+
+    if not USE_NATIVE_DOCX_EXTRACTION:
+        print("DOCX native extraction intentionally bypassed; returning 0 chars")
+        return ""
+        
     abs_path = os.path.abspath(filepath)
     doc = docx.Document(abs_path)
-    return "\n".join(
-        [para.text for para in doc.paragraphs if para.text.strip()]
-    )
+    parts = []
 
+    def add_paragraphs(paragraphs):
+        for para in paragraphs:
+            text = para.text.strip()
+            if text:
+                parts.append(text)
+
+    def add_table(table):
+        for row in table.rows:
+            for cell in row.cells:
+                add_paragraphs(cell.paragraphs)
+                for nested_table in cell.tables:
+                    add_table(nested_table)
+
+    add_paragraphs(doc.paragraphs)
+
+    for table in doc.tables:
+        add_table(table)
+
+    for section in doc.sections:
+        add_paragraphs(section.header.paragraphs)
+        add_paragraphs(section.footer.paragraphs)
+        for table in section.header.tables:
+            add_table(table)
+        for table in section.footer.tables:
+            add_table(table)
+
+    return "\n".join(parts)
+    
 def extract_text_from_pdf(filepath):
     try:
         from pdfminer.high_level import extract_text

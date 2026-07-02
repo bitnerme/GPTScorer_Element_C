@@ -8,12 +8,12 @@ import pandas as pd
 # Calibration Constants (FROZEN)
 # =========================
 # Legacy linear calibration (variance + bias alignment)
-LEGACY_A = 1.36
-LEGACY_B = -0.75
+LEGACY_A = 1.0
+LEGACY_B = -0.25
 
 # Current linear calibration (variance + bias alignment)
-CURRENT_A = 0.80
-CURRENT_B = -0.35
+CURRENT_A = 1.30  
+CURRENT_B = -1.4  
 
 
 # =========================
@@ -180,8 +180,23 @@ def apply_calibration_pipeline(df: pd.DataFrame, mode: str) -> pd.DataFrame:
     # Normalize subscores
     for k in range(1, 3):
         col = f"B{k}"
+        api_col = f"B{k}_api"
+        raw_col = f"B{k}_raw"
+        gpt_col = f"B{k}_gpt"
+
+        if col in df.columns:
+            source = df[col]
+        elif api_col in df.columns:
+            source = df[api_col]
+        elif raw_col in df.columns:
+            source = df[raw_col]
+        elif gpt_col in df.columns:
+            source = df[gpt_col]
+        else:
+            source = pd.Series(0, index=df.index)
+
         df[col] = (
-            pd.to_numeric(df.get(col), errors="coerce")
+            pd.to_numeric(source, errors="coerce")
             .fillna(0)
             .round()
             .astype(int)

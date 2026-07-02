@@ -41,8 +41,8 @@ SUBELEMENT_COUNT = 3
 LEGACY_A = 1.0
 LEGACY_B = 0.0  
 
-CURRENT_A = 1.0
-CURRENT_B = -0.4
+CURRENT_A = 0.75
+CURRENT_B = -0.20
 
 progress_tracker = {}
 
@@ -193,20 +193,40 @@ def reconcile_integer_subscores(
 # Calibration Pipeline
 # ============================================================
 def apply_calibration_pipeline(df, mode):
+    df = df.copy()
+
+    rename_map = {
+        "K": "K1_raw",
+        "K.1": "K2_raw",
+        "K.2": "K3_raw",
+    }
+
+    df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
+
+    required_raw = [f"K{k}_raw" for k in range(1, 4)]
+    missing = [c for c in required_raw if c not in df.columns]
+
+    if missing:
+        raise ValueError(
+            f"Missing required raw K columns: {missing}. "
+            f"Available columns: {df.columns.tolist()}"
+        )
 
     for k in range(1, 4):
-        col = f"K{k}"
-        df[col] = pd.to_numeric(df.get(col, 0), errors="coerce").fillna(0)
+        raw_col = f"K{k}_raw"
+        score_col = f"K{k}"
 
-    df["element_score_raw"] = df[[f"K{k}" for k in range(1, 4)]].mean(axis=1)
+        df[raw_col] = pd.to_numeric(df[raw_col], errors="coerce")
+        df[score_col] = df[raw_col]   # calibration can modify this later
+
+    df["element_score_raw"] = df[[f"K{k}_raw" for k in range(1, 4)]].mean(axis=1)
+
+    # continue with calibration here...
 
     if mode == "legacy":
         a, b = LEGACY_A, LEGACY_B
     else:
         a, b = CURRENT_A, CURRENT_B
-
-    print("J CALIBRATION MODE:", mode, "A:", a, "B:", b)
-
 
     df["element_score_target"] = (a * df["element_score_raw"] + b).clip(0, 5)
 

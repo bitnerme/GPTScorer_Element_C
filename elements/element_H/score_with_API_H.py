@@ -426,17 +426,20 @@ def score_document(filename, content, blended_model):
         # 🔎 Capture PURE API scores before rule engine logic
         # =====================================================
 
-        # --- Preserve pure API subscores BEFORE rule engine ---
-        for i in range(1,6):
-            response_dict[f"H{i}_api"] = int(response_dict[f"H{i}"])
-
-        scores = [response_dict[f"H{i}_api"] for i in range(1,6)]
-        response_dict["element_score_api"] = sum(scores) / len(scores)
-
-        # --- Validate expected fields (FAIL LOUDLY) ---
+        # --- Validate expected API fields first ---
         for i in range(1, 6):
             assert f"H{i}" in response_dict, f"Missing H{i}"
             assert f"H{i}_rationale" in response_dict, f"Missing H{i}_rationale"
+
+        # --- Preserve pure API subscores BEFORE rule engine/calibration ---
+        for i in range(1, 6):
+            pure_score = int(response_dict[f"H{i}"])
+            response_dict[f"H{i}_api"] = pure_score
+            response_dict[f"H{i}_raw"] = pure_score
+
+        scores = [response_dict[f"H{i}_api"] for i in range(1, 6)]
+        response_dict["element_score_api"] = sum(scores) / len(scores)
+        response_dict["element_score_raw"] = response_dict["element_score_api"]
 
         return response_dict
 
@@ -469,7 +472,12 @@ def main(folder_path, output_path, blended_version):
         full_path = os.path.join(folder_path, filename)
         print(f"Scoring {filename}...")
         try:
-            text = extract_text_with_fallback(full_path)
+            
+            text, extraction_metadata = extract_text_with_fallback(
+                full_path,
+                return_metadata=True
+            )
+            print("RAW EXTRACTION METADATA:", extraction_metadata)
             print("EXTRACTED LENGTH:", len(text))
             print("EXTRACTED SAMPLE:", text[:300])
             response_dict = score_document(filename, text,blended_version)
@@ -487,6 +495,7 @@ def main(folder_path, output_path, blended_version):
             row["Case"] = idx
             row["filename"] = filename
             row["text"] = text
+            row.update(extraction_metadata)
 
             row["incomplete_response"] = any(
                 k not in response_dict for k in [f"H{i}" for i in range(1, 6)]
@@ -502,6 +511,23 @@ def main(folder_path, output_path, blended_version):
                 row["element_score_api"]
             )
 
+            for k in [
+                "ocr_used",
+                "initial_text_length",
+                "ocr_text_length",
+                "final_text_length",
+                "extraction_method",
+            ]:
+                row[k] = extraction_metadata.get(k)
+
+                print("FINAL ROW OCR FIELDS:", {k: row.get(k) for k in [
+                    "ocr_used",
+                    "initial_text_length",
+                    "ocr_text_length",
+                    "final_text_length",
+                    "extraction_method",
+                ]})
+
             results.append(row)
 
         except Exception:
@@ -512,7 +538,17 @@ def main(folder_path, output_path, blended_version):
 
     output_df = pd.DataFrame(results)
     # Reorder columns
-    core = ["Case", "filename", "text", "incomplete_response"]
+    core = [
+        "Case",
+        "filename",
+        "text",
+        "ocr_used",
+        "initial_text_length",
+        "ocr_text_length",
+        "final_text_length",
+        "extraction_method",
+        "incomplete_response"
+    ]
 
     scores = [f"H{i}" for i in range(1, 6)]
     api_scores = [f"H{i}_api" for i in range(1, 6)]  # 👈 NEW
@@ -547,7 +583,11 @@ def score_documents_with_api(documents, blended_version):
         file_path = doc["path"]
 
         # --- Extraction ---
-        text = extract_text_with_fallback(file_path)     
+        text, extraction_metadata = extract_text_with_fallback(
+            file_path,
+            return_metadata=True
+        )
+        print("RAW EXTRACTION METADATA:", extraction_metadata)     
         print("EXTRACTED LENGTH:", len(text))
         print("EXTRACTED SAMPLE:", text[:300])
 
@@ -561,6 +601,15 @@ def score_documents_with_api(documents, blended_version):
             "filename": filename,
             "text": text,
         }
+        
+        print("ROW OCR FIELDS:", {k: row.get(k) for k in [
+            "ocr_used",
+            "initial_text_length",
+            "ocr_text_length",
+            "final_text_length",
+            "extraction_method"
+        ]})
+        row.update(extraction_metadata)
         
         for i in range(1, 6):
             if response_dict is None:
@@ -576,6 +625,9 @@ def score_documents_with_api(documents, blended_version):
             row[f"H{i}_api"] = int(
                 response_dict.get(f"H{i}_api", response_dict.get(f"H{i}", 0))
             )
+            row[f"H{i}_raw"] = int(
+                response_dict.get(f"H{i}_raw", response_dict.get(f"H{i}", 0))
+            )
 
         # --- Attach element API score ---
         row["element_score_api"] = float(
@@ -588,7 +640,24 @@ def score_documents_with_api(documents, blended_version):
                 filename,
                 [row[f"H{i}_api"] for i in range(1, 6)],
                 row["element_score_api"]
-            )
+            )  
+
+        for k in [
+            "ocr_used",
+            "initial_text_length",
+            "ocr_text_length",
+            "final_text_length",
+            "extraction_method",
+        ]:
+            row[k] = extraction_metadata.get(k)
+
+            print("FINAL ROW OCR FIELDS:", {k: row.get(k) for k in [
+                "ocr_used",
+                "initial_text_length",
+                "ocr_text_length",
+                "final_text_length",
+                "extraction_method",
+            ]})
 
         results.append(row)
 

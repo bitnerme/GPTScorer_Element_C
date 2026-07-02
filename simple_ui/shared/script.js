@@ -654,7 +654,6 @@ function escapeCSV(value) {
 }
 
 function downloadCSV() {
-
     const payload = window.lastPayload;
 
     if (!payload) {
@@ -662,113 +661,107 @@ function downloadCSV() {
         return;
     }
 
-    const element = (payload.element || "A").toUpperCase();
-
-    const subelementDefaults = {
-        A: 6,
-        B: 4,
-        C: 4,
-        D: 4,
-        E: 4,
-        F: 1
-        };
-
-    const count = window.subelementCount || subelementDefaults[element] || 1;
-
-    const rawKeys = Array.from({ length: count }, (_, i) => `${element}${i+1}`);
-    const finalKeys = rawKeys.map(k => `${k}_final`);
-
-    // 🔥 unwrap nested results
     const results = payload?.results?.results || payload?.results;
 
-    if (!Array.isArray(results)) {
+    if (!Array.isArray(results) || results.length === 0) {
         alert("Invalid results format.");
         console.error("Bad payload:", payload);
         return;
     }
 
-    // Build CSV
-    const isElementL =
-        results.length > 0 &&
-        ("L1_api" in results[0] || "L1_rule" in results[0]);
+    const firstRow = results[0];
 
-    let headers;
+    const scoreBases = Object.keys(firstRow)
+        .map(k => {
+            const m = k.match(/^([A-L]\d+)(?:_raw|_api|_rule|_final)?$/);
+            return m ? m[1] : null;
+        })
+        .filter(Boolean)
+        .filter((v, i, arr) => arr.indexOf(v) === i)
+        .sort((a, b) => parseInt(a.slice(1), 10) - parseInt(b.slice(1), 10));
 
-    if (isElementL) {
-        headers = [
-            "filename",
-
-            "L1_raw", "L2_raw", "L1_api", "L2_api", "L1_rule", "L2_rule", "L1_final", "L2_final",
-
-            "element_score_raw",
-            "element_score_api",
-            "element_score_rule",
-            "element_score_final",
-            "element_score_delta",
-            "identified_recommendations",
-            "valid_project_recommendations",
-            "valid_project_recommendations_count",
-            "non_counting_recommendations",
-
-            "narrative_feedback"
-        ];
-    } else {
-        headers = [
-            "filename",
-            ...rawKeys.map(k => `${k}_raw`),
-            ...finalKeys,
-            "element_score_raw",
-            "element_score_final",
-            "element_score_delta",
-            "narrative_feedback"
-        ];
+    // Normalize replay rows so bare subelement scores are also available as *_api.
+    // This protects replay paths that return G1/G2/... instead of G1_api/G2_api/...
+    for (const row of results) {
+        for (const k of scoreBases) {
+            if (row[`${k}_api`] === undefined && row[k] !== undefined) {
+                row[`${k}_api`] = row[k];
+            }
+        }
     }
 
-    const rows = results.map(r => {
+    console.log("scoreBases:", scoreBases);
+    console.log("first result row:", results[0]);
 
-        const delta = (
-            (Number(r.element_score_final) || 0) -
-            (Number(r.element_score_raw) || 0)
-        ).toFixed(2);
+    let headers = [
+        "filename",
 
-        if (isElementL) {
-            return headers.map(h => {
-                if (h === "element_score_delta") {
-                    return escapeCSV(delta);
-                }
-                return escapeCSV(r[h]);
-            });
-        }
+        "ocr_used",
+        "initial_text_length",
+        "ocr_text_length",
+        "final_text_length",
+        "extraction_method",
+        
+        ...scoreBases.map(k => `${k}_api_pass1`),
+        ...scoreBases.map(k => `${k}_api_pass2`),
+        ...scoreBases.map(k => `${k}_api_pass3`),
+        ...scoreBases.map(k => `${k}_api`),
+        ...scoreBases.map(k => `${k}_rule`),
+        ...scoreBases.map(k => `${k}_final`),
 
-        return [
-            escapeCSV(r.filename),
+        "element_score_api",
+        "element_score_rule",
+        "element_score_final",
+        "element_score_delta",
+        "element_score_calibrated",
+        "calibration_delta",
 
-            // Raw (API)
-            ...rawKeys.map(k => escapeCSV(r[k])),
+        "identified_recommendations",
+        "valid_project_recommendations",
+        "valid_project_recommendations_count",
+        "non_counting_recommendations",
 
-            // Final
-            ...finalKeys.map(k => escapeCSV(r[k])),
+        "flags",
+        "rationales",
+        "narrative_feedback"
+    ];
 
-            escapeCSV(r.element_score_raw),
-            escapeCSV(r.element_score_final),
-            escapeCSV(delta),
-            escapeCSV(r.narrative_feedback)
-        ];
-    });
+    headers = headers.filter(h =>
+        results.some(row => Object.prototype.hasOwnProperty.call(row, h))
+    );
 
-    let csvContent = [
-        headers.join(","),
-        ...rows.map(row => row.join(","))
-    ].join("\n");
+    const csvRows = [];
+    csvRows.push(headers.join(","));
 
-    // Download
+    for (const row of results) {
+        csvRows.push(
+            headers.map(h => escapeCSV(row[h] ?? "")).join(",")
+        );
+    }
+
+    const csvContent = csvRows.join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
+
+    console.log("scoreBases =", scoreBases);
+
+    if (results && results.length > 0) {
+        console.log("First replay row:");
+        console.log(results[0]);
+
+        console.log("Replay row keys:");
+        console.log(Object.keys(results[0]).sort());
+    }
+
+    console.log("CSV headers:");
+    console.log(headers);
 
     const link = document.createElement("a");
     link.href = url;
     link.download = "results.csv";
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
 }

@@ -38,11 +38,11 @@ SUBELEMENT_COUNT = 4
 # =========================
 # Linear Calibration
 # =========================
-LEGACY_A = 1.0
+LEGACY_A = 0.90
 LEGACY_B = 0.0
 
-CURRENT_A = 1.0
-CURRENT_B = -0.6
+CURRENT_A = 0.95
+CURRENT_B = -0.4
 
 progress_tracker = {}
 

@@ -1,8 +1,8 @@
 {
   "sample_size": 20,
-  "bias": -0.175,
-  "mae": 0.65,
-  "ci_half": 0.36616511949780534,
-  "ci_full": 0.7323302389956107,
-  "mean_calibrated_score": 1.9
+  "bias": -0.4375,
+  "mae": 0.6875,
+  "ci_half": 0.3480743077048499,
+  "ci_full": 0.6961486154096997,
+  "mean_calibrated_score": 1.6375
 }

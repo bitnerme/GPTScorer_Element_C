@@ -38,11 +38,11 @@ SUBELEMENT_COUNT = 5
 # =========================
 # Linear Calibration
 # =========================
-LEGACY_A = 1.0
-LEGACY_B = 0.0
+LEGACY_A = 1.0 #1.0
+LEGACY_B = 0.0 #0.0
 
-CURRENT_A = 1.0
-CURRENT_B = 0.0
+CURRENT_A = 0.87 #1.0
+CURRENT_B = 0.0 #0.0
 
 progress_tracker = {}
 
@@ -194,6 +194,8 @@ def reconcile_integer_subscores(
 # Calibration Pipeline
 # ============================================================
 def apply_calibration_pipeline(df, mode):
+
+    print(df.columns.tolist())
 
     for k in range(1, 6):
         col = f"H{k}"
