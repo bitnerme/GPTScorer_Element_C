@@ -6,7 +6,7 @@ from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
 from typing import List
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from core.job_manager import create_job, update_progress, complete_job
+from core.job_manager import create_job, update_progress, complete_job,update_total,update_phase
 import pandas as pd
 from io import BytesIO
 import math
@@ -20,8 +20,16 @@ from fastapi import FastAPI, Form
 from scripts.shared.validate_golden20 import validate_golden20
 from flask import request
 from core.diagnostics import interpret_diagnostics
+import logging
+from typing import Any, Dict
+
+import openai
+
+from elements.element_A.score_with_API_A import get_gpt_model
 
 app = FastAPI()
+
+logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
@@ -184,9 +192,18 @@ async def score(
             "content": content
         })
 
-    job_id = create_job(len(file_payloads), element, 4)
+    
+    subelement_count = detect_subelement_count(None, element)
+    provisional_count = len(files)
+    job_id = create_job(2*provisional_count, element, subelement_count)
 
-    apply_rules = getattr(score_mod, "apply_element_l_rules", None)
+    apply_rules = getattr(
+        score_mod,
+        f"apply_element_{element_clean.lower()}_rules",
+        None
+    )
+
+    print("APPLY RULES FUNCTION:", apply_rules)
 
     background_tasks.add_task(
         process_files_background,
@@ -218,6 +235,8 @@ def process_files_background(
     apply_rules,
 ):
 
+    print("BACKGROUND STARTED:", job_id)
+
     global last_results, last_metrics, last_mode, LAST_RUN_WAS_SCORING
 
     dfs = []
@@ -240,6 +259,34 @@ def process_files_background(
 
             df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
 
+            # Normalize replay CSV score columns generically
+            element_prefix = element.upper()
+
+            for k in range(1, 10):
+                base = f"{element_prefix}{k}"
+                api = f"{base}_api"
+                raw = f"{base}_raw"
+                gpt = f"{base}_gpt"
+
+                source_col = next(
+                    (c for c in [api, raw, gpt, base] if c in df_one.columns),
+                    None
+                )
+
+                work_item_count = len(df_one)
+
+                if source_col is None:
+                    continue
+
+                vals = pd.to_numeric(df_one[source_col], errors="coerce").fillna(0)
+
+                # Preserve replayed/API scores explicitly
+                df_one[api] = vals
+                df_one[raw] = vals
+
+                # Ensure calibration input exists
+                df_one[base] = vals.round().astype(int)
+
             if apply_rules is not None:
                 blended = get_blended_model(element, mode)
                 df_one = pd.DataFrame([
@@ -257,6 +304,8 @@ def process_files_background(
                 blended_version=blended
             )
 
+            work_item_count = len(df_one)
+
         dfs.append(df_one)
 
         update_progress(job_id, i + 1)
@@ -269,11 +318,26 @@ def process_files_background(
 
     df = pd.concat(dfs, ignore_index=True)
 
-    df = apply_calibration_pipeline(df, mode.lower())  
+    n_cases = len(df)
+
+    print("DF COLUMNS AFTER CONCAT:", df.columns.tolist())
+
+    cols_to_check = [
+        "filename",
+        "G1", "G2", "G3", "G4",
+        "G1_api", "G2_api", "G3_api", "G4_api",
+    ]
+
+    existing = [c for c in cols_to_check if c in df.columns]
+    
+    df = apply_calibration_pipeline(
+        df,
+        mode.lower(),
+        job_id=job_id,
+        progress_offset=len(df),
+    ) 
 
     subelement_count = detect_subelement_count(df, element)
-    
-    print(df[[f"{element}{i}_final" for i in range(1,subelement_count+1)]].head(1))
 
     valid_cols = ["filename"]
 
@@ -313,9 +377,6 @@ def process_files_background(
         "narrative_feedback"
     ]
 
-    print("DF COLUMNS BEFORE FILTER:")
-    print(df.columns.tolist())
-
     last_metrics = compute_gpt_metrics(df.copy(), element)
     print("METRICS:", last_metrics)
 
@@ -352,11 +413,30 @@ def process_files_background(
         df["flags"] = ""
 
     # combine rationales
-    rat_cols = [c for c in df.columns if c.endswith("_rationale")]
+    rat_cols = [
+        f"{element}{i}_rationale"
+        for i in range(1, subelement_count + 1)
+        if f"{element}{i}_rationale" in df.columns
+    ]
+
+    # Preserve individual subelement rationale columns.
+    # Also retain the combined "rationales" field temporarily for backward
+    # compatibility with the existing UI and older exports.
+
+    rat_cols = [
+        f"{element.upper()}{i}_rationale"
+        for i in range(1, subelement_count + 1)
+        if f"{element.upper()}{i}_rationale" in df.columns
+    ]
+
     if rat_cols:
         df["rationales"] = df[rat_cols].apply(
-            lambda r: " | ".join(str(x) for x in r if pd.notna(x) and str(x).strip()),
-            axis=1
+            lambda row: " | ".join(
+                str(value).strip()
+                for value in row
+                if pd.notna(value) and str(value).strip()
+            ),
+            axis=1,
         )
     else:
         df["rationales"] = ""
@@ -367,42 +447,102 @@ def process_files_background(
     if element == "L":
         valid_cols += [
             "L1_api", "L1_rule", "L1_raw", "L1_final",
+            "L1_rationale",
+            "L1_rationale_original",
+
             "L2_api", "L2_rule", "L2_raw", "L2_final",
+            "L2_rationale",
+            "L2_rationale_original",
+
             "element_score_raw",
             "element_score_rule",
             "element_score_final",
-            "element_score_delta",
             "element_score_calibrated",
             "calibration_delta",
+
             "identified_recommendations",
             "valid_project_recommendations",
             "valid_project_recommendations_count",
             "non_counting_recommendations",
+            
+            "scoring_hints",
             "flags",
             "rationales",
             "narrative_feedback",
+            "narrative_feedback_original",
+            "narrative_reconciliation_status",
+            "narrative_reconciliation_error",
         ]
-    else:
-        for i in range(1, 10):
-            col = f"{element}{i}"
-            final_col = f"{element}{i}_final"
-            if col in df.columns:
-                valid_cols.append(col)
-            if final_col in df.columns:
-                valid_cols.append(final_col)
 
+    elif element == "F":
         valid_cols += [
+            "F1_api", "F1_rule", "F1_raw", "F1_final",
+            "F1_rationale",
+            "F1_rationale_original",
+
             "element_score_raw",
+            "element_score_rule",
             "element_score_final",
             "element_score_calibrated",
             "calibration_delta",
+            
+            "scoring_hints",
             "flags",
             "rationales",
             "narrative_feedback",
+            "narrative_feedback_original",
+            "narrative_reconciliation_status",
+            "narrative_reconciliation_error",
+        ]
+
+    else:
+        element_prefix = element.upper()
+
+        for i in range(1, subelement_count + 1):
+            # Score lineage columns
+            for suffix in ["", "_api", "_rule", "_raw", "_final"]:
+                col = f"{element_prefix}{i}{suffix}"
+                if col in df.columns:
+                    valid_cols.append(col)
+
+            # Separate rationale columns
+            for suffix in ["_rationale", "_rationale_original"]:
+                col = f"{element_prefix}{i}{suffix}"
+                if col in df.columns:
+                    valid_cols.append(col)
+
+        valid_cols += [
+            "element_score_raw",
+            "element_score_rule",
+            "element_score_final",
+            "element_score_calibrated",
+            "calibration_delta",
+            "scoring_hints",
+            "flags",
+            "rationales",
+
+            "narrative_feedback",
+            "narrative_feedback_original",
+            "narrative_reconciliation_required",
+            "narrative_reconciliation_status",
+            "narrative_reconciliation_error",
+        ]
+        valid_cols += [
+            "ocr_used",
+            "initial_text_length",
+            "ocr_text_length",
+            "final_text_length",
+            "extraction_method",
         ]
 
     valid_cols = [c for c in valid_cols if c in df.columns]
     valid_cols = list(dict.fromkeys(valid_cols))
+    for c in [
+        "F1_api", "F1_rule", "F1_raw", "F1_final",
+        "element_score_api", "element_score_rule"
+    ]:
+        if c in df.columns and c not in valid_cols:
+            valid_cols.append(c)
 
     df = df[valid_cols]
     df = df.where(pd.notnull(df), None)
@@ -417,6 +557,11 @@ def process_files_background(
     print("COLUMNS AFTER DEDUPE:", df.columns.tolist())
 
     results = df.to_dict(orient="records")
+
+    print("FIRST RESULT KEYS:", results[0].keys())
+
+    print("FIRST RESULT HINTS:")
+    print(results[0].get("scoring_hints"))
 
     results = [
         {k: clean_nan(v) for k, v in row.items()}
@@ -439,7 +584,7 @@ def process_files_background(
     last_metrics = clean_metrics
     last_mode = mode.lower()   
 
-    complete_job(job_id, job_output)
+    #complete_job(job_id, job_output)
 
 # =========================
 # Progress Endpoint
@@ -526,6 +671,11 @@ async def check_saved_results(
 
 
     df = pd.DataFrame(last_results)
+
+    print(
+        "4. FINAL PAYLOAD HINTS:",
+        df.get("scoring_hints")
+    )
 
     print("RECOMPUTE FLAG (controller):", recompute_regression_scores)
     print("LAST_RUN_WAS_SCORING:", LAST_RUN_WAS_SCORING)

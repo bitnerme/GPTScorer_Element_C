@@ -41,8 +41,8 @@ SUBELEMENT_COUNT = 5
 LEGACY_A = 1.0 #1.0
 LEGACY_B = 0.0 #0.0
 
-CURRENT_A = 0.87 #1.0
-CURRENT_B = 0.0 #0.0
+CURRENT_A =  0.87 #1.0 2026
+CURRENT_B =  0.0  #0.37 2026
 
 progress_tracker = {}
 

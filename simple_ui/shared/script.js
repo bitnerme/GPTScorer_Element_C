@@ -107,14 +107,25 @@ async function pollProgress(jobId) {
             const completed = data.completed ?? 0;
             const total = data.total ?? 0;
 
-            const percent = total > 0 ? (completed / total) * 100 : 0;
+            const percent =
+                total > 0
+                    ? Math.min(100, (completed / total) * 100)
+                    : 0;
 
             if (progressBar) {
                 progressBar.style.width = percent + "%";
             }
 
             if (progressText) {
-                progressText.textContent = `Scored ${completed} of ${total} documents`;
+                const phase = data.phase || "Scoring";
+
+                if (phase === "Finalizing Feedback") {
+                    progressText.textContent =
+                        `Finalizing ${completed} of ${total} feedback`;
+                } else {
+                    progressText.textContent =
+                        `Scoring ${completed} of ${total} documents`;
+                }
             }
 
             if (data.status === "done") {
@@ -227,7 +238,6 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
         const data = await response.json();
         const jobId = data.job_id;
 
-        window.subelementCount = data.subelement_count || window.subelementCount || 1;
         const subelementDefaults = {
             A: 6,
             B: 4,
@@ -680,6 +690,28 @@ function downloadCSV() {
         .filter((v, i, arr) => arr.indexOf(v) === i)
         .sort((a, b) => parseInt(a.slice(1), 10) - parseInt(b.slice(1), 10));
 
+    const rationaleHeaders = scoreBases
+        .map(k => `${k}_rationale`)
+        .filter(header =>
+            results.some(row =>
+                Object.prototype.hasOwnProperty.call(row, header)
+            )
+        );
+
+    //const originalRationaleHeaders = scoreBases
+    //        .map(k => `${k}_rationale_original`)
+    //    .filter(header =>
+    //        results.some(row =>
+    //            Object.prototype.hasOwnProperty.call(row, header)
+    //        )
+    //    );
+
+    const scoringHintHeaders = results.some(row =>
+        Object.prototype.hasOwnProperty.call(row, "scoring_hints")
+    )
+        ? ["scoring_hints"]
+        : [];
+
     // Normalize replay rows so bare subelement scores are also available as *_api.
     // This protects replay paths that return G1/G2/... instead of G1_api/G2_api/...
     for (const row of results) {
@@ -709,6 +741,14 @@ function downloadCSV() {
         ...scoreBases.map(k => `${k}_rule`),
         ...scoreBases.map(k => `${k}_final`),
 
+        ...scoringHintHeaders,
+
+        // Separate reconciled subelement rationales
+        ...rationaleHeaders,
+
+        // Optional audit copies of the original API rationales
+        //...originalRationaleHeaders,
+
         "element_score_api",
         "element_score_rule",
         "element_score_final",
@@ -716,6 +756,7 @@ function downloadCSV() {
         "element_score_calibrated",
         "calibration_delta",
 
+        "scoring_hints",
         "identified_recommendations",
         "valid_project_recommendations",
         "valid_project_recommendations_count",
@@ -735,7 +776,15 @@ function downloadCSV() {
 
     for (const row of results) {
         csvRows.push(
-            headers.map(h => escapeCSV(row[h] ?? "")).join(",")
+            headers.map(h => {
+                let value = row[h] ?? "";
+
+                if (h === "scoring_hints" && Array.isArray(value)) {
+                    value = value.join(" | ");
+                }
+
+                return escapeCSV(value);
+            }).join(",")
         );
     }
 
@@ -751,6 +800,9 @@ function downloadCSV() {
 
         console.log("Replay row keys:");
         console.log(Object.keys(results[0]).sort());
+
+        console.log("First row scoring hints:");
+        console.log(results[0].scoring_hints);
     }
 
     console.log("CSV headers:");
@@ -762,6 +814,7 @@ function downloadCSV() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    console.log("CSV WRITTEN:", link.download);
 
     URL.revokeObjectURL(url);
 }

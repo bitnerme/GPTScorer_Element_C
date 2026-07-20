@@ -25,8 +25,8 @@ NARRATIVE_MODE = "single"
 #Calibration Constants
 LEGACY_A = 1.0
 LEGACY_B = 0.0
-CURRENT_A = 0.86 #0.86
-CURRENT_B = 0.0 #0.0
+CURRENT_A = 0.86
+CURRENT_B = 0.0
 
 # ============================================================
 # Calibration Pipeline

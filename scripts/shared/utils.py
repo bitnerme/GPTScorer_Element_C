@@ -16,6 +16,9 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+import math
+import numpy as np
+import pandas as pd
 
 SOFFICE_PATH = r"C:\Program Files\LibreOffice\program\soffice.exe"
 
@@ -27,6 +30,39 @@ SOFFICE_PATH = r"C:\Program Files\LibreOffice\program\soffice.exe"
 # Changing this flag requires full regression testing and baseline refresh.
 
 USE_NATIVE_DOCX_EXTRACTION = False  # v2.0 baseline lock.  
+
+def sanitize_for_json(value):
+    if isinstance(value, dict):
+        return {
+            key: sanitize_for_json(item)
+            for key, item in value.items()
+        }
+
+    if isinstance(value, list):
+        return [sanitize_for_json(item) for item in value]
+
+    if isinstance(value, tuple):
+        return [sanitize_for_json(item) for item in value]
+
+    if isinstance(value, np.ndarray):
+        return [sanitize_for_json(item) for item in value.tolist()]
+
+    if isinstance(value, np.generic):
+        value = value.item()
+
+    if value is None or value is pd.NA:
+        return None
+
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+
+    return value
 
 def convert_docx_to_pdf(filepath):
     filepath = Path(filepath)

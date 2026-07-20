@@ -50,8 +50,8 @@ def configure_tesseract():
 # GPT MODEL CONFIGURATION
 # =========================
 
-GPT_MODEL_LEGACY = "gpt-3.5-turbo"
-GPT_MODEL_CURRENT = "gpt-4.1-mini"    #"gpt-4-0613"
+LEGACY_GPT_MODEL = "gpt-4.1-mini"     #"gpt-3.5-turbo"
+CURRENT_GPT_MODEL = "gpt-4.1-mini"    #"gpt-4-0613"
 
 SYSTEM_PROMPT = """You are a rigorous engineering design evaluator applying the Element A rubric consistently and professionally.
 
@@ -98,9 +98,9 @@ def get_gpt_model(blended_version: str) -> str:
     Selects the correct GPT model based on blended model version.
     """
     if blended_version == "v1.0":
-        return GPT_MODEL_LEGACY
+        return LEGACY_GPT_MODEL
     elif blended_version == "v1.2":
-        return GPT_MODEL_CURRENT
+        return CURRENT_GPT_MODEL
     else:
         raise ValueError(f"Unknown blended model version: {blended_version}")
 
@@ -194,6 +194,54 @@ def score_document(filename, content, blended_model):
 
         For each category (A1–A6), explicitly determine which rubric descriptor the evidence most closely matches, then assign that score.
 
+        POINTS FOR TEACHER REVIEW
+        -------------------------
+
+        Before returning the scores, identify exactly five scoring decisions that an experienced human scorer would most likely want to verify independently.
+
+        For each scoring decision, write one concise review prompt for the teacher.
+
+        - Three prompts must be document-specific and based on features, omissions, or ambiguities observed in this submission.
+        - Two prompts must be broader rubric reminders for criteria that are especially important to verify in this submission, even if those concerns are not unusual.
+
+        Blend the five prompts naturally. Do not label them as document-specific or general.
+
+        Each prompt must:
+
+        - direct the teacher to inspect or verify evidence before accepting the score;
+        - identify a genuine scoring judgment rather than a routine checklist item;
+        - avoid stating the scoring conclusion;
+        - avoid recommending a score;
+        - avoid merely summarizing a strength or weakness;
+        - remain relevant to this submission;
+        - avoid rubric shorthand such as A1, A2, A5 or similar subelement labels;
+        - avoid explicit score references such as "zero score", "full marks", or "higher score";
+        - read naturally as if written by an experienced moderator leaving review notes for another scorer.
+
+        Good review prompts are document-specific.
+
+        Prefer review prompts that identify genuine scoring judgments rather than routine rubric reminders.
+
+        Poor:
+        "Verify whether the document includes credible sources."
+
+        Better:
+        "Determine whether the Declaration itself should be treated as sufficient supporting evidence or whether independent sources are expected."
+
+        Poor:
+        "Check stakeholder groups."
+
+        Better:
+        "Consider whether references to British citizens, Parliament, the Crown, and Indigenous peoples represent distinct stakeholder groups or merely passing mentions."
+
+        Poor:
+        "Look for a problem statement."
+
+        Better:
+        "Decide whether the colonies' grievances collectively function as an explicit problem definition despite the absence of a labeled problem statement."
+
+        Return the review prompts as a JSON array named "scoring_hints".
+
         Return only valid JSON in exactly this format:
 
         {{
@@ -203,8 +251,12 @@ def score_document(filename, content, blended_model):
         "A4": {{"score": X, "rationale": "."}},
         "A5": {{"score": X, "rationale": "."}},
         "A6": {{"score": X, "rationale": "."}},
-        "narrative_feedback": "180–220 word single-paragraph explanation referencing strengths, weaknesses, and improvement suggestions."
-        }}
+        "narrative_feedback": "180–220 word single-paragraph explanation referencing strengths, weaknesses, and improvement suggestions.",
+        "scoring_hints": [
+            "...",
+            "...",
+            "..."
+        ]}}
         """
     elif blended_model == "v1.2":
         prompt = f"""
@@ -267,6 +319,54 @@ def score_document(filename, content, blended_model):
 
         For each category (A1–A6), explicitly determine which rubric descriptor the evidence most closely matches, then assign that score.
 
+        POINTS FOR TEACHER REVIEW
+        -------------------------
+
+        Before returning the scores, identify exactly five scoring decisions that an experienced human scorer would most likely want to verify independently.
+
+        For each scoring decision, write one concise review prompt for the teacher.
+
+        - Three prompts must be document-specific and based on features, omissions, or ambiguities observed in this submission.
+        - Two prompts must be broader rubric reminders for criteria that are especially important to verify in this submission, even if those concerns are not unusual.
+
+        Blend the five prompts naturally. Do not label them as document-specific or general.
+
+        Each prompt must:
+
+        - direct the teacher to inspect or verify evidence before accepting the score;
+        - identify a genuine scoring judgment rather than a routine checklist item;
+        - avoid stating the scoring conclusion;
+        - avoid recommending a score;
+        - avoid merely summarizing a strength or weakness;
+        - remain relevant to this submission;
+        - avoid rubric shorthand such as A1, A2, A5 or similar subelement labels;
+        - avoid explicit score references such as "zero score", "full marks", or "higher score";
+        - read naturally as if written by an experienced moderator leaving review notes for another scorer.
+
+        Good review prompts are document-specific.
+
+        Prefer review prompts that identify genuine scoring judgments rather than routine rubric reminders.
+
+        Poor:
+        "Verify whether the document includes credible sources."
+
+        Better:
+        "Determine whether the Declaration itself should be treated as sufficient supporting evidence or whether independent sources are expected."
+
+        Poor:
+        "Check stakeholder groups."
+
+        Better:
+        "Consider whether references to British citizens, Parliament, the Crown, and Indigenous peoples represent distinct stakeholder groups or merely passing mentions."
+
+        Poor:
+        "Look for a problem statement."
+
+        Better:
+        "Decide whether the colonies' grievances collectively function as an explicit problem definition despite the absence of a labeled problem statement."
+
+        Return the review prompts as a JSON array named "scoring_hints".
+
         Return only valid JSON in exactly this format:
 
         {{
@@ -276,8 +376,12 @@ def score_document(filename, content, blended_model):
         "A4": {{"score": X, "rationale": "."}},
         "A5": {{"score": X, "rationale": "."}},
         "A6": {{"score": X, "rationale": "."}},
-        "narrative_feedback": "180–220 word single-paragraph explanation referencing strengths, weaknesses, and improvement suggestions."
-        }}
+        "narrative_feedback": "180–220 word single-paragraph explanation referencing strengths, weaknesses, and improvement suggestions.",
+        "scoring_hints": [
+            "...",
+            "...",
+            "..."
+        ]}}
         """
     else:
         raise ValueError(f"Unsupported blended_model version: {blended_model}")
@@ -298,6 +402,12 @@ def score_document(filename, content, blended_model):
     # === Call the API ===
     
     gpt_model = get_gpt_model(blended_model)
+
+    print("=" * 80)
+    print("LEGACY API PROMPT")
+    print("=" * 80)
+    print(prompt)
+    print("=" * 80)
 
     response = openai.ChatCompletion.create(
         model=gpt_model,
@@ -397,6 +507,23 @@ def score_document(filename, content, blended_model):
                     "truncation_detected": 1
                 }
 
+        # --- Extract and normalize scoring hints ---
+        raw_hints = response_dict.get("scoring_hints", [])
+
+        print("1. RAW MODEL HINTS:", response_dict.get("scoring_hints"))
+
+        if isinstance(raw_hints, list):
+            scoring_hints = [
+                str(hint).strip()
+                for hint in raw_hints
+                if hint is not None and str(hint).strip()
+            ]
+        elif isinstance(raw_hints, str) and raw_hints.strip():
+            # Defensive fallback in case the model returns one string.
+            scoring_hints = [raw_hints.strip()]
+        else:
+            scoring_hints = []
+
         # --- Flatten nested structure ---
         flattened = {}
         for key, value in response_dict.items():
@@ -407,6 +534,8 @@ def score_document(filename, content, blended_model):
                 flattened[key] = value
 
         response_dict = flattened
+
+        print("2. PARSED HINTS:", scoring_hints)
 
         response_dict["truncation_detected"] = 0
 
@@ -570,7 +699,14 @@ def score_documents_with_api(documents, blended_version):
         for i in range(1, 7):
             row[f"A{i}_api"] = response_dict.get(f"A{i}_api", row.get(f"A{i}", 0))
 
+            print("3. ROW HINTS:", row.get("scoring_hints"))
+
         results.append(row)
+
+    print(
+        "4. ALL RESULT HINTS:",
+        [r.get("scoring_hints") for r in results]
+    )
 
     # ✅ return is OUTSIDE the loop, INSIDE the function
     return pd.DataFrame(results)
