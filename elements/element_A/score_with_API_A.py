@@ -403,12 +403,6 @@ def score_document(filename, content, blended_model):
     
     gpt_model = get_gpt_model(blended_model)
 
-    print("=" * 80)
-    print("LEGACY API PROMPT")
-    print("=" * 80)
-    print(prompt)
-    print("=" * 80)
-
     response = openai.ChatCompletion.create(
         model=gpt_model,
         messages=messages,
@@ -460,53 +454,46 @@ def score_document(filename, content, blended_model):
 
         except Exception as e:
             print(f"⚠️ First parse failed for {filename}: {e}")
+            print("⚠️ Retrying once...")
 
-            # Check for truncation
-            if is_truncated_json(cleaned):
-                print("⚠️ Detected truncated JSON. Retrying once...")
+            retry_response = openai.ChatCompletion.create(
+                model=gpt_model,
+                messages=messages,
+                temperature=0,
+                top_p=1,
+                max_tokens=1500
+            )
 
-                retry_response = openai.ChatCompletion.create(
-                    model=gpt_model,
-                    messages=messages,
-                    temperature=0,
-                    top_p=1,
-                    max_tokens=1500
-                )
+            try:
+                retry_str = retry_response.choices[0].message.content.strip()
 
-                try:
-                    retry_str = retry_response.choices[0].message.content.strip()
+                # Remove markdown fences
+                if retry_str.startswith("```"):
+                    retry_str = "\n".join(
+                        line for line in retry_str.splitlines()
+                        if not line.strip().startswith("```")
+                    ).strip()
 
-                    # Clean retry response
-                    if retry_str.startswith("```"):
-                        retry_str = "\n".join(
-                            line for line in retry_str.splitlines()
-                            if not line.strip().startswith("```")
-                        ).strip()
+                # Keep only JSON object
+                first_brace = retry_str.find("{")
+                if first_brace != -1:
+                    retry_str = retry_str[first_brace:]
 
-                    first_brace = retry_str.find("{")
-                    if first_brace != -1:
-                        retry_str = retry_str[first_brace:]
+                last_brace = retry_str.rfind("}")
+                if last_brace != -1:
+                    retry_str = retry_str[:last_brace + 1]
 
-                    last_brace = retry_str.rfind("}")
-                    if last_brace != -1:
-                        retry_str = retry_str[: last_brace + 1]
+                retry_str = clean_json_string(retry_str)
 
-                    retry_str = clean_json_string(retry_str)
+                response_dict = json5.loads(retry_str)
+                print("✅ Retry succeeded")
 
-                    response_dict = json5.loads(retry_str)
-                    print("✅ Retry succeeded")
-
-                except Exception as retry_error:
-                    print(f"❌ Retry failed for {filename}: {retry_error}")
-                    return {
-                        "truncation_detected": 1
-                    }
-            else:
-                print("❌ Not a truncation case. Skipping document.")
+            except Exception as retry_error:
+                print(f"❌ Retry failed for {filename}: {retry_error}")
                 return {
-                    "truncation_detected": 1
+                    "truncation_detected": 1,
+                    "incomplete_response": True
                 }
-
         # --- Extract and normalize scoring hints ---
         raw_hints = response_dict.get("scoring_hints", [])
 
@@ -699,7 +686,7 @@ def score_documents_with_api(documents, blended_version):
         for i in range(1, 7):
             row[f"A{i}_api"] = response_dict.get(f"A{i}_api", row.get(f"A{i}", 0))
 
-            print("3. ROW HINTS:", row.get("scoring_hints"))
+        print("3. ROW HINTS:", row.get("scoring_hints"))
 
         results.append(row)
 

@@ -20,6 +20,7 @@ import pythoncom
 from scripts.shared.utils import extract_text_with_fallback
 import traceback
 
+print("LOADED SCORE_WITH_API_B FROM:", __file__)
 
 # Resolve project root: c:\GPTScorer
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -155,6 +156,8 @@ def score_document(filename, content, blended_model):
     content = sanitize_for_json(content)
     filename = sanitize_for_json(filename)
 
+    print("ENTERED ELEMENT B API SCORING FUNCTION")
+
     # Choose prompt based on model
     if blended_model == "v1.2":
         prompt = f"""
@@ -230,14 +233,72 @@ def score_document(filename, content, blended_model):
         However, only assign credit when the surrounding text clearly describes what the visual shows, how it is used, or what conclusions are drawn from it.
 
         Do not award credit based solely on vague references such as "see diagram" without explanation.
-        
+
+        POINTS FOR TEACHER REVIEW
+        -------------------------
+
+        Before returning the scores, identify exactly five scoring decisions that an experienced human scorer would most likely want to verify independently.
+
+        For each scoring decision, write one concise review prompt for the teacher.
+
+        - Three prompts must be document-specific and based on features, omissions, or ambiguities observed in this submission.
+        - Two prompts must be broader rubric reminders for criteria that are especially important to verify in this submission, even if those concerns are not unusual.
+
+        Blend the five prompts naturally. Do not label them as document-specific or general.
+
+        Each prompt must:
+
+        - direct the teacher to inspect or verify evidence before accepting the score;
+        - identify a genuine scoring judgment rather than a routine checklist item;
+        - avoid stating the scoring conclusion;
+        - avoid recommending a score;
+        - avoid merely summarizing a strength or weakness;
+        - remain relevant to this submission;
+        - avoid rubric shorthand such as A1, A2, A5 or similar subelement labels;
+        - avoid explicit score references such as "zero score", "full marks", or "higher score";
+        - read naturally as if written by an experienced moderator leaving review notes for another scorer.
+
+        Good review prompts are document-specific.
+
+        Prefer review prompts that identify genuine scoring judgments rather than routine rubric reminders.
+
+        Poor:
+        "Verify whether the document includes credible sources."
+
+        Better:
+        "Determine whether the Declaration itself should be treated as sufficient supporting evidence or whether independent sources are expected."
+
+        Poor:
+        "Check stakeholder groups."
+
+        Better:
+        "Consider whether references to British citizens, Parliament, the Crown, and Indigenous peoples represent distinct stakeholder groups or merely passing mentions."
+
+        Poor:
+        "Look for a problem statement."
+
+        Better:
+        "Decide whether the colonies' grievances collectively function as an explicit problem definition despite the absence of a labeled problem statement."
+
+        Return the review prompts as a JSON array named "scoring_hints".
+
+        Return exactly one valid JSON object matching the required structure.
+
+        Do not close the outer JSON object until after the scoring_hints array.
+
+        Do not include markdown fences, commentary, trailing commas, or any text before or after the JSON object.
+
         Return only valid JSON in exactly this format:
 
         {{
         "B1": {{"score": X, "rationale": "."}},
         "B2": {{"score": X, "rationale": "."}},
-        "narrative_feedback": "170–220 word narrative written in 2–3 paragraphs explaining strengths, weaknesses, and specific improvement suggestions."
-        }}
+        "narrative_feedback": "170–220 word narrative written in 2–3 paragraphs explaining strengths, weaknesses, and specific improvement suggestions.",
+        "scoring_hints": [
+            "...",
+            "...",
+            "..."
+        ]}}
         """
     elif blended_model == "v1.4b":
         prompt = f"""
@@ -328,13 +389,72 @@ def score_document(filename, content, blended_model):
 
         Do not award credit based solely on vague references such as "see diagram" without explanation.
 
+        POINTS FOR TEACHER REVIEW
+        -------------------------
+
+        Before returning the scores, identify exactly five scoring decisions that an experienced human scorer would most likely want to verify independently.
+
+        For each scoring decision, write one concise review prompt for the teacher.
+
+        - Three prompts must be document-specific and based on features, omissions, or ambiguities observed in this submission.
+        - Two prompts must be broader rubric reminders for criteria that are especially important to verify in this submission, even if those concerns are not unusual.
+
+        Blend the five prompts naturally. Do not label them as document-specific or general.
+
+        Each prompt must:
+
+        - direct the teacher to inspect or verify evidence before accepting the score;
+        - identify a genuine scoring judgment rather than a routine checklist item;
+        - avoid stating the scoring conclusion;
+        - avoid recommending a score;
+        - avoid merely summarizing a strength or weakness;
+        - remain relevant to this submission;
+        - avoid rubric shorthand such as A1, A2, A5 or similar subelement labels;
+        - avoid explicit score references such as "zero score", "full marks", or "higher score";
+        - read naturally as if written by an experienced moderator leaving review notes for another scorer.
+
+        Good review prompts are document-specific.
+
+        Prefer review prompts that identify genuine scoring judgments rather than routine rubric reminders.
+
+        Poor:
+        "Verify whether the document includes credible sources."
+
+        Better:
+        "Determine whether the Declaration itself should be treated as sufficient supporting evidence or whether independent sources are expected."
+
+        Poor:
+        "Check stakeholder groups."
+
+        Better:
+        "Consider whether references to British citizens, Parliament, the Crown, and Indigenous peoples represent distinct stakeholder groups or merely passing mentions."
+
+        Poor:
+        "Look for a problem statement."
+
+        Better:
+        "Decide whether the colonies' grievances collectively function as an explicit problem definition despite the absence of a labeled problem statement."
+
+        Return the review prompts as a JSON array named "scoring_hints".
+
+        Return exactly one valid JSON object matching the required structure.
+
+        Do not close the outer JSON object until after the scoring_hints array.
+
+        Do not include markdown fences, commentary, trailing commas, or any text before or after the JSON object.
+
+
         Return only valid JSON in exactly this format:
 
         {{
         "B1": {{"score": X, "rationale": "."}},
         "B2": {{"score": X, "rationale": "."}},
-        "narrative_feedback": "170–220 word narrative written in 2–3 paragraphs explaining strengths, weaknesses, and specific improvement suggestions."
-        }}
+        "narrative_feedback": "170–220 word narrative written in 2–3 paragraphs explaining strengths, weaknesses, and specific improvement suggestions.",
+        "scoring_hints": [
+            "...",
+            "...",
+            "..."
+        ]}}
         """
     else:
         raise ValueError(f"Unsupported blended_model version: {blended_model}")
@@ -382,7 +502,16 @@ def score_document(filename, content, blended_model):
         print(f"❌ GPT call returned None for {filename}")
         return {}
 
-   # === Continue with parsing logic ===
+    # === Continue with parsing logic ===
+    def repair_common_json_errors(text: str) -> str:
+        return re.sub(
+            r'("narrative_feedback"\s*:\s*"(?:\\.|[^"\\])*")\s*}\s*,\s*'
+            r'("scoring_hints"\s*:)',
+            r'\1,\n  \2',
+            text,
+            flags=re.DOTALL
+        )
+
     try:
         # --- Normalize ---
         response_str = response_str.strip()
@@ -408,56 +537,98 @@ def score_document(filename, content, blended_model):
         cleaned = clean_json_string(response_str)
 
         try:
+            cleaned = clean_json_string(cleaned)
+            cleaned = repair_common_json_errors(cleaned)
+
             response_dict = json5.loads(cleaned)
+
+            print("B RESPONSE DICT KEYS:", response_dict.keys())
+            print("B RAW MODEL HINTS:", response_dict.get("scoring_hints"))
 
         except Exception as e:
             print(f"⚠️ First parse failed for {filename}: {e}")
+            print("⚠️ Retrying once...")
 
-            # Check for truncation
-            if is_truncated_json(cleaned):
-                print("⚠️ Detected truncated JSON. Retrying once...")
-
-                retry_response = openai.ChatCompletion.create(
-                    model=gpt_model,
-                    messages=messages,
-                    temperature=0,
-                    top_p=1,
-                    max_tokens=1500
-                )
-
-                try:
-                    retry_str = retry_response.choices[0].message.content.strip()
-
-                    # Clean retry response
-                    if retry_str.startswith("```"):
-                        retry_str = "\n".join(
-                            line for line in retry_str.splitlines()
-                            if not line.strip().startswith("```")
-                        ).strip()
-
-                    first_brace = retry_str.find("{")
-                    if first_brace != -1:
-                        retry_str = retry_str[first_brace:]
-
-                    last_brace = retry_str.rfind("}")
-                    if last_brace != -1:
-                        retry_str = retry_str[: last_brace + 1]
-
-                    retry_str = clean_json_string(retry_str)
-
-                    response_dict = json5.loads(retry_str)
-                    print("✅ Retry succeeded")
-
-                except Exception as retry_error:
-                    print(f"❌ Retry failed for {filename}: {retry_error}")
-                    return {
-                        "truncation_detected": 1
-                    }
-            else:
-                print("❌ Not a truncation case. Skipping document.")
-                return {
-                    "truncation_detected": 1
+            retry_messages = messages + [
+                {
+                    "role": "user",
+                    "content": (
+                        "Your previous response was not valid JSON and could not be parsed. "
+                        "Return the complete response again as exactly one valid JSON object matching the required schema. "
+                        "Do not include markdown, code fences, commentary, or any text outside the JSON object. "
+                        "Do not close the outer JSON object until after the scoring_hints array. "
+                    )
                 }
+            ]
+
+            retry_response = openai.ChatCompletion.create(
+                model=gpt_model,
+                messages=retry_messages,
+                temperature=0,
+                top_p=1,
+                max_tokens=1500
+            )
+
+            try:
+                retry_str = retry_response.choices[0].message.content.strip()
+
+                print("RETRY RAW RESPONSE:")
+                print(retry_str)
+
+                print("RETRY CLEANED RESPONSE:")
+                print(clean_json_string(retry_str))
+
+
+                # Remove markdown fences
+                if retry_str.startswith("```"):
+                    retry_str = "\n".join(
+                        line for line in retry_str.splitlines()
+                        if not line.strip().startswith("```")
+                    ).strip()
+
+                # Keep only JSON object
+                first_brace = retry_str.find("{")
+                if first_brace != -1:
+                    retry_str = retry_str[first_brace:]
+
+                last_brace = retry_str.rfind("}")
+                if last_brace != -1:
+                    retry_str = retry_str[:last_brace + 1]
+
+                retry_str = clean_json_string(retry_str)
+
+                cleaned = clean_json_string(retry_str)
+                cleaned = repair_common_json_errors(cleaned)
+
+                print("RETRY CLEANED RESPONSE:")
+                print(cleaned)
+
+                response_dict = json5.loads(cleaned)
+                print("✅ Retry succeeded")
+
+            except Exception as retry_error:
+                print(f"❌ Retry failed for {filename}: {retry_error}")
+                return {
+                    "truncation_detected": 1,
+                    "incomplete_response": True
+                }
+
+        required_paths = [
+            ("B1", "score"),
+            ("B1", "rationale"),
+            ("B2", "score"),
+            ("B2", "rationale"),
+        ]
+
+        for section, field in required_paths:
+            if section not in response_dict or field not in response_dict[section]:
+                raise ValueError(f"Response omitted {section}.{field}")
+
+        if "narrative_feedback" not in response_dict:
+            raise ValueError("Response omitted narrative_feedback")
+
+        if "scoring_hints" not in response_dict:
+            raise ValueError("Response omitted scoring_hints")
 
         # --- Flatten nested structure ---
         flattened = {}
@@ -500,6 +671,16 @@ def score_document(filename, content, blended_model):
             "truncation_detected": 1
         }
 
+    print("B RETURN VALUE TYPE:", type(result))
+    print(
+        "B RETURN KEYS:",
+        result.keys() if isinstance(result, dict) else "NOT A DICT",
+    )
+    print(
+        "B RETURN HINTS:",
+        result.get("scoring_hints") if isinstance(result, dict) else None,
+    )
+
 def natural_sort_key(s):
     return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
 
@@ -527,6 +708,8 @@ def build_result_row(filename, text, response_dict, idx):
     # Ensure integer scores
     for i in range(1, 3):
         row[f"B{i}"] = int(row.get(f"B{i}", 0))
+
+    print("scoring_hints after storing row:",row.get("scoring_hints"))
 
     return row
 
@@ -655,10 +838,27 @@ def score_documents_with_api(documents, blended_version):
             response_dict.get("element_score_api", 0)
         )
 
+        # Preserve teacher-review scoring hints from the model response
+        raw_hints = response_dict.get("scoring_hints", [])
+
+        if isinstance(raw_hints, list):
+            row["scoring_hints"] = [
+                str(hint).strip()
+                for hint in raw_hints
+                if hint is not None and str(hint).strip()
+            ]
+        elif isinstance(raw_hints, str) and raw_hints.strip():
+            row["scoring_hints"] = [raw_hints.strip()]
+        else:
+            row["scoring_hints"] = []
+
         results.append(row)
 
     # ✅ return is OUTSIDE the loop, INSIDE the function
+    print("Afer normalizing and appending row to results and before return:",[r.get("scoring_hints") for r in results])
     return pd.DataFrame(results)
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Score documents using GPT API and blended model logic.")

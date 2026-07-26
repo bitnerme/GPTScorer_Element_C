@@ -147,7 +147,7 @@ def run_validation(element, json_path, doc_dir, mode, recompute=False, rebuild_b
     df = normalize_columns(df, element)
 
     # calibration
-    df = apply_calibration_pipeline(df, mode.lower())
+    df = apply_calibration_pipeline(df, mode.lower(),reconcile_feedback=False,)
 
     # fallback
     if "element_score_final" in df.columns:

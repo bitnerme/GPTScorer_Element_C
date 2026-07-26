@@ -119,12 +119,26 @@ async function pollProgress(jobId) {
             if (progressText) {
                 const phase = data.phase || "Scoring";
 
+                // Overall progress is two passes:
+                // scoring N documents + reconciling N feedback records.
+                const phaseTotal = Math.floor(total / 2);
+
                 if (phase === "Finalizing Feedback") {
-                    progressText.textContent =
-                        `Finalizing ${completed} of ${total} feedback`;
+                    const phaseCompleted = Math.max(0, completed - phaseTotal);
+
+                    if (phaseCompleted === 0) {
+                        progressText.textContent = "Preparing to reconcile feedback...";
+                    } else {
+                        progressText.textContent =
+                            `Reconciling feedback ${phaseCompleted} of ${phaseTotal}`;
+                    }
                 } else {
-                    progressText.textContent =
-                        `Scoring ${completed} of ${total} documents`;
+                    if (completed === 0) {
+                        progressText.textContent = "Preparing to score...";
+                    } else {
+                        progressText.textContent =
+                            `Scoring ${completed} of ${phaseTotal} documents`;
+                    }
                 }
             }
 
@@ -756,7 +770,7 @@ function downloadCSV() {
         "element_score_calibrated",
         "calibration_delta",
 
-        "scoring_hints",
+        //"scoring_hints",
         "identified_recommendations",
         "valid_project_recommendations",
         "valid_project_recommendations_count",

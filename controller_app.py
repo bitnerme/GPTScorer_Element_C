@@ -46,6 +46,12 @@ SAVE_BASELINE = False
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+##################################################
+# Default to running feedback reonciliation
+##################################################
+
+RUN_FEEDBACK_RECONCILIATION = True
+
 def save_drift_baseline_to_file(current_metrics, baseline_file):
 
     baseline_data = {
@@ -299,6 +305,7 @@ def process_files_background(
 
             documents = [{"filename": filename, "path": tmp_path}]
 
+
             df_one = score_documents_with_api(
                 documents,
                 blended_version=blended
@@ -329,13 +336,19 @@ def process_files_background(
     ]
 
     existing = [c for c in cols_to_check if c in df.columns]
+
+    print("SCORING PHASE RETURNED")
+    print("STARTING CALIBRATION/RECONCILIATION")
     
     df = apply_calibration_pipeline(
         df,
         mode.lower(),
         job_id=job_id,
         progress_offset=len(df),
+        reconcile_feedback=RUN_FEEDBACK_RECONCILIATION,
     ) 
+
+    print("CALIBRATION/RECONCILIATION RETURNED")
 
     subelement_count = detect_subelement_count(df, element)
 
