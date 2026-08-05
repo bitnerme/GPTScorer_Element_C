@@ -20,26 +20,38 @@ def create_job(total: int, element: str, subelement_count: int):
 
     return job_id
 
-def update_progress(job_id: str, completed: int):
+def update_progress(job_id: str | None, completed: int) -> None:
+    if job_id is None or job_id not in jobs:
+        return
     jobs[job_id]["completed"] = completed
 
-def complete_job(job_id: str, results):
+
+def complete_job(job_id: str | None, results) -> None:
+    if job_id is None or job_id not in jobs:
+        return
     jobs[job_id]["status"] = "done"
     jobs[job_id]["results"] = results
 
-def get_job(job_id: str):
-    return jobs.get(job_id)
 
-def update_total(job_id: str, total: int):
+def update_total(job_id: str | None, total: int) -> None:
+    if job_id is None or job_id not in jobs:
+        return
     jobs[job_id]["total"] = total
 
+
+def get_job(job_id: str | None):
+    if job_id is None:
+        return None
+    return jobs.get(job_id)
+
+
 def update_phase(
-    job_id: str,
+    job_id: str | None,
     phase: str,
     completed: int | None = None,
     total: int | None = None,
 ) -> None:
-    if job_id not in jobs:
+    if job_id is None or job_id not in jobs:
         return
 
     jobs[job_id]["phase"] = phase

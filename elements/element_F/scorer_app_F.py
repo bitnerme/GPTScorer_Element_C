@@ -31,7 +31,13 @@ CURRENT_B = 0.0
 # ============================================================
 # Calibration Pipeline
 # ============================================================
-def apply_calibration_pipeline(df, mode):
+def apply_calibration_pipeline(
+    df: pd.DataFrame,
+    mode: str,
+    job_id: str | None = None,
+    progress_offset: int = 0,
+    reconcile_feedback: bool = True,
+) -> pd.DataFrame:
 
     df = df.copy()
 

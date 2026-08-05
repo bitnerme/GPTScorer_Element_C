@@ -341,7 +341,14 @@ def reconcile_integer_subscores(
 # ============================================================
 # Calibration
 # ============================================================
-def apply_calibration_pipeline(df, mode):
+def apply_calibration_pipeline(
+    df: pd.DataFrame,
+    mode: str,
+    job_id: str | None = None,
+    progress_offset: int = 0,
+    reconcile_feedback: bool = True,
+) -> pd.DataFrame:
+
     mode_key = (mode or "current").lower()
 
     cal = ELEMENT_CALIBRATION["E"].get(mode_key)

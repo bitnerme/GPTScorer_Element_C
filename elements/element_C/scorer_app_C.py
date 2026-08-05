@@ -161,7 +161,13 @@ def reconcile_integer_subscores(
 # Calibration Pipeline (USED BY CONTROLLER)
 # =========================
 
-def apply_calibration_pipeline(df: pd.DataFrame, mode: str) -> pd.DataFrame:
+def apply_calibration_pipeline(
+    df: pd.DataFrame,
+    mode: str,
+    job_id: str | None = None,
+    progress_offset: int = 0,
+    reconcile_feedback: bool = True,
+) -> pd.DataFrame:
 
     # Normalize subscores
     for k in range(1, 7):

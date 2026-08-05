@@ -1,0 +1,110 @@
+Element E: Application of STEM Principles and Practices
+E1. STEM principles and practices to design requirements.
+
+The STEM principles and practices articulated are
+
+Score 5:
+applicable to all or nearly all high-priority design requirements and functional claims.
+
+Score 4:
+applicable to many high-priority design requirements and functional claims.
+
+Score 3:
+applicable to at least a few high-priority design requirements and functional claims.
+
+Score 2:
+applicable to at least one high-priority design requirement and functional claim.
+
+Score 1:
+not applicable to any high-priority design requirements and/or functional claims, though an attempt was made.
+
+Score 0:
+not applicable to any design requirements and/or functional claims.
+
+E2. Proposed solution to STEM principles and practices.
+
+The proposed solution is
+
+Score 5:
+well substantiated with STEM principles and practices.
+
+Score 4:
+generally substantiated with STEM principles and practices.
+
+Score 3:
+partially substantiated with STEM principles and practices.
+
+Score 2:
+minimally substantiated with STEM principles and practices.
+
+Score 1:
+lacking substantiation with STEM principles and practices, though an attempt was made.
+
+Score 0:
+not substantiated with STEM principles and practices.
+
+E3. Evidence that design is reviewed.
+
+There is evidence that the application of STEM principles and practices has been reviewed by field expert(s).
+
+Score 5:
+substantial.
+
+Score 4:
+adequate.
+
+Score 3:
+some.
+
+Score 2:
+minimal.
+
+Score 1:
+no, but review was requested.
+
+Score 0:
+no.
+
+E4. Design reviewed by experts.
+
+Field expert(s) have/has reviewed the design for application of STEM principles and practices.
+
+Score 5:
+two or more, with at least two having documented, relevant credentials.
+
+Score 4:
+two or more, with at least one having documented, relevant credentials.
+
+Score 3:
+at least one with documented, relevant credentials.
+
+Score 2:
+at least one with documented credentials.
+
+Score 1:
+only one with unclear credentials.
+
+Score 0:
+no.
+
+E5. Design review results in verification.
+
+The design reviews provided
+
+Score 5:
+clear and detailed confirmation (verification), or substantial detail necessary to inform a corrective response.
+
+Score 4:
+clear confirmation (verification), or detail necessary to inform a corrective response.
+
+Score 3:
+partial confirmation (verification), or some detail necessary to inform a corrective response.
+
+Score 2:
+does not provide clear confirmation (verification) or suggestions for a corrective response, but at least some response is provided.
+
+Score 1:
+show no evidence of confirmation (verification) or suggestions for a corrective response by an expert, but include notes of attempts to gain feedback.
+
+Score 0:
+show no evidence of confirmation (verification) or suggestions for a corrective response by an expert.

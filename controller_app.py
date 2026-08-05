@@ -6,7 +6,7 @@ from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
 from typing import List
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from core.job_manager import create_job, update_progress, complete_job,update_total,update_phase
+from core.job_manager import create_job, update_progress, complete_job,update_total,update_phase, get_job
 import pandas as pd
 from io import BytesIO
 import math
@@ -50,7 +50,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Default to running feedback reonciliation
 ##################################################
 
-RUN_FEEDBACK_RECONCILIATION = True
+RUN_FEEDBACK_RECONCILIATION = False  #default = True
 
 def save_drift_baseline_to_file(current_metrics, baseline_file):
 
@@ -318,7 +318,7 @@ def process_files_background(
         update_progress(job_id, i + 1)
 
     if not dfs:
-        complete_job(job_id, [])
+        (job_id, [])
         return
 
     LAST_RUN_WAS_SCORING = True
@@ -597,7 +597,15 @@ def process_files_background(
     last_metrics = clean_metrics
     last_mode = mode.lower()   
 
-    #complete_job(job_id, job_output)
+    job = get_job(job_id)
+
+    print("JOB STATUS BEFORE CONTROLLER COMPLETION:", job)
+
+    if job is None or job.get("status") != "done":
+        print("CONTROLLER COMPLETING JOB:", job_id)
+        complete_job(job_id, job_output)
+    else:
+        print("JOB ALREADY COMPLETED BY PIPELINE:", job_id)
 
 # =========================
 # Progress Endpoint
