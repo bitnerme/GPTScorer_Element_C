@@ -50,7 +50,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Default to running feedback reonciliation
 ##################################################
 
-RUN_FEEDBACK_RECONCILIATION = False  #default = True
+RUN_FEEDBACK_RECONCILIATION = True  #default = True
 
 def save_drift_baseline_to_file(current_metrics, baseline_file):
 
@@ -178,7 +178,7 @@ async def score(
     element_clean = (element or "").strip().upper()
     subelement_count = detect_subelement_count(None, element)
 
-    print("ELEMENT RAW:", repr(element))
+    #print("ELEMENT RAW:", repr(element))
     print("ELEMENT CLEAN:", repr(element_clean))
     print("SUBELEMENT COUNT:", subelement_count)
 
@@ -266,31 +266,63 @@ def process_files_background(
             df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
 
             # Normalize replay CSV score columns generically
+            # Replay files exist in three historical formats:
+            #
+            #   D1
+            #   D1_raw
+            #   D1_api
+            #
+            # Exactly one of these should exist in an input replay file.
+            # Replay normalizes all three formats into the current internal
+            # representation by creating both _raw and _api columns.
+            #
+            # If both _raw and _api are present, the replay file is considered
+            # invalid because lineage is ambiguous.
+            
             element_prefix = element.upper()
 
-            for k in range(1, 10):
+            subelement_count = detect_subelement_count(None, element)
+
+            sources_used = set()
+
+            for k in range(1, subelement_count + 1):
                 base = f"{element_prefix}{k}"
                 api = f"{base}_api"
                 raw = f"{base}_raw"
-                gpt = f"{base}_gpt"
 
-                source_col = next(
-                    (c for c in [api, raw, gpt, base] if c in df_one.columns),
-                    None
-                )
+                has_api = api in df_one.columns
+                has_raw = raw in df_one.columns
+                has_base = base in df_one.columns
 
-                work_item_count = len(df_one)
+                # Both lineage columns should never exist in a replay input.
+                if has_api and has_raw:
+                    raise ValueError(
+                        f"Replay input error for {base}: both {api} and {raw} exist. "
+                        "A replay file must contain only one source score format."
+                    )
 
-                if source_col is None:
+                if has_api:
+                    vals = pd.to_numeric(df_one[api], errors="coerce")
+                    source - api
+
+                elif has_raw:
+                    vals = pd.to_numeric(df_one[raw], errors="coerce")
+                    scource = raw
+
+                elif has_base:
+                    vals = pd.to_numeric(df_one[base], errors="coerce")
+                    source = base
+
+                else:
                     continue
 
-                vals = pd.to_numeric(df_one[source_col], errors="coerce").fillna(0)
+                vals = vals.fillna(0)
 
-                # Preserve replayed/API scores explicitly
+                # Always preserve/create both lineage columns.
                 df_one[api] = vals
                 df_one[raw] = vals
 
-                # Ensure calibration input exists
+                # Working score used later in the calibration pipeline.
                 df_one[base] = vals.round().astype(int)
 
             if apply_rules is not None:
@@ -327,7 +359,7 @@ def process_files_background(
 
     n_cases = len(df)
 
-    print("DF COLUMNS AFTER CONCAT:", df.columns.tolist())
+    #print("DF COLUMNS AFTER CONCAT:", df.columns.tolist())
 
     cols_to_check = [
         "filename",
@@ -348,7 +380,7 @@ def process_files_background(
         reconcile_feedback=RUN_FEEDBACK_RECONCILIATION,
     ) 
 
-    print("CALIBRATION/RECONCILIATION RETURNED")
+    #print("CALIBRATION/RECONCILIATION RETURNED")
 
     subelement_count = detect_subelement_count(df, element)
 
@@ -391,7 +423,7 @@ def process_files_background(
     ]
 
     last_metrics = compute_gpt_metrics(df.copy(), element)
-    print("METRICS:", last_metrics)
+    #print("METRICS:", last_metrics)
 
     # ---- Compute metrics ----
     raw_cols = [c for c in df.columns if c.startswith(element) and c[len(element):].isdigit()]
@@ -408,7 +440,7 @@ def process_files_background(
     api_s = df["element_score_raw"].dropna()
     fin_s = df["element_score_final"].dropna()
 
-    print("METRICS SET:", last_metrics)
+    #print("METRICS SET:", last_metrics)
 
     # calibrated score + delta
     if "element_score_raw" in df.columns and "element_score_final" in df.columns:
@@ -560,21 +592,21 @@ def process_files_background(
     df = df[valid_cols]
     df = df.where(pd.notnull(df), None)
 
-    print("🚨 FINAL PAYLOAD KEYS:")
-    print(df.columns.tolist())
+    #print("🚨 FINAL PAYLOAD KEYS:")
+    #print(df.columns.tolist())
 
     dupes = df.columns[df.columns.duplicated()].tolist()
-    print("DUPLICATE COLUMNS:", dupes)
+    #print("DUPLICATE COLUMNS:", dupes)
 
     df = df.loc[:, ~df.columns.duplicated()]
-    print("COLUMNS AFTER DEDUPE:", df.columns.tolist())
+    #print("COLUMNS AFTER DEDUPE:", df.columns.tolist())
 
     results = df.to_dict(orient="records")
 
-    print("FIRST RESULT KEYS:", results[0].keys())
+    #print("FIRST RESULT KEYS:", results[0].keys())
 
-    print("FIRST RESULT HINTS:")
-    print(results[0].get("scoring_hints"))
+    #print("FIRST RESULT HINTS:")
+    #print(results[0].get("scoring_hints"))
 
     results = [
         {k: clean_nan(v) for k, v in row.items()}
@@ -599,7 +631,7 @@ def process_files_background(
 
     job = get_job(job_id)
 
-    print("JOB STATUS BEFORE CONTROLLER COMPLETION:", job)
+    #print("JOB STATUS BEFORE CONTROLLER COMPLETION:", job)
 
     if job is None or job.get("status") != "done":
         print("CONTROLLER COMPLETING JOB:", job_id)
@@ -693,12 +725,12 @@ async def check_saved_results(
 
     df = pd.DataFrame(last_results)
 
-    print(
-        "4. FINAL PAYLOAD HINTS:",
-        df.get("scoring_hints")
-    )
+    #print(
+    #    "4. FINAL PAYLOAD HINTS:",
+    #    df.get("scoring_hints")
+    #)
 
-    print("RECOMPUTE FLAG (controller):", recompute_regression_scores)
+    #print("RECOMPUTE FLAG (controller):", recompute_regression_scores)
     print("LAST_RUN_WAS_SCORING:", LAST_RUN_WAS_SCORING)
 
     if run_regression:

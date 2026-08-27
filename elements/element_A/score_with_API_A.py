@@ -132,6 +132,9 @@ def is_truncated_json(text: str) -> bool:
 
 
 def score_document(filename, content, blended_model):
+    
+    document_length = len(content)
+
     # Choose prompt based on model
     if blended_model == "v1.0":
         prompt = f"""
@@ -320,30 +323,29 @@ def score_document(filename, content, blended_model):
         For each category (A1–A6), explicitly determine which rubric descriptor the evidence most closely matches, then assign that score.
 
         POINTS FOR TEACHER REVIEW
-        -------------------------
 
-        Before returning the scores, identify exactly five scoring decisions that an experienced human scorer would most likely want to verify independently.
+        Before returning the scores, identify exactly five places where the student's submission contains evidence, omissions, or ambiguities that could reasonably lead experienced scorers to disagree.
 
-        For each scoring decision, write one concise review prompt for the teacher.
+        For each potential scoring disagreement, write one concise review prompt for the teacher.
 
-        - Three prompts must be document-specific and based on features, omissions, or ambiguities observed in this submission.
-        - Two prompts must be broader rubric reminders for criteria that are especially important to verify in this submission, even if those concerns are not unusual.
+        Every review prompt must be specific to this submission and must explicitly reference at least one concrete feature, claim, source, stakeholder, measurement, omission, ambiguity, person, organization, or design detail found in the student's work.
 
-        Blend the five prompts naturally. Do not label them as document-specific or general.
+        A prompt is not sufficiently document-specific if it could be copied unchanged into another student's portfolio.
 
         Each prompt must:
 
-        - direct the teacher to inspect or verify evidence before accepting the score;
-        - identify a genuine scoring judgment rather than a routine checklist item;
-        - avoid stating the scoring conclusion;
-        - avoid recommending a score;
-        - avoid merely summarizing a strength or weakness;
-        - remain relevant to this submission;
-        - avoid rubric shorthand such as A1, A2, A5 or similar subelement labels;
-        - avoid explicit score references such as "zero score", "full marks", or "higher score";
-        - read naturally as if written by an experienced moderator leaving review notes for another scorer.
+        direct the teacher to inspect or verify evidence before accepting the score;
+        identify a genuine scoring judgment rather than a routine checklist item;
+        avoid stating the scoring conclusion;
+        avoid recommending a score;
+        avoid merely summarizing a strength or weakness;
+        avoid rubric shorthand such as A1, A2, A5, or similar subelement labels;
+        avoid explicit score references such as "zero score", "full marks", or "higher score";
+        read naturally as if written by an experienced moderator leaving review notes for another scorer.
 
-        Good review prompts are document-specific.
+        Every review prompt must be specific to this submission and must explicitly reference at least one concrete feature, claim, source, stakeholder, measurement, omission, ambiguity, constraint, design requirement, user, person, organization, or design detail found in the student's work.
+
+        Before returning the prompts, check all five. If any could apply unchanged to another student's portfolio, rewrite it so that it depends on details unique to this submission.
 
         Prefer review prompts that identify genuine scoring judgments rather than routine rubric reminders.
 
@@ -364,6 +366,12 @@ def score_document(filename, content, blended_model):
 
         Better:
         "Decide whether the colonies' grievances collectively function as an explicit problem definition despite the absence of a labeled problem statement."
+
+        Poor:
+        "Verify whether the problem statement clearly defines the problem."
+
+        Better:
+        "Determine whether the cited L1/L2 spinal injury and Mr. Kiser's height provide sufficient evidence that bending while pushing the cart is the primary engineering problem rather than simply one contributing factor."
 
         Return the review prompts as a JSON array named "scoring_hints".
 
@@ -409,6 +417,22 @@ def score_document(filename, content, blended_model):
         temperature=0,
         top_p=1,
         max_tokens=1500
+    )
+
+    usage = response["usage"]
+
+    input_tokens = usage["prompt_tokens"]
+    output_tokens = usage["completion_tokens"]
+    cached_tokens = usage["prompt_tokens_details"]["cached_tokens"]
+    total_tokens = usage["total_tokens"]
+
+    print(
+        f"{filename}\t"
+        f"{document_length}\t"
+        f"{input_tokens}\t"
+        f"{output_tokens}\t"
+        f"{cached_tokens}\t"
+        f"{total_tokens}"
     )
 
     print("MODEL BEING USED:", gpt_model)
@@ -497,7 +521,7 @@ def score_document(filename, content, blended_model):
         # --- Extract and normalize scoring hints ---
         raw_hints = response_dict.get("scoring_hints", [])
 
-        print("1. RAW MODEL HINTS:", response_dict.get("scoring_hints"))
+        #print("1. RAW MODEL HINTS:", response_dict.get("scoring_hints"))
 
         if isinstance(raw_hints, list):
             scoring_hints = [
@@ -522,7 +546,7 @@ def score_document(filename, content, blended_model):
 
         response_dict = flattened
 
-        print("2. PARSED HINTS:", scoring_hints)
+        #print("2. PARSED HINTS:", scoring_hints)
 
         response_dict["truncation_detected"] = 0
 
@@ -550,7 +574,7 @@ def score_document(filename, content, blended_model):
 
     except json.JSONDecodeError as e:
         print(f"❌ JSON parse failed for {filename}")
-        print(response_str)
+        #print(response_str)
         return {
             "truncation_detected": 1
         }
@@ -643,7 +667,7 @@ def main(folder_path, output_path, blended_version):
         "narrative_feedback"
     ]
 
-    print("COLUMNS BEFORE REORDER:", output_df.columns.tolist())
+    #print("COLUMNS BEFORE REORDER:", output_df.columns.tolist())
 
     ordered_columns = core + scores + api_scores + flags + rationales + extras
 
@@ -665,7 +689,7 @@ def score_documents_with_api(documents, blended_version):
         # --- Extraction ---
         text = extract_text_with_fallback(file_path)     
         print("EXTRACTED LENGTH:", len(text))
-        print("EXTRACTED SAMPLE:", text[:300])
+        #print("EXTRACTED SAMPLE:", text[:300])
 
         response_dict = score_document(filename, text, blended_version)
         if response_dict is None:
@@ -676,7 +700,7 @@ def score_documents_with_api(documents, blended_version):
 
         row["narrative_feedback"] = response_dict.get("narrative_feedback", "")
 
-        print("Narrative in row:", row.get("narrative_feedback"))
+        #print("Narrative in row:", row.get("narrative_feedback"))
 
         # NOTE: No rule processing currently implemented for Element A.
         # Placeholder for future blended model rule logic (e.g., v1.x adjustments).
@@ -686,14 +710,14 @@ def score_documents_with_api(documents, blended_version):
         for i in range(1, 7):
             row[f"A{i}_api"] = response_dict.get(f"A{i}_api", row.get(f"A{i}", 0))
 
-        print("3. ROW HINTS:", row.get("scoring_hints"))
+        #print("3. ROW HINTS:", row.get("scoring_hints"))
 
         results.append(row)
 
-    print(
-        "4. ALL RESULT HINTS:",
-        [r.get("scoring_hints") for r in results]
-    )
+    #print(
+    #    "4. ALL RESULT HINTS:",
+    #    [r.get("scoring_hints") for r in results]
+    #)
 
     # ✅ return is OUTSIDE the loop, INSIDE the function
     return pd.DataFrame(results)

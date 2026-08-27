@@ -235,51 +235,44 @@ def score_document(filename, content, blended_model):
         Do not award credit based solely on vague references such as "see diagram" without explanation.
 
         POINTS FOR TEACHER REVIEW
-        -------------------------
 
-        Before returning the scores, identify exactly five scoring decisions that an experienced human scorer would most likely want to verify independently.
+        Before returning the scores, identify exactly five places where the student's submission contains evidence, omissions, or ambiguities that could reasonably lead experienced scorers to disagree.
 
-        For each scoring decision, write one concise review prompt for the teacher.
+        For each potential scoring disagreement, write one concise review prompt for the teacher.
 
-        - Three prompts must be document-specific and based on features, omissions, or ambiguities observed in this submission.
-        - Two prompts must be broader rubric reminders for criteria that are especially important to verify in this submission, even if those concerns are not unusual.
+        Every review prompt must be specific to this submission and must explicitly reference at least one concrete feature, claim, source, stakeholder, measurement, omission, ambiguity, person, organization, or design detail found in the student's work.
 
-        Blend the five prompts naturally. Do not label them as document-specific or general.
+        A prompt is not sufficiently document-specific if it could be copied unchanged into another student's portfolio.
 
         Each prompt must:
 
-        - direct the teacher to inspect or verify evidence before accepting the score;
-        - identify a genuine scoring judgment rather than a routine checklist item;
-        - avoid stating the scoring conclusion;
-        - avoid recommending a score;
-        - avoid merely summarizing a strength or weakness;
-        - remain relevant to this submission;
-        - avoid rubric shorthand such as A1, A2, A5 or similar subelement labels;
-        - avoid explicit score references such as "zero score", "full marks", or "higher score";
-        - read naturally as if written by an experienced moderator leaving review notes for another scorer.
+        direct the teacher to inspect or verify evidence before accepting the score;
+        identify a genuine scoring judgment rather than a routine checklist item;
+        avoid stating the scoring conclusion;
+        avoid recommending a score;
+        avoid merely summarizing a strength or weakness;
+        avoid rubric shorthand such as A1, A2, A5, or similar subelement labels;
+        avoid explicit score references such as "zero score", "full marks", or "higher score";
+        read naturally as if written by an experienced moderator leaving review notes for another scorer.
 
-        Good review prompts are document-specific.
+        Every review prompt must be specific to this submission and must explicitly reference at least one concrete feature, claim, source, stakeholder, measurement, omission, ambiguity, constraint, design requirement, user, person, organization, or design detail found in the student's work.
+
+        Before returning the prompts, check all five. If any could apply unchanged to another student's portfolio, rewrite it so that it depends on details unique to this submission.
 
         Prefer review prompts that identify genuine scoring judgments rather than routine rubric reminders.
 
-        Poor:
-        "Verify whether the document includes credible sources."
+        Poor
+        "Assess whether prior solutions are compared adequately."
 
-        Better:
-        "Determine whether the Declaration itself should be treated as sufficient supporting evidence or whether independent sources are expected."
+        Better
+        "Determine whether the documented analysis genuinely explains why features from certain prior solutions influenced the student's design while other approaches were rejected, or merely describes the prior attempts."
 
-        Poor:
-        "Check stakeholder groups."
+        Poor
+        "Verify the analysis of prior attempts."
 
-        Better:
-        "Consider whether references to British citizens, Parliament, the Crown, and Indigenous peoples represent distinct stakeholder groups or merely passing mentions."
-
-        Poor:
-        "Look for a problem statement."
-
-        Better:
-        "Decide whether the colonies' grievances collectively function as an explicit problem definition despite the absence of a labeled problem statement."
-
+        Better
+        "Consider whether the documented strengths and shortcomings are actually used to justify later design decisions, or remain isolated observations about the prior solutions."
+        
         Return the review prompts as a JSON array named "scoring_hints".
 
         Return exactly one valid JSON object matching the required structure.
@@ -390,51 +383,44 @@ def score_document(filename, content, blended_model):
         Do not award credit based solely on vague references such as "see diagram" without explanation.
 
         POINTS FOR TEACHER REVIEW
-        -------------------------
 
-        Before returning the scores, identify exactly five scoring decisions that an experienced human scorer would most likely want to verify independently.
+        Before returning the scores, identify exactly five places where the student's submission contains evidence, omissions, or ambiguities that could reasonably lead experienced scorers to disagree.
 
-        For each scoring decision, write one concise review prompt for the teacher.
+        For each potential scoring disagreement, write one concise review prompt for the teacher.
 
-        - Three prompts must be document-specific and based on features, omissions, or ambiguities observed in this submission.
-        - Two prompts must be broader rubric reminders for criteria that are especially important to verify in this submission, even if those concerns are not unusual.
+        Every review prompt must be specific to this submission and must explicitly reference at least one concrete feature, claim, source, stakeholder, measurement, omission, ambiguity, person, organization, or design detail found in the student's work.
 
-        Blend the five prompts naturally. Do not label them as document-specific or general.
+        A prompt is not sufficiently document-specific if it could be copied unchanged into another student's portfolio.
 
         Each prompt must:
 
-        - direct the teacher to inspect or verify evidence before accepting the score;
-        - identify a genuine scoring judgment rather than a routine checklist item;
-        - avoid stating the scoring conclusion;
-        - avoid recommending a score;
-        - avoid merely summarizing a strength or weakness;
-        - remain relevant to this submission;
-        - avoid rubric shorthand such as A1, A2, A5 or similar subelement labels;
-        - avoid explicit score references such as "zero score", "full marks", or "higher score";
-        - read naturally as if written by an experienced moderator leaving review notes for another scorer.
+        direct the teacher to inspect or verify evidence before accepting the score;
+        identify a genuine scoring judgment rather than a routine checklist item;
+        avoid stating the scoring conclusion;
+        avoid recommending a score;
+        avoid merely summarizing a strength or weakness;
+        avoid rubric shorthand such as A1, A2, A5, or similar subelement labels;
+        avoid explicit score references such as "zero score", "full marks", or "higher score";
+        read naturally as if written by an experienced moderator leaving review notes for another scorer.
 
-        Good review prompts are document-specific.
+        Every review prompt must be specific to this submission and must explicitly reference at least one concrete feature, claim, source, stakeholder, measurement, omission, ambiguity, constraint, design requirement, user, person, organization, or design detail found in the student's work.
+
+        Before returning the prompts, check all five. If any could apply unchanged to another student's portfolio, rewrite it so that it depends on details unique to this submission.
 
         Prefer review prompts that identify genuine scoring judgments rather than routine rubric reminders.
 
-        Poor:
-        "Verify whether the document includes credible sources."
+        Poor
+        "Assess whether prior solutions are compared adequately."
 
-        Better:
-        "Determine whether the Declaration itself should be treated as sufficient supporting evidence or whether independent sources are expected."
+        Better
+        "Determine whether the documented analysis genuinely explains why features from certain prior solutions influenced the student's design while other approaches were rejected, or merely describes the prior attempts."
 
-        Poor:
-        "Check stakeholder groups."
+        Poor
+        "Verify the analysis of prior attempts."
 
-        Better:
-        "Consider whether references to British citizens, Parliament, the Crown, and Indigenous peoples represent distinct stakeholder groups or merely passing mentions."
-
-        Poor:
-        "Look for a problem statement."
-
-        Better:
-        "Decide whether the colonies' grievances collectively function as an explicit problem definition despite the absence of a labeled problem statement."
-
+        Better
+        "Consider whether the documented strengths and shortcomings are actually used to justify later design decisions, or remain isolated observations about the prior solutions."
+        
         Return the review prompts as a JSON array named "scoring_hints".
 
         Return exactly one valid JSON object matching the required structure.

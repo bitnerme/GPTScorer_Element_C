@@ -587,12 +587,12 @@ def reconcile_integer_subscores(
             old_value = rec[best_k]
             new_value = old_value + direction
 
-            print(
-                "RECONCILIATION STEP:",
-                f"{best_k} {old_value} -> {new_value}",
-                f"cost={best_rank[0]:.3f}",
-                f"prior_movement={movement_count[best_k]}",
-            )
+            #print(
+            #    "RECONCILIATION STEP:",
+            #    f"{best_k} {old_value} -> {new_value}",
+            #    f"cost={best_rank[0]:.3f}",
+            #    f"prior_movement={movement_count[best_k]}",
+            #)
 
 
             rec[best_k] = new_value
@@ -1014,14 +1014,14 @@ def generate_calibrated_feedback(
 
     for i in range(1, 7):
         key = f"A{i}_rationale"
-        print(f"{key}: {result.get(key)}")
+        #print(f"{key}: {result.get(key)}")
 
-    print(result.get("narrative_feedback"))
+    #print(result.get("narrative_feedback"))
 
-    print(
-        "HINTS LEAVING RECONCILIATION:",
-        result.get("scoring_hints")
-    )
+    #print(
+    #    "HINTS LEAVING RECONCILIATION:",
+    #    result.get("scoring_hints")
+    #)
 
     return result
 
@@ -1057,7 +1057,7 @@ def apply_calibration_pipeline(
         for column in df.columns
     ]
 
-    print("NORMALIZED REPLAY COLUMNS:", [repr(c) for c in df.columns])
+    #("NORMALIZED REPLAY COLUMNS:", [repr(c) for c in df.columns])
 
     def numeric_series(df, column, default=0):
         if column not in df.columns:
@@ -1068,10 +1068,10 @@ def apply_calibration_pipeline(
 
         converted = pd.to_numeric(df[column], errors="coerce")
 
-        print(
-            f"{column}: raw={df[column].head().tolist()} "
-            f"converted={converted.head().tolist()}"
-        )
+        #print(
+        #    f"{column}: raw={df[column].head().tolist()} "
+        #    f"converted={converted.head().tolist()}"
+        #)
 
         return converted.fillna(default)
 
@@ -1090,7 +1090,7 @@ def apply_calibration_pipeline(
     for i in range(1, 7):
         ensure_text_column(df, f"A{i}_rationale")
 
-    print("STARTING CALIBRATION:", job_id)
+    #print("STARTING CALIBRATION:", job_id)
 
     # Normalize subscores
     for k in range(1, 7):
@@ -1137,7 +1137,7 @@ def apply_calibration_pipeline(
         [f"A{k}_final" for k in range(1, 7)]
     ].mean(axis=1)
 
-    print("CALIBRATION FINISHED:", job_id)
+    #print("CALIBRATION FINISHED:", job_id)
 
     # Build subelement-level editorial guidance from the movement between
     # the original post-rule/API score and the authoritative final score.
@@ -1182,7 +1182,7 @@ def apply_calibration_pipeline(
             total=2 * len(df),
         )
 
-    print("AFTER update_phase:", get_job(job_id))
+    #print("AFTER update_phase:", get_job(job_id))
 
     # Reconcile the original API rationales and narrative to the now-authoritative
     # final subelement scores.
@@ -1190,41 +1190,46 @@ def apply_calibration_pipeline(
 
     #total_docs = len(df)
 
-    for idx, (_, row) in enumerate(df.iterrows()):
+    reconciled_rows = []
 
-        reconciled_rows = []
+    if reconcile_feedback:
+        
+        for idx, (_, row) in enumerate(df.iterrows()):
 
-        if reconcile_feedback:
-            
-            for idx, (_, row) in enumerate(df.iterrows()):
+            reconciled_rows.append(
+                generate_calibrated_feedback(
+                    row=row.to_dict(),
+                    mode=mode,
+                    force=True,
+                )
+            )
 
-                reconciled_rows.append(
-                    generate_calibrated_feedback(
-                        row=row.to_dict(),
-                        mode=mode,
-                        force=True,
-                    )
+            if job_id is not None:
+                #print(
+                #    f"RECON UPDATE | "
+                #    f"offset={progress_offset} | "
+                #    f"idx={idx} | "
+                #    f"completed={progress_offset + idx + 1}"
+                #)
+
+                update_progress(
+                    job_id,
+                    progress_offset + idx + 1,
                 )
 
-                if job_id is not None:
-                    update_progress(
-                        job_id,
-                        progress_offset + idx + 1,
-                    )
+        df = pd.DataFrame(reconciled_rows)
 
-            df = pd.DataFrame(reconciled_rows)
+    else:
+        if idx == 1: print("Feedback reconciliation disabled; continuing without reconciliation.")
 
-        else:
-            print("Feedback reconciliation disabled; continuing without reconciliation.")
+    #print("COLUMNS AFTER RECONCILIATION:")
+    #print(df.columns.tolist())
 
-    print("COLUMNS AFTER RECONCILIATION:")
-    print(df.columns.tolist())
-
-    if not df.empty:
-        print(
-            "HINTS AFTER RECONCILIATION:",
-            df.iloc[0].get("scoring_hints")
-        )
+    #if not df.empty:
+    #    print(
+    #        "HINTS AFTER RECONCILIATION:",
+    #        df.iloc[0].get("scoring_hints")
+    #    )
 
     df = df.replace([np.inf, -np.inf], np.nan)
     df = df.astype(object).where(pd.notna(df), None)
@@ -1234,7 +1239,7 @@ def apply_calibration_pipeline(
     )
 
     if job_id is not None:
-        print("BEFORE complete_job:", get_job(job_id))
+        #print("BEFORE complete_job:", get_job(job_id))
 
         complete_job(
             job_id,
@@ -1243,6 +1248,6 @@ def apply_calibration_pipeline(
             },
         )
 
-        print("AFTER complete_job:", get_job(job_id))
+        #print("AFTER complete_job:", get_job(job_id))
 
     return df

@@ -803,7 +803,9 @@ function downloadCSV() {
     }
 
     const csvContent = csvRows.join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
+    
     const url = URL.createObjectURL(blob);
 
     console.log("scoreBases =", scoreBases);
