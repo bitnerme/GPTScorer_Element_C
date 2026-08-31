@@ -1,0 +1,9 @@
+Unified 2025+2026 baselines and balanced Golden20 for Elements A and B
+
+- Adopted unified 2025+2026 production baselines for Elements A and B.
+- Replaced the 2025-only Golden20 regression sets with balanced 20-case sets (10×2025, 10×2026) for both elements.
+- Updated Golden20 selection to balance submission year and expert score bands, with integer/half-point coverage where appropriate.
+- Improved replay and validation utilities for unified cohort support, including robust CSV handling and Golden20 generation.
+- Rebuilt Drift Detection and Golden20 regression baselines for both elements.
+- Verified deterministic replay with zero baseline differences on immediate rerun.
+- Established the unified validation workflow for continuing Element C–L migration.

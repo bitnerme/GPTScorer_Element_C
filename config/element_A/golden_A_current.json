@@ -1,22 +1,82 @@
 [
-{"filename": "Case084_000000.pdf", "expert_score": 0},
-{"filename": "Case080_000000.pdf", "expert_score": 0},
-{"filename": "Case072_000000.pdf", "expert_score": 0},
-{"filename": "Case065_000000.pdf", "expert_score": 0},
-{"filename": "Case035_321000.docx", "expert_score": 1},
-{"filename": "Case024_211101.pdf", "expert_score": 1},
-{"filename": "Case037_121101.pdf", "expert_score": 1},
-{"filename": "Case105_221001.pdf", "expert_score": 1},
-{"filename": "Case042_221331.pdf", "expert_score": 2},
-{"filename": "Case064_522111.docx", "expert_score": 2},
-{"filename": "Case118_323220.pdf", "expert_score": 2},
-{"filename": "Case020_442200.pdf", "expert_score": 2},
-{"filename": "Case067_433323.pdf", "expert_score": 3},
-{"filename": "Case059_550215.docx", "expert_score": 3},
-{"filename": "Case109_550503.pdf", "expert_score": 3},
-{"filename": "Case097_432432.pdf", "expert_score": 3},
-{"filename": "Case029_344454.pdf", "expert_score": 4},
-{"filename": "Case025_343545.docx", "expert_score": 4},
-{"filename": "Case030_434355.pdf", "expert_score": 4},
-{"filename": "Case002_454453.pdf", "expert_score": 4.166666667}
+  {
+    "filename": "Case065_000000.pdf",
+    "expert_score": 0.0
+  },
+  {
+    "filename": "Case034_111000.docx",
+    "expert_score": 0.5
+  },
+  {
+    "filename": "Case024_211101.pdf",
+    "expert_score": 1.0
+  },
+  {
+    "filename": "Case031_122121.pdf",
+    "expert_score": 1.5
+  },
+  {
+    "filename": "Case020_442200.pdf",
+    "expert_score": 2.0
+  },
+  {
+    "filename": "Case045_323502.pdf",
+    "expert_score": 2.5
+  },
+  {
+    "filename": "Case059_550215.docx",
+    "expert_score": 3.0
+  },
+  {
+    "filename": "Case010_525333.docx",
+    "expert_score": 3.5
+  },
+  {
+    "filename": "Case025_343545.docx",
+    "expert_score": 4.0
+  },
+  {
+    "filename": "Case011_545355.docx",
+    "expert_score": 4.5
+  },
+  {
+    "filename": "Case132_000000.docx",
+    "expert_score": 0.0
+  },
+  {
+    "filename": "Case232_110001.pdf",
+    "expert_score": 0.5
+  },
+  {
+    "filename": "Case196_420000.pdf",
+    "expert_score": 1.0
+  },
+  {
+    "filename": "Case130_230202.pdf",
+    "expert_score": 1.5
+  },
+  {
+    "filename": "Case201_331230.pdf",
+    "expert_score": 2.0
+  },
+  {
+    "filename": "Case129_432402.docx",
+    "expert_score": 2.5
+  },
+  {
+    "filename": "Case173_555102.pdf",
+    "expert_score": 3.0
+  },
+  {
+    "filename": "Case124_352353.docx",
+    "expert_score": 3.5
+  },
+  {
+    "filename": "Case270_434544.pdf",
+    "expert_score": 4.0
+  },
+  {
+    "filename": "Case152_552555.pdf",
+    "expert_score": 4.5
+  }
 ]

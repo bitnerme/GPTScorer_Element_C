@@ -50,7 +50,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Default to running feedback reonciliation
 ##################################################
 
-RUN_FEEDBACK_RECONCILIATION = True  #default = True
+RUN_FEEDBACK_RECONCILIATION = False  #default = True; set False for calibration runs in replay
 
 def save_drift_baseline_to_file(current_metrics, baseline_file):
 
@@ -263,7 +263,23 @@ def process_files_background(
         if filename.lower().endswith(".csv"):
             print("Processing CSV:", filename)  # CSV inputs are assumed pre-scored (bypass API + rules pipeline)
 
-            df_one = pd.read_csv(BytesIO(content), engine="python", on_bad_lines="warn")
+            try:
+                df_one = pd.read_csv(
+                    BytesIO(content),
+                    engine="python",
+                    on_bad_lines="warn",
+                    encoding="utf-8-sig"
+                )
+
+            except UnicodeDecodeError:
+                print("UTF-8 CSV decode failed; retrying as Windows-1252")
+
+                df_one = pd.read_csv(
+                    BytesIO(content),
+                    engine="python",
+                    on_bad_lines="warn",
+                    encoding="cp1252"
+                )
 
             # Normalize replay CSV score columns generically
             # Replay files exist in three historical formats:
@@ -303,11 +319,11 @@ def process_files_background(
 
                 if has_api:
                     vals = pd.to_numeric(df_one[api], errors="coerce")
-                    source - api
+                    source = api
 
                 elif has_raw:
                     vals = pd.to_numeric(df_one[raw], errors="coerce")
-                    scource = raw
+                    source = raw
 
                 elif has_base:
                     vals = pd.to_numeric(df_one[base], errors="coerce")

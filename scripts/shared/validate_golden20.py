@@ -116,6 +116,21 @@ def run_validation(element, json_path, doc_dir, mode, recompute=False, rebuild_b
 
         filename = case["filename"]
         expert = case["expert_score"]
+
+        print("GOLDEN20 FILENAME:", repr(filename), type(filename))
+
+        if pd.isna(filename):
+            print("BAD GOLDEN20 ROW:")
+            print(case)
+            continue
+
+        filename = str(filename).strip()
+
+        if not filename:
+            print("BLANK GOLDEN20 FILENAME:")
+            print(case)
+            continue
+
         path = os.path.join(doc_dir, filename)
         blended = get_blended_model(element, mode)
 

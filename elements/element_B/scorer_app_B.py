@@ -268,9 +268,8 @@ LEGACY_A = 1.0
 LEGACY_B = 0.0
 
 # Current linear calibration (variance + bias alignment)
-CURRENT_A = 1.3 #1.3  
-CURRENT_B = -1.3 #-1.4  
-
+CURRENT_A =  1.0 # 1.3 2025
+CURRENT_B =  0.0 # -1.3 2025  
 
 # =========================
 # Flag Policy
@@ -1046,32 +1045,30 @@ def apply_calibration_pipeline(
 
     #total_docs = len(df)
 
-    for idx, (_, row) in enumerate(df.iterrows()):
+    reconciled_rows = []
 
-        reconciled_rows = []
+    if reconcile_feedback:
+        
+        for idx, (_, row) in enumerate(df.iterrows()):
 
-        if reconcile_feedback:
-            
-            for idx, (_, row) in enumerate(df.iterrows()):
+            reconciled_rows.append(
+                generate_calibrated_feedback(
+                    row=row.to_dict(),
+                    mode=mode,
+                    force=True,
+                )
+            )
 
-                reconciled_rows.append(
-                    generate_calibrated_feedback(
-                        row=row.to_dict(),
-                        mode=mode,
-                        force=True,
-                    )
+            if job_id is not None:
+                update_progress(
+                    job_id,
+                    progress_offset + idx + 1,
                 )
 
-                if job_id is not None:
-                    update_progress(
-                        job_id,
-                        progress_offset + idx + 1,
-                    )
+        df = pd.DataFrame(reconciled_rows)
 
-            df = pd.DataFrame(reconciled_rows)
-
-        else:
-            print("Feedback reconciliation disabled; continuing without reconciliation.")
+    else:
+        print("Feedback reconciliation disabled; continuing without reconciliation.")
 
     print("COLUMNS AFTER RECONCILIATION:")
     print(df.columns.tolist())

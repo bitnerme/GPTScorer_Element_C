@@ -206,13 +206,66 @@ async function pollProgress(jobId) {
 
     }, 1000);
 }
+window.scoreRequestInProgress = false;
+
 document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-    e.preventDefault(); 
-    
+    e.preventDefault();
+
+    const fileInput = document.getElementById("fileInput");
+    const statusText = document.getElementById("statusText");
+
+    // ---------------------------------------------------------
+    // 1. Validate before locking the scoring request
+    // ---------------------------------------------------------
+    if (!fileInput.files.length) {
+        alert("No file selected.");
+        return;
+    }
+
+    const totalBytes = Array.from(fileInput.files)
+        .reduce((sum, file) => sum + file.size, 0);
+
+    console.log(
+        `Uploading ${fileInput.files.length} files ` +
+        `(${(totalBytes / 1024 / 1024).toFixed(1)} MB)`
+    );
+
+    // ---------------------------------------------------------
+    // 2. Prevent duplicate Score Documents submissions
+    // ---------------------------------------------------------
+    if (window.scoreRequestInProgress) {
+        console.log("Score request already in progress; ignoring duplicate submit.");
+        return;
+    }
+
+    window.scoreRequestInProgress = true;
+
+    // Get the button that submitted the form
+    const scoreButton =
+        e.submitter ||
+        document.querySelector('#uploadForm button[type="submit"]');
+
+    if (scoreButton) {
+        scoreButton.disabled = true;
+        scoreButton.textContent = "Preparing...";
+    }
+
+    // ---------------------------------------------------------
+    // 3. Give immediate feedback BEFORE building FormData
+    // ---------------------------------------------------------
+    if (statusText) {
+        statusText.textContent =
+            `Preparing ${fileInput.files.length} documents for upload...`;
+    }
+
+    // Give the browser one chance to paint the message/button change
+    // before beginning the potentially expensive work.
+    await new Promise(requestAnimationFrame);
+
     window.lockResults = false;
     window.currentView = "scoring";
 
-    const fileInput = document.getElementById("fileInput");
+    console.time("Build FormData");
 
     const scoreFormData = new FormData();
 
@@ -224,13 +277,9 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
     for (const file of fileInput.files) {
         scoreFormData.append("files", file);
     }
-    
-    if (!fileInput.files.length) {
-        alert("No file selected.");
-        return;
-    }
 
-    const legacyChecked = document.getElementById("legacyToggle")?.checked;
+    const legacyChecked =
+        document.getElementById("legacyToggle")?.checked;
 
     const mode = legacyChecked ? "legacy" : "current";
 
@@ -238,17 +287,33 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
 
     console.log("Selected mode:", mode);
 
+    console.timeEnd("Build FormData");
+
+    // ---------------------------------------------------------
+    // 4. FormData is built; now we're waiting on the POST/upload
+    // ---------------------------------------------------------
+    if (statusText) {
+        statusText.textContent =
+            `Uploading ${fileInput.files.length} documents...`;
+    }
+
+    if (scoreButton) {
+        scoreButton.textContent = "Uploading...";
+    }
+
     try {
         const response = await fetch("/score", {
             method: "POST",
             body: scoreFormData,
         });
 
-        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
 
         document.getElementById("progressContainer").style.display = "block";
         document.getElementById("progressBar").style.width = "0%";
-            
+
         const data = await response.json();
         const jobId = data.job_id;
 
@@ -265,22 +330,42 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
             J: 3,
             K: 3,
             L: 2
-            };
+        };
 
         window.subelementCount =
-        data.subelement_count ||
-        window.subelementCount ||
-        subelementDefaults[element] ||
-        1;
+            data.subelement_count ||
+            window.subelementCount ||
+            subelementDefaults[element] ||
+            1;
 
-        window.currentView = "scoring";  
-        window.pollingActive = true;      
+        window.currentView = "scoring";
+        window.pollingActive = true;
+
+        // The backend has accepted the job.
+        if (statusText) {
+            statusText.textContent =
+                `Scoring ${fileInput.files.length} documents...`;
+        }
+
+        if (scoreButton) {
+            scoreButton.textContent = "Scoring...";
+        }
 
         pollProgress(jobId);
 
     } catch (error) {
         console.error("Upload failed:", error);
         alert("Upload failed. Check the console for details.");
+
+        // -----------------------------------------------------
+        // 5. Only unlock here because the request FAILED
+        // -----------------------------------------------------
+        window.scoreRequestInProgress = false;
+
+        if (scoreButton) {
+            scoreButton.disabled = false;
+            scoreButton.textContent = "Score Documents";
+        }
     }
 });
 
