@@ -1,0 +1,8 @@
+v2.2.4 – Unified 2025+2026 pilot baseline for Elements A–D
+
+Unified 2025+2026 scoring and validation baselines for Elements A–D.
+Verified Element D performance at or above the 2025-only baseline with no drift detected.
+Refreshed combined replay files, Golden20 regression sets, and saved validation baselines.
+Preserved cohort-balanced regression coverage where available.
+Established A–D as the frozen scoring baseline for Cisco demo/pilot activities.
+Continued A–L unification will proceed from this checkpoint.

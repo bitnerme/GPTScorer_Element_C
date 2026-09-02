@@ -18,5 +18,5 @@ data = [
     for _, row in df.iterrows()
 ]
 
-with open("golden_B_legacy.json", "w") as f:
+with open("golden_B_current.json", "w") as f:
     json.dump(data, f, indent=2)

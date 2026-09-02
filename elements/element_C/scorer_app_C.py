@@ -11,8 +11,8 @@ import math
 LEGACY_BIAS_OFFSET = 0.25
 
 # Current linear calibration (variance + bias alignment)
-CURRENT_A = 0.93 #0.90 2026
-CURRENT_B = -0.04 #-0.04 2026
+CURRENT_A = 0.93 #0.90 2026 0.93 2025
+CURRENT_B = -0.04 #-0.04 2026  -0.04  2025
 
 def _as_numeric_series(source, df):
     """

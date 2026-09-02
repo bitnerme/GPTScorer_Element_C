@@ -14,7 +14,7 @@ ELEMENT = "B"
 SUBELEMENT_COUNTS = {
     "A": 6,
     "B": 2,
-    "C": 4,
+    "C": 6,
     "D": 4,
     "E": 4,
     "F": 1,
